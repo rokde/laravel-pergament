@@ -1,7 +1,7 @@
 # Laravel Pergament
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rokde/laravel-pergament.svg?style=flat-square)](https://packagist.org/packages/rokde/laravel-pergament)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/rokde/laravel-pergament/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/rokde/laravel-pergament/actions?query=workflow%tests+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/rokde/laravel-pergament/tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/rokde/laravel-pergament/actions/workflows/tests.yml?query=branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/rokde/laravel-pergament.svg?style=flat-square)](https://packagist.org/packages/rokde/laravel-pergament)
 
 A file-based CMS package for Laravel. Renders documentation, blog posts, and standalone pages from Markdown files with YAML front matter. Blade templates, Tailwind CSS, dark mode, server-side syntax highlighting — no database required.
