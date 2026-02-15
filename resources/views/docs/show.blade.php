@@ -1,0 +1,67 @@
+@extends('pergament::layouts.docs')
+
+@section('seo')
+    <x-pergament::seo-head :seo="$seo" />
+@endsection
+
+@section('docs-content')
+<article>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+        {{ $page['title'] }}
+    </h1>
+
+    @if($page['excerpt'])
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            {{ $page['excerpt'] }}
+        </p>
+    @endif
+
+    <div class="prose dark:prose-invert max-w-none">
+        {!! $page['htmlContent'] !!}
+    </div>
+
+    {{-- Previous / Next navigation --}}
+    <nav class="mt-12 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
+        @if($page['previousPage'])
+            <a href="{{ $page['previousPage']['url'] }}" class="group flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg class="size-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                {{ $page['previousPage']['title'] }}
+            </a>
+        @else
+            <span></span>
+        @endif
+
+        @if($page['nextPage'])
+            <a href="{{ $page['nextPage']['url'] }}" class="group flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                {{ $page['nextPage']['title'] }}
+                <svg class="size-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </a>
+        @endif
+    </nav>
+</article>
+
+@push('styles')
+<style>
+    .pergament-img-dark { display: none; }
+    .dark .pergament-img-light { display: none; }
+    .dark .pergament-img-dark { display: block; }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.querySelectorAll('.prose h2[id], .prose h3[id], .prose h4[id]').forEach(function(heading) {
+        heading.style.cursor = 'pointer';
+        heading.title = 'Click to copy link';
+        heading.addEventListener('click', function() {
+            const url = window.location.origin + window.location.pathname + '#' + heading.id;
+            navigator.clipboard.writeText(url).then(function() {
+                const original = heading.textContent;
+                heading.textContent = 'Link copied!';
+                setTimeout(function() { heading.textContent = original; }, 1500);
+            });
+        });
+    });
+</script>
+@endpush
+@endsection
