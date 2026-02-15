@@ -22,7 +22,7 @@
            "@test:lint",
            "@test:unit"
         ],
-        "test:ci": "pest --ci"
+        "test:ci": "pest --parallel --ci"
     },
     "require": {
         "php": "^8.4",
