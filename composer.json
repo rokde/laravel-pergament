@@ -21,7 +21,8 @@
         "test": [
            "@test:lint",
            "@test:unit"
-        ]
+        ],
+        "test:ci": "pest --ci"
     },
     "require": {
         "php": "^8.4",
