@@ -113,7 +113,7 @@ Published views go to `resources/views/vendor/pergament/`. Key templates:
 - `components/seo-head.blade.php` — SEO meta tags component
 - `components/post-card.blade.php` — blog post card component
 
-Views use the `pergament::` namespace. Components use `<x-pergament::component-name>`.
+Views use the `pergament::` namespace. Components use @verbatim`<x-pergament::component-name>`@endverbatim.
 
 ### Artisan Commands
 
