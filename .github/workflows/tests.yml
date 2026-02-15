@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -38,6 +42,13 @@ jobs:
           extensions: fileinfo
           tools: composer:v2
           coverage: xdebug
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ matrix.os }}-${{ matrix.php }}-${{ matrix.laravel }}-${{ matrix.stability }}-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Dependencies (ziggy-js needs setup prior npm)
         run: |
