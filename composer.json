@@ -1,0 +1,54 @@
+{
+    "name": "rokde/laravel-pergament",
+    "description": "A file-based CMS package for Laravel with documentation, blog, landing pages, SEO, and PWA support.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "pergament", "cms", "documentation", "blog", "markdown"],
+    "autoload": {
+        "psr-4": {
+            "Pergament\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pergament\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "lint": "pint --parallel",
+        "test:lint": "pint --parallel --test",
+        "test:unit": "pest --parallel --coverage --min=80",
+        "test": [
+           "@test:lint",
+           "@test:unit"
+        ]
+    },
+    "require": {
+        "php": "^8.4",
+        "illuminate/support": "^11.0|^12.0",
+        "league/commonmark": "^2.0",
+        "tempest/highlight": "^2.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.0|^4.0",
+        "laravel/pint": "^1.27"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Pergament\\PergamentServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
