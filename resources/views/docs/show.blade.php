@@ -43,16 +43,19 @@
 @push('scripts')
 <script>
     document.querySelectorAll('.prose h2[id], .prose h3[id], .prose h4[id]').forEach(function(heading) {
-        heading.style.cursor = 'pointer';
-        heading.title = 'Click to copy link';
-        heading.addEventListener('click', function() {
+        const btn = document.createElement('button');
+        btn.className = 'heading-anchor';
+        btn.setAttribute('aria-label', 'Copy link to section');
+        btn.textContent = '¶';
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
             const url = window.location.origin + window.location.pathname + '#' + heading.id;
             navigator.clipboard.writeText(url).then(function() {
-                const original = heading.textContent;
-                heading.textContent = 'Link copied!';
-                setTimeout(function() { heading.textContent = original; }, 1500);
+                btn.textContent = 'Copied';
+                setTimeout(function() { btn.textContent = '¶'; }, 1500);
             });
         });
+        heading.appendChild(btn);
     });
 </script>
 @endpush

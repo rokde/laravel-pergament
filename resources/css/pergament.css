@@ -10,6 +10,39 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer utilities {
+    .heading-anchor {
+        opacity: 0;
+        margin-left: 0.35em;
+        font-size: 0.8em;
+        font-weight: 400;
+        color: var(--color-gray-400);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        vertical-align: baseline;
+        transition: opacity 0.15s ease, color 0.15s ease;
+    }
+
+    .prose h2:hover .heading-anchor,
+    .prose h3:hover .heading-anchor,
+    .prose h4:hover .heading-anchor,
+    .heading-anchor:focus-visible {
+        opacity: 1;
+    }
+
+    .heading-anchor:hover {
+        color: var(--color-blue-500);
+    }
+
+    .dark .heading-anchor {
+        color: var(--color-gray-500);
+    }
+
+    .dark .heading-anchor:hover {
+        color: var(--color-blue-400);
+    }
+
     .toc-link-active {
         color: var(--color-blue-700);
         font-weight: 500;
