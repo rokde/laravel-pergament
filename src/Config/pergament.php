@@ -190,7 +190,7 @@ return [
     */
 
     'colors' => [
-        'primary'    => '#3b82f6',
+        'primary' => '#3b82f6',
         'background' => '#ffffff',
     ],
 
