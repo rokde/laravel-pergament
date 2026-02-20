@@ -90,6 +90,19 @@ Configure what shows at the base URL:
 ],
 ```
 
+### Colors & Theming
+
+Configure your brand color and page background. Both values propagate as CSS custom properties (`--p-primary`, `--p-bg`) that drive the entire UI — navigation highlights, badges, links, scrollbars, focus rings, text selection, and more:
+
+```php
+'colors' => [
+    'primary'    => '#3b82f6',   // any CSS color: hex, oklch, named…
+    'background' => '#ffffff',
+],
+```
+
+Dark mode is handled automatically: the background switches to a dark slate (`#111827`) and tints derived from `--p-primary` re-resolve against it without any extra configuration.
+
 ### Site & SEO
 
 ```php
@@ -385,6 +398,25 @@ The variant resolution works as follows:
 | No | Yes | `dashboard.light.png` | `dashboard.png` |
 | Yes | Yes | `dashboard.light.png` | `dashboard.dark.png` |
 
+## Command Palette Search
+
+When search is enabled, a command palette is available on every page. Open it with `Cmd+K` (macOS) or `Ctrl+K` (other platforms), or by clicking the search input in the navigation bar.
+
+- **Real-time results** — results appear as you type, fetched from the search endpoint as JSON (no page reload)
+- **Type badges** — each result is labelled **Doc**, **Post**, or **Page**
+- **Keyboard navigation** — `↑`/`↓` to move between results, `Enter` to open, `Escape` to close
+- **Mouse navigation** — click any result to navigate
+- **Excerpt preview** — a short excerpt is shown below each title; falls back to the first 160 characters of content when no explicit excerpt is set in front matter
+- **No-JS fallback** — the nav search form submits to `/search?q=…` as before when JavaScript is unavailable
+
+Search covers all three content types:
+
+| Type | Source |
+|------|--------|
+| Doc | Documentation pages |
+| Post | Blog posts |
+| Page | Standalone pages |
+
 ## Artisan Commands
 
 ### Create a documentation page
@@ -438,21 +470,21 @@ With `prefix` set to `docs`, all routes become `/docs/...`, `/docs/blog/...`, et
 ## Features
 
 - **File-based content** — Markdown + YAML front matter, no database
-- **Documentation** — Numbered chapters/pages, sidebar navigation, previous/next links, themed images
+- **Documentation** — Numbered chapters/pages, sidebar navigation, TOC scrollspy, heading anchor links, themed images
 - **Blog** — Categories, tags, multiple authors, date-prefixed directories, pagination
 - **RSS/Atom feeds** — Configurable feed type and limits
 - **SEO** — Meta tags, Open Graph, Twitter Cards, per-page overrides via dot notation
 - **Sitemap** — Auto-generated XML sitemap
 - **robots.txt / llms.txt** — Auto-generated or custom content
-- **Search** — Full-text search across docs and blog
+- **Command palette search** — `Cmd+K`/`Ctrl+K` opens a live search dialog across docs, posts, and pages; keyboard navigable; no-JS form fallback
 - **PWA** — Optional manifest.json and service worker
 - **Landing pages** — Block-based content with `:::directive` syntax
-- **Dark mode** — Class-based, themed image variants
-- **Syntax highlighting** — Server-side via tempest/highlight
+- **Dark mode** — Class-based toggle with system preference detection; dark-mode syntax highlighting
+- **Syntax highlighting** — Server-side via tempest/highlight, light and dark themes included
+- **Theming** — Configure `colors.primary` and `colors.background`; the entire UI (nav, links, badges, scrollbars, focus rings, text selection) derives from these two values via CSS custom properties
+- **Zoomable images** — Click any image to enlarge it in a lightbox; Escape or click outside to close
+- **Copy code** — Hover a code block to reveal a Copy button; switches to "Copied" on success
 - **Configurable prefix** — Mount the CMS at any URL path
-- **Zoomable images** — Hovering an image lets you click to zoom in
-- **Copy code** — Each code block can be copied to clipboard
-- **Brand color** — Configure your brand color and the whole page will be rendered in that colors (primary and background)
 
 ## Testing
 
