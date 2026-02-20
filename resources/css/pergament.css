@@ -9,6 +9,32 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@layer base {
+    * {
+        scrollbar-color: color-mix(in oklch, var(--p-primary) 15%, var(--p-bg)) var(--p-bg);
+        scrollbar-width: thin;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--p-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: color-mix(in oklch, var(--p-primary) 35%, var(--p-bg));
+        border-radius: 9999px;
+        border: 1px solid var(--p-bg);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: color-mix(in oklch, var(--p-primary) 60%, var(--p-bg));
+    }
+}
+
 @layer utilities {
     .heading-anchor {
         opacity: 0;
