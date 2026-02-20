@@ -18,7 +18,7 @@
                 name="q"
                 value="{{ $query }}"
                 placeholder="Search documentation and blog..."
-                class="w-full pl-4 pr-12 py-3 text-base rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                class="w-full pl-4 pr-12 py-3 text-base rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
                 autofocus
             >
             <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
@@ -53,7 +53,7 @@
                                     {{ $result['type'] === 'doc' ? 'Documentation' : 'Blog' }}
                                 </span>
                             </div>
-                            <h3 class="text-base font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            <h3 class="text-base font-semibold text-gray-900 dark:text-white pergament-primary-group-hover transition-colors">
                                 {{ $result['title'] }}
                             </h3>
                             @if(!empty($result['excerpt']))

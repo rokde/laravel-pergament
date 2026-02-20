@@ -179,6 +179,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Colors
+    |--------------------------------------------------------------------------
+    |
+    | Primary color drives all interactive UI elements: active states, focus
+    | rings, badges, links, and highlights. Background sets the page surface
+    | in light mode; dark mode always uses a near-black surface.
+    | Both values accept any valid CSS color (hex, rgb, oklch, …).
+    |
+    */
+
+    'colors' => [
+        'primary'    => '#3b82f6',
+        'background' => '#ffffff',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Search
     |--------------------------------------------------------------------------
     */

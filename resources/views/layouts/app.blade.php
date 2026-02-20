@@ -20,12 +20,28 @@
 
     <link rel="stylesheet" href="{{ asset('vendor/pergament/pergament.css') }}">
 
+    <style>
+        :root {
+            --p-primary:         {{ config('pergament.colors.primary', '#3b82f6') }};
+            --p-bg:              {{ config('pergament.colors.background', '#ffffff') }};
+            /* Derived tints — re-resolved automatically when .dark overrides --p-bg */
+            --p-primary-subtle:  color-mix(in oklch, var(--p-primary) 12%, var(--p-bg));
+            --p-primary-fg:      color-mix(in oklch, var(--p-primary) 75%, black);
+            --p-bg-elevated:     var(--p-bg);
+        }
+        .dark {
+            --p-bg:          #111827;
+            --p-bg-elevated: #1f2937;
+            --p-primary-fg:  color-mix(in oklch, var(--p-primary) 65%, white);
+        }
+    </style>
+
     @stack('styles')
 </head>
-<body class="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
+<body class="min-h-screen flex flex-col pergament-bg text-gray-900 dark:text-gray-100 antialiased">
 
     {{-- Navigation --}}
-    <nav class="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+    <nav class="sticky top-0 z-50 pergament-bg border-b border-gray-200 dark:border-gray-700 print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 {{-- Site name --}}
@@ -53,7 +69,7 @@
                                 type="text"
                                 name="q"
                                 placeholder="Search..."
-                                class="w-44 pl-3 pr-8 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-44 pl-3 pr-8 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
                             >
                             <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -106,7 +122,7 @@
                             type="text"
                             name="q"
                             placeholder="Search..."
-                            class="w-full pl-3 pr-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="w-full pl-3 pr-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
                         >
                     </form>
                 @endif
@@ -130,7 +146,7 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <footer class="border-t border-gray-200 dark:border-gray-700 pergament-bg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <p class="text-center text-sm text-gray-500 dark:text-gray-400">
                 &copy; {{ date('Y') }} {{ config('pergament.site.name', config('app.name', 'Pergament')) }}. All rights reserved.

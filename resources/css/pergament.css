@@ -32,24 +32,68 @@
     }
 
     .heading-anchor:hover {
-        color: var(--color-blue-500);
+        color: var(--p-primary);
     }
 
     .dark .heading-anchor {
         color: var(--color-gray-500);
     }
 
-    .dark .heading-anchor:hover {
-        color: var(--color-blue-400);
-    }
-
     .toc-link-active {
-        color: var(--color-blue-700);
+        color: var(--p-primary-fg);
         font-weight: 500;
     }
 
-    .dark .toc-link-active {
-        color: var(--color-blue-300);
+    /* Surfaces */
+    .pergament-bg {
+        background-color: var(--p-bg);
+    }
+
+    .pergament-card-bg {
+        background-color: var(--p-bg-elevated);
+    }
+
+    /* Active/selected nav item */
+    .pergament-active-nav {
+        background-color: var(--p-primary-subtle);
+        color: var(--p-primary-fg);
+        font-weight: 500;
+    }
+
+    /* Primary-colored badge / pill */
+    .pergament-primary-badge {
+        color: var(--p-primary-fg);
+        background-color: var(--p-primary-subtle);
+    }
+
+    .pergament-primary-badge:hover {
+        background-color: color-mix(in oklch, var(--p-primary) 22%, var(--p-bg));
+    }
+
+    /* Primary link (e.g. blog category on show page) */
+    .pergament-primary-link {
+        color: var(--p-primary);
+    }
+
+    .pergament-primary-link:hover {
+        color: var(--p-primary-fg);
+    }
+
+    /* Primary hover text (e.g. post card title) */
+    .pergament-primary-hover:hover {
+        color: var(--p-primary);
+    }
+
+    /* Primary group-hover text (e.g. search result titles) */
+    .group:hover .pergament-primary-group-hover {
+        color: var(--p-primary);
+    }
+
+    /* Focus ring for text inputs */
+    .pergament-input:focus {
+        outline: none;
+        border-color: transparent;
+        box-shadow: 0 0 0 2px var(--p-primary);
     }
 
     .pergament-code-block {
