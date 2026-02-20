@@ -231,5 +231,28 @@
             });
         })();
     </script>
+
+    <script>
+        (function() {
+            document.querySelectorAll('main pre').forEach(function(pre) {
+                const btn = document.createElement('button');
+                btn.className = 'copy-code-btn';
+                btn.textContent = 'Copy';
+                btn.addEventListener('click', function() {
+                    const code = pre.querySelector('code');
+                    const text = code ? code.innerText : pre.innerText;
+                    navigator.clipboard.writeText(text).then(function() {
+                        btn.textContent = 'Copied';
+                        btn.classList.add('copy-done');
+                        setTimeout(function() {
+                            btn.textContent = 'Copy';
+                            btn.classList.remove('copy-done');
+                        }, 1500);
+                    });
+                });
+                pre.appendChild(btn);
+            });
+        })();
+    </script>
 </body>
 </html>
