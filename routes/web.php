@@ -14,6 +14,26 @@ use Pergament\Http\Controllers\SearchController;
 use Pergament\Http\Controllers\SitemapController;
 use Pergament\Support\UrlGenerator;
 
+// CSS asset — static file takes priority when vendor:published; this route is the fallback
+Route::get('vendor/pergament/pergament.css', function () {
+    $path = __DIR__.'/../dist/pergament.css';
+    $content = file_get_contents($path);
+    $etag = '"'.md5($content).'"';
+
+    if (request()->header('If-None-Match') === $etag) {
+        return response('', 304, [
+            'ETag' => $etag,
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    return response($content, 200, [
+        'Content-Type' => 'text/css; charset=utf-8',
+        'Cache-Control' => 'public, max-age=86400',
+        'ETag' => $etag,
+    ]);
+})->name('pergament.css');
+
 $basePrefix = UrlGenerator::basePrefix();
 
 Route::prefix($basePrefix)->group(function (): void {
