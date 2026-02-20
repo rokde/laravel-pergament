@@ -1,0 +1,28 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@source "../views";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer utilities {
+    .pergament-code-block {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+    }
+
+    .pergament-img-dark {
+        display: none;
+    }
+
+    .dark .pergament-img-light {
+        display: none;
+    }
+
+    .dark .pergament-img-dark {
+        display: block;
+    }
+}
