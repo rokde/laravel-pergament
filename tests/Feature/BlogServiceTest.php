@@ -130,6 +130,6 @@ it('searches blog posts', function (): void {
     $results = $service->search('laravel');
 
     expect($results)->not->toBeEmpty();
-    expect($results->first()['type'])->toBe('blog');
+    expect($results->first()['type'])->toBe('post');
     expect($results->first()['title'])->toBe('Getting Started with Laravel');
 });

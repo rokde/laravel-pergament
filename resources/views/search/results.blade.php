@@ -49,8 +49,12 @@
                     <a href="{{ $result['url'] }}" class="block group">
                         <div class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="inline-block text-xs font-medium px-2 py-0.5 rounded-full {{ $result['type'] === 'doc' ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' }}">
-                                    {{ $result['type'] === 'doc' ? 'Documentation' : 'Blog' }}
+                                @php
+                                    $typeLabel = match($result['type']) { 'doc' => 'Documentation', 'post' => 'Blog', 'page' => 'Page', default => ucfirst($result['type']) };
+                                    $typeClass = match($result['type']) { 'doc' => 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400', 'post' => 'bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400', default => 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400' };
+                                @endphp
+                                <span class="inline-block text-xs font-medium px-2 py-0.5 rounded-full {{ $typeClass }}">
+                                    {{ $typeLabel }}
                                 </span>
                             </div>
                             <h3 class="text-base font-semibold text-gray-900 dark:text-white pergament-primary-group-hover transition-colors">

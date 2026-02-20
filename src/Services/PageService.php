@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Pergament\Data\Page;
 use Pergament\Support\FrontMatterParser;
+use Pergament\Support\UrlGenerator;
 
 final class PageService
 {
@@ -74,6 +75,30 @@ final class PageService
             'meta' => $page->meta,
             'linkErrors' => $linkErrors,
         ];
+    }
+
+    /**
+     * Search standalone pages.
+     *
+     * @return Collection<int, array{title: string, excerpt: string, url: string, type: string}>
+     */
+    public function search(string $query): Collection
+    {
+        $query = mb_strtolower($query);
+
+        return $this->getSlugs()
+            ->map(fn (string $slug): ?Page => $this->getPage($slug))
+            ->filter()
+            ->filter(fn (Page $page): bool => str_contains(mb_strtolower($page->title), $query) ||
+                str_contains(mb_strtolower($page->excerpt), $query) ||
+                str_contains(mb_strtolower($page->content), $query))
+            ->map(fn (Page $page): array => [
+                'title' => $page->title,
+                'excerpt' => $page->excerpt,
+                'url' => UrlGenerator::path($page->slug),
+                'type' => 'page',
+            ])
+            ->values();
     }
 
     /**

@@ -11,6 +11,7 @@ final class SearchService
     public function __construct(
         private DocumentationService $docs,
         private BlogService $blog,
+        private PageService $pages,
     ) {}
 
     /**
@@ -28,6 +29,10 @@ final class SearchService
 
         if (config('pergament.blog.enabled', true)) {
             $results = $results->merge($this->blog->search($query));
+        }
+
+        if (config('pergament.pages.enabled', true)) {
+            $results = $results->merge($this->pages->search($query));
         }
 
         return $results->values();

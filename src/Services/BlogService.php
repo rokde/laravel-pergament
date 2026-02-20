@@ -220,7 +220,7 @@ final class BlogService
                 'slug' => $post->slug,
                 'date' => $post->date,
                 'url' => UrlGenerator::path($blogPrefix, $post->slug),
-                'type' => 'blog',
+                'type' => 'post',
             ])
             ->values();
     }
