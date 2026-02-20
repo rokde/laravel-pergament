@@ -126,6 +126,45 @@
         color: var(--p-primary);
     }
 
+    /* Lightbox */
+    .pergament-zoomable {
+        cursor: zoom-in;
+    }
+
+    .pergament-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(0 0 0 / 82%);
+        cursor: zoom-out;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .pergament-lightbox.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .pergament-lightbox img {
+        max-width: 90vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        box-shadow: 0 25px 60px -10px rgb(0 0 0 / 70%);
+        cursor: zoom-out;
+    }
+
+    body.lightbox-open {
+        overflow: hidden;
+    }
+
     /* Focus ring for text inputs */
     .pergament-input:focus {
         outline: none;
