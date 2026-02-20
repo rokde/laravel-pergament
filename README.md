@@ -421,20 +421,22 @@ Search covers all three content types:
 
 ### Create a documentation page
 
+We have an interactive docs creation command. All arguments are optional, you will be guided through all necessary things.
+
 ```bash
-php artisan pergament:make-doc-page
+php artisan pergament:make:doc
 
 # Or with arguments
-php artisan pergament:make-doc-page getting-started installation --title="Installation Guide" --order=02
+php artisan pergament:make:doc --chapter=getting-started --title="Installation Guide" --order=02
 ```
 
 ### Create a blog post
 
 ```bash
-php artisan pergament:make-blog-post
+php artisan pergament:make:post
 
 # Or with arguments
-php artisan pergament:make-blog-post my-first-post \
+php artisan pergament:make:post \
     --title="My First Post" \
     --category="Tutorials" \
     --tags="laravel, php" \

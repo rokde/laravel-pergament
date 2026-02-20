@@ -22,12 +22,12 @@ Each blog post is a directory containing `post.md` and optional media files.
 
 **Create via artisan (interactive prompts):**
 ```bash
-php artisan pergament:make-blog-post
+php artisan pergament:make:post
 ```
 
 **Create via artisan (non-interactive):**
 ```bash
-php artisan pergament:make-blog-post my-post-slug \
+php artisan pergament:make:post \
   --title="My Post Title" \
   --category="Tutorials" \
   --tags="laravel, php" \
@@ -85,12 +85,12 @@ content/docs/
 
 **Create via artisan (interactive):**
 ```bash
-php artisan pergament:make-doc-page
+php artisan pergament:make:page
 ```
 
 **Create via artisan (non-interactive):**
 ```bash
-php artisan pergament:make-doc-page getting-started installation \
+php artisan pergament:make:page --chapter=getting-started \
   --title="Installation Guide" \
   --order=02
 ```
