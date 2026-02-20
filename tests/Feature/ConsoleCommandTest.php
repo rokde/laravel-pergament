@@ -193,3 +193,147 @@ it('fails when blog post directory already exists', function (): void {
     $this->artisan('pergament:make:post', $allOptions)->assertSuccessful();
     $this->artisan('pergament:make:post', $allOptions)->assertFailed();
 });
+
+it('prompts for category via text when no existing categories', function (): void {
+    $this->artisan('pergament:make:post', [
+        '--title' => 'New Post',
+        '--date' => '2024-06-15',
+        '--tags' => '',
+        '--author' => '',
+        '--excerpt' => 'A summary.',
+    ])
+        ->expectsQuestion('What category does this post belong to?', 'Tutorial')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-new-post/post.md');
+    expect($content)->toContain('category: "Tutorial"');
+});
+
+it('creates blog post with no category when text prompt left empty', function (): void {
+    $this->artisan('pergament:make:post', [
+        '--title' => 'Uncategorized Post',
+        '--date' => '2024-06-15',
+        '--tags' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('What category does this post belong to?', '')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-uncategorized-post/post.md');
+    expect($content)->not->toContain('category:');
+});
+
+it('shows category select when existing categories are present', function (): void {
+    $blogPath = $this->tempDir.'/blog';
+    mkdir($blogPath.'/2023-01-01-old-post', 0755, true);
+    file_put_contents($blogPath.'/2023-01-01-old-post/post.md', "---\ntitle: \"Old Post\"\nexcerpt: \"\"\ncategory: \"General\"\n---\n\n# Old Post\n");
+
+    $this->artisan('pergament:make:post', [
+        '--title' => 'New Post',
+        '--date' => '2024-06-15',
+        '--tags' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('What category does this post belong to?', 'General')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-new-post/post.md');
+    expect($content)->toContain('category: "General"');
+});
+
+it('creates new category when new option chosen from category select', function (): void {
+    $blogPath = $this->tempDir.'/blog';
+    mkdir($blogPath.'/2023-01-01-old-post', 0755, true);
+    file_put_contents($blogPath.'/2023-01-01-old-post/post.md', "---\ntitle: \"Old Post\"\nexcerpt: \"\"\ncategory: \"General\"\n---\n\n# Old Post\n");
+
+    $this->artisan('pergament:make:post', [
+        '--title' => 'New Post',
+        '--date' => '2024-06-15',
+        '--tags' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('What category does this post belong to?', '__new__')
+        ->expectsQuestion('Enter the new category name', 'Custom Category')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-new-post/post.md');
+    expect($content)->toContain('category: "Custom Category"');
+});
+
+it('collects tags via input loop when no existing tags', function (): void {
+    $this->artisan('pergament:make:post', [
+        '--title' => 'Tagged Post',
+        '--date' => '2024-06-15',
+        '--category' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('Add a tag', 'laravel')
+        ->expectsQuestion('Add a tag', 'php')
+        ->expectsQuestion('Add a tag', '')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-tagged-post/post.md');
+    expect($content)->toContain('- "laravel"');
+    expect($content)->toContain('- "php"');
+});
+
+it('creates blog post with no tags when tag loop stopped immediately', function (): void {
+    $this->artisan('pergament:make:post', [
+        '--title' => 'No Tags Post',
+        '--date' => '2024-06-15',
+        '--category' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('Add a tag', '')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-no-tags-post/post.md');
+    expect($content)->not->toContain('tags:');
+});
+
+it('selects existing tags from multiselect when tags are present', function (): void {
+    $blogPath = $this->tempDir.'/blog';
+    mkdir($blogPath.'/2023-01-01-old-post', 0755, true);
+    file_put_contents($blogPath.'/2023-01-01-old-post/post.md', "---\ntitle: \"Old Post\"\nexcerpt: \"\"\ntags:\n  - \"laravel\"\n  - \"php\"\n---\n\n# Old Post\n");
+
+    $this->artisan('pergament:make:post', [
+        '--title' => 'New Post',
+        '--date' => '2024-06-15',
+        '--category' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('Which tags should this post have?', ['laravel'])
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-new-post/post.md');
+    expect($content)->toContain('- "laravel"');
+    expect($content)->not->toContain('- "php"');
+});
+
+it('adds new tags after selecting existing ones from multiselect', function (): void {
+    $blogPath = $this->tempDir.'/blog';
+    mkdir($blogPath.'/2023-01-01-old-post', 0755, true);
+    file_put_contents($blogPath.'/2023-01-01-old-post/post.md', "---\ntitle: \"Old Post\"\nexcerpt: \"\"\ntags:\n  - \"laravel\"\n---\n\n# Old Post\n");
+
+    $this->artisan('pergament:make:post', [
+        '--title' => 'New Post',
+        '--date' => '2024-06-15',
+        '--category' => '',
+        '--author' => '',
+        '--excerpt' => '',
+    ])
+        ->expectsQuestion('Which tags should this post have?', ['laravel', '__add_new__'])
+        ->expectsQuestion('Add a tag', 'vue')
+        ->expectsQuestion('Add a tag', '')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/blog/2024-06-15-new-post/post.md');
+    expect($content)->toContain('- "laravel"');
+    expect($content)->toContain('- "vue"');
+});
