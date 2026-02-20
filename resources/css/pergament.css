@@ -10,6 +10,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
+    ::selection {
+        background-color: color-mix(in oklch, var(--p-primary) 30%, var(--p-bg));
+        color: var(--p-primary-fg);
+    }
+
     * {
         scrollbar-color: color-mix(in oklch, var(--p-primary) 15%, var(--p-bg)) var(--p-bg);
         scrollbar-width: thin;
