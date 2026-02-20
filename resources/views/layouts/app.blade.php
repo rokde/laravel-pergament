@@ -18,9 +18,7 @@
         <link rel="manifest" href="/manifest.json">
     @endif
 
-    <link rel="stylesheet" href="{{ asset('vendor/pergament/app.css') }}">
-
-    <link rel="stylesheet" href="https://unpkg.com/@tempest-php/highlight@3/src/Themes/highlight-light-lite.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/pergament/pergament.css') }}">
 
     @stack('styles')
 </head>

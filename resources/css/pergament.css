@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./highlight-light-lite.css";
 @plugin "@tailwindcss/typography";
 
 @source "../views";
