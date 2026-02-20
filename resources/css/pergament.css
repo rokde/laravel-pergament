@@ -10,6 +10,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer utilities {
+    .toc-link-active {
+        color: var(--color-blue-700);
+        font-weight: 500;
+    }
+
+    .dark .toc-link-active {
+        color: var(--color-blue-300);
+    }
+
     .pergament-code-block {
         background: #1e293b;
         color: #e2e8f0;
