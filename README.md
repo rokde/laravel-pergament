@@ -467,6 +467,20 @@ All routes are nested under the configured `prefix`. With the default `/` prefix
 
 With `prefix` set to `docs`, all routes become `/docs/...`, `/docs/blog/...`, etc.
 
+## Markdown Responses for AI & LLMs
+
+All content pages (documentation, blog posts, standalone pages, and the homepage) can be served as plain Markdown instead of HTML. This is configurable in the exports section of the configuration.
+
+A markdown response is returned when any of the following is true:
+
+| Trigger | Example |
+|---------|---------|
+| `Accept: text/markdown` request header | `curl -H "Accept: text/markdown" /docs/getting-started/installation` |
+| Known AI / LLM user-agent | Requests from ChatGPT, Claude, Perplexity, etc. |
+| `.md` URL suffix | `/blog/my-post.md` |
+
+Media files, feeds, sitemaps, and search results are excluded — only rendered HTML content pages are converted.
+
 ## Features
 
 - **File-based content** — Markdown + YAML front matter, no database
@@ -476,6 +490,7 @@ With `prefix` set to `docs`, all routes become `/docs/...`, `/docs/blog/...`, et
 - **SEO** — Meta tags, Open Graph, Twitter Cards, per-page overrides via dot notation
 - **Sitemap** — Auto-generated XML sitemap
 - **robots.txt / llms.txt** — Auto-generated or custom content
+- **Markdown responses** — All content pages served as plain Markdown via `Accept: text/markdown`, `.md` suffix, or known AI user-agents (powered by spatie/laravel-markdown-response)
 - **Command palette search** — `Cmd+K`/`Ctrl+K` opens a live search dialog across docs, posts, and pages; keyboard navigable; no-JS form fallback
 - **PWA** — Optional manifest.json and service worker
 - **Landing pages** — Block-based content with `:::directive` syntax
