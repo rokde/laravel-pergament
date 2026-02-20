@@ -32,6 +32,10 @@ final class DocumentationController
         DocumentationService $service,
         SeoService $seoService,
     ): View {
+        if (str_ends_with($page, '.md')) {
+            $page = substr($page, 0, -3);
+        }
+
         $pageData = $service->getRenderedPage($chapter, $page);
 
         abort_unless($pageData !== null, 404);

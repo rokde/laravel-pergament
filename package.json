@@ -1,0 +1,13 @@
+{
+    "name": "laravel-pergament",
+    "private": true,
+    "scripts": {
+        "build": "tailwindcss -i resources/css/pergament.css -o dist/pergament.css --minify",
+        "dev": "tailwindcss -i resources/css/pergament.css -o dist/pergament.css --watch"
+    },
+    "devDependencies": {
+        "@tailwindcss/cli": "^4.0",
+        "@tailwindcss/typography": "^0.5",
+        "tailwindcss": "^4.0"
+    }
+}

@@ -10,7 +10,7 @@
         {{-- Header --}}
         <header class="mb-8">
             @if($post['category'])
-                <a href="{{ route('pergament.blog.category', \Illuminate\Support\Str::slug($post['category'])) }}" class="inline-block text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mb-3 transition-colors">
+                <a href="{{ route('pergament.blog.category', \Illuminate\Support\Str::slug($post['category'])) }}" class="inline-block text-sm font-medium pergament-primary-link mb-3 transition-colors">
                     {{ $post['category'] }}
                 </a>
             @endif
@@ -67,7 +67,7 @@
                             @endif
                         </div>
                         <div>
-                            <a href="{{ route('pergament.blog.author', $author->slug()) }}" class="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                            <a href="{{ route('pergament.blog.author', $author->slug()) }}" class="font-medium text-gray-900 dark:text-white pergament-primary-hover transition-colors">
                                 {{ $author->name }}
                             </a>
                             @if($author->url)

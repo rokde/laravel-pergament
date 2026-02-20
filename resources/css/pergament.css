@@ -1,0 +1,376 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@import "./highlight-light-lite.css";
+@import "./highlight-dark-lite.css";
+
+@source "../views";
+@source inline("{m,p}{x,y,t,b,l,r}-{1..20}");
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+    ::selection {
+        background-color: color-mix(in oklch, var(--p-primary) 30%, var(--p-bg));
+        color: var(--p-primary-fg);
+    }
+
+    * {
+        scrollbar-color: color-mix(in oklch, var(--p-primary) 15%, var(--p-bg)) var(--p-bg);
+        scrollbar-width: thin;
+    }
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--p-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: color-mix(in oklch, var(--p-primary) 35%, var(--p-bg));
+        border-radius: 9999px;
+        border: 1px solid var(--p-bg);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: color-mix(in oklch, var(--p-primary) 60%, var(--p-bg));
+    }
+
+    img, figure, video {
+        border-radius: 0.375rem;
+        box-shadow:
+            0 0 0 1px color-mix(in oklch, var(--p-primary) 12%, var(--p-bg)),
+            0 2px 8px color-mix(in oklch, var(--p-primary) 8%, transparent);
+    }
+
+    figure {
+        overflow: hidden;
+    }
+}
+
+@layer utilities {
+    .heading-anchor {
+        opacity: 0;
+        margin-left: 0.35em;
+        font-size: 0.8em;
+        font-weight: 400;
+        color: var(--color-gray-400);
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        vertical-align: baseline;
+        transition: opacity 0.15s ease, color 0.15s ease;
+    }
+
+    .prose h2:hover .heading-anchor,
+    .prose h3:hover .heading-anchor,
+    .prose h4:hover .heading-anchor,
+    .heading-anchor:focus-visible {
+        opacity: 1;
+    }
+
+    .heading-anchor:hover {
+        color: var(--p-primary);
+    }
+
+    .dark .heading-anchor {
+        color: var(--color-gray-500);
+    }
+
+    .toc-link-active {
+        color: var(--p-primary-fg);
+        font-weight: 500;
+    }
+
+    /* Surfaces */
+    .pergament-bg {
+        background-color: var(--p-bg);
+    }
+
+    .pergament-card-bg {
+        background-color: var(--p-bg-elevated);
+    }
+
+    /* Active/selected nav item */
+    .pergament-active-nav {
+        background-color: var(--p-primary-subtle);
+        color: var(--p-primary-fg);
+        font-weight: 500;
+    }
+
+    /* Primary-colored badge / pill */
+    .pergament-primary-badge {
+        color: var(--p-primary-fg);
+        background-color: var(--p-primary-subtle);
+    }
+
+    .pergament-primary-badge:hover {
+        background-color: color-mix(in oklch, var(--p-primary) 22%, var(--p-bg));
+    }
+
+    /* Primary link (e.g. blog category on show page) */
+    .pergament-primary-link {
+        color: var(--p-primary);
+    }
+
+    .pergament-primary-link:hover {
+        color: var(--p-primary-fg);
+    }
+
+    /* Primary hover text (e.g. post card title) */
+    .pergament-primary-hover:hover {
+        color: var(--p-primary);
+    }
+
+    /* Primary group-hover text (e.g. search result titles) */
+    .group:hover .pergament-primary-group-hover {
+        color: var(--p-primary);
+    }
+
+    /* Code copy button */
+    main pre {
+        position: relative;
+    }
+
+    .copy-code-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.7rem;
+        font-family: var(--font-sans);
+        font-weight: 500;
+        line-height: 1.5;
+        color: color-mix(in oklch, var(--p-primary) 70%, white);
+        background: color-mix(in oklch, var(--p-primary) 12%, #1e293b);
+        border: 1px solid color-mix(in oklch, var(--p-primary) 25%, #334155);
+        border-radius: 0.25rem;
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+        user-select: none;
+    }
+
+    main pre:hover .copy-code-btn {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .copy-code-btn:hover {
+        color: white;
+        background: color-mix(in oklch, var(--p-primary) 25%, #1e293b);
+    }
+
+    .copy-code-btn.copy-done {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+
+    /* Lightbox */
+    .pergament-zoomable {
+        cursor: zoom-in;
+    }
+
+    .pergament-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(0 0 0 / 82%);
+        cursor: zoom-out;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+    }
+
+    .pergament-lightbox.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .pergament-lightbox img {
+        max-width: 90vw;
+        max-height: 90vh;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        box-shadow: 0 25px 60px -10px rgb(0 0 0 / 70%);
+        cursor: zoom-out;
+    }
+
+    body.lightbox-open {
+        overflow: hidden;
+    }
+
+    /* Focus ring for text inputs */
+    .pergament-input:focus {
+        outline: none;
+        border-color: transparent;
+        box-shadow: 0 0 0 2px var(--p-primary);
+    }
+
+    .pergament-code-block {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+    }
+
+    .pergament-img-dark {
+        display: none;
+    }
+
+    .dark .pergament-img-light {
+        display: none;
+    }
+
+    .dark .pergament-img-dark {
+        display: block;
+    }
+
+    /* Command palette */
+    body.cmd-open {
+        overflow: hidden;
+    }
+
+    .pergament-cmd-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 15vh;
+        background: rgb(0 0 0 / 55%);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease;
+    }
+
+    .pergament-cmd-backdrop.is-open {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .pergament-cmd-dialog {
+        width: 100%;
+        max-width: 42rem;
+        margin: 0 1rem;
+        background: var(--p-bg-elevated);
+        border: 1px solid color-mix(in oklch, var(--p-primary) 18%, var(--p-bg));
+        border-radius: 0.75rem;
+        box-shadow: 0 25px 60px -10px rgb(0 0 0 / 45%);
+        overflow: hidden;
+    }
+
+    .pergament-cmd-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid color-mix(in oklch, var(--p-primary) 10%, var(--p-bg));
+    }
+
+    .pergament-cmd-icon {
+        flex-shrink: 0;
+        color: color-mix(in oklch, var(--p-primary) 50%, currentColor);
+    }
+
+    .pergament-cmd-input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        color: inherit;
+    }
+
+    .pergament-cmd-input::placeholder {
+        color: color-mix(in oklch, currentColor 40%, transparent);
+    }
+
+    .pergament-cmd-esc {
+        flex-shrink: 0;
+        font-size: 0.7rem;
+        font-family: var(--font-mono, monospace);
+        padding: 0.15rem 0.4rem;
+        border-radius: 0.25rem;
+        border: 1px solid color-mix(in oklch, var(--p-primary) 15%, var(--p-bg));
+        color: color-mix(in oklch, currentColor 45%, transparent);
+        user-select: none;
+    }
+
+    .pergament-cmd-results {
+        max-height: 24rem;
+        overflow-y: auto;
+        padding: 0.375rem;
+    }
+
+    .pergament-cmd-empty {
+        padding: 2rem 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+        color: color-mix(in oklch, currentColor 45%, transparent);
+    }
+
+    .pergament-cmd-result {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        transition: background-color 0.1s ease;
+    }
+
+    .pergament-cmd-result.is-active,
+    .pergament-cmd-result:hover {
+        background: color-mix(in oklch, var(--p-primary) 10%, var(--p-bg));
+    }
+
+    .pergament-cmd-result-badge {
+        flex-shrink: 0;
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.2rem 0.5rem;
+        border-radius: 9999px;
+        margin-top: 0.15rem;
+        background: color-mix(in oklch, var(--p-primary) 15%, var(--p-bg));
+        color: var(--p-primary-fg);
+    }
+
+    .pergament-cmd-result-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .pergament-cmd-result-title {
+        font-size: 0.9rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    .pergament-cmd-result-excerpt {
+        font-size: 0.78rem;
+        margin-top: 0.1rem;
+        color: color-mix(in oklch, currentColor 55%, transparent);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

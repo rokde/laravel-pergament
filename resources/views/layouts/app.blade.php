@@ -18,34 +18,30 @@
         <link rel="manifest" href="/manifest.json">
     @endif
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
-
-    <link rel="stylesheet" href="https://unpkg.com/@tempest-php/highlight@3/src/Themes/highlight-light-lite.css" />
+    <link rel="stylesheet" href="{{ asset('vendor/pergament/pergament.css') }}">
 
     <style>
-        .pergament-code-block {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
+        :root {
+            --p-primary:         {{ config('pergament.colors.primary', '#3b82f6') }};
+            --p-bg:              {{ config('pergament.colors.background', '#ffffff') }};
+            /* Derived tints — re-resolved automatically when .dark overrides --p-bg */
+            --p-primary-subtle:  color-mix(in oklch, var(--p-primary) 12%, var(--p-bg));
+            --p-primary-fg:      color-mix(in oklch, var(--p-primary) 75%, black);
+            --p-bg-elevated:     var(--p-bg);
         }
-        .pergament-img-dark { display: none; }
-        .dark .pergament-img-light { display: none; }
-        .dark .pergament-img-dark { display: block; }
+        .dark {
+            --p-bg:          #111827;
+            --p-bg-elevated: #1f2937;
+            --p-primary-fg:  color-mix(in oklch, var(--p-primary) 65%, white);
+        }
     </style>
 
     @stack('styles')
 </head>
-<body class="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
+<body class="min-h-screen flex flex-col pergament-bg text-gray-900 dark:text-gray-100 antialiased">
 
     {{-- Navigation --}}
-    <nav class="sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+    <nav class="sticky top-0 z-50 pergament-bg border-b border-gray-200 dark:border-gray-700 print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 {{-- Site name --}}
@@ -73,7 +69,7 @@
                                 type="text"
                                 name="q"
                                 placeholder="Search..."
-                                class="w-44 pl-3 pr-8 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                class="w-44 pl-3 pr-8 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
                             >
                             <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -106,7 +102,7 @@
         </div>
 
         {{-- Mobile menu --}}
-        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-700">
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-700 print:hidden">
             <div class="px-4 py-3 space-y-2">
                 @if(config('pergament.docs.enabled'))
                     <a href="{{ route('pergament.docs.index') }}" class="block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-1">
@@ -126,7 +122,7 @@
                             type="text"
                             name="q"
                             placeholder="Search..."
-                            class="w-full pl-3 pr-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            class="w-full pl-3 pr-3 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
                         >
                     </form>
                 @endif
@@ -144,13 +140,36 @@
         </div>
     </nav>
 
+    {{-- Command palette --}}
+    @if(config('pergament.search.enabled'))
+    <div id="cmd-palette-backdrop" class="pergament-cmd-backdrop" aria-modal="true" role="dialog" aria-label="Search">
+        <div class="pergament-cmd-dialog">
+            <div class="pergament-cmd-input-wrap">
+                <svg class="pergament-cmd-icon size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input
+                    id="cmd-palette-input"
+                    class="pergament-cmd-input"
+                    type="text"
+                    placeholder="Search documentation, posts, pages…"
+                    autocomplete="off"
+                    spellcheck="false"
+                    aria-autocomplete="list"
+                    aria-controls="cmd-palette-results"
+                >
+                <kbd class="pergament-cmd-esc">Esc</kbd>
+            </div>
+            <div id="cmd-palette-results" class="pergament-cmd-results" role="listbox"></div>
+        </div>
+    </div>
+    @endif
+
     {{-- Main content --}}
     <main class="flex-1">
         @yield('content')
     </main>
 
     {{-- Footer --}}
-    <footer class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+    <footer class="border-t border-gray-200 dark:border-gray-700 pergament-bg print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <p class="text-center text-sm text-gray-500 dark:text-gray-400">
                 &copy; {{ date('Y') }} {{ config('pergament.site.name', config('app.name', 'Pergament')) }}. All rights reserved.
@@ -198,5 +217,222 @@
     </script>
 
     @stack('scripts')
+
+    <script>
+        (function() {
+            const overlay = document.createElement('div');
+            overlay.className = 'pergament-lightbox';
+            const lightboxImg = document.createElement('img');
+            overlay.appendChild(lightboxImg);
+            document.body.appendChild(overlay);
+
+            function open(src, alt) {
+                lightboxImg.src = src;
+                lightboxImg.alt = alt || '';
+                overlay.classList.add('is-open');
+                document.body.classList.add('lightbox-open');
+            }
+
+            function close() {
+                overlay.classList.remove('is-open');
+                document.body.classList.remove('lightbox-open');
+            }
+
+            overlay.addEventListener('click', close);
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') close();
+            });
+
+            // Attach to all content images; skip rounded-full avatars/icons
+            document.querySelectorAll('main img:not(.rounded-full)').forEach(function(img) {
+                img.classList.add('pergament-zoomable');
+                img.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    open(img.src, img.alt);
+                });
+            });
+        })();
+    </script>
+
+    @if(config('pergament.search.enabled'))
+    <script>
+        (function() {
+            const backdrop = document.getElementById('cmd-palette-backdrop');
+            const input    = document.getElementById('cmd-palette-input');
+            const resultsEl = document.getElementById('cmd-palette-results');
+            if (!backdrop || !input || !resultsEl) return;
+
+            const searchUrl = '{{ route('pergament.search') }}';
+            let activeIdx = -1;
+            let results   = [];
+            let debounce  = null;
+
+            function open() {
+                backdrop.classList.add('is-open');
+                document.body.classList.add('cmd-open');
+                input.value = '';
+                resultsEl.innerHTML = '';
+                results = [];
+                activeIdx = -1;
+                setTimeout(function() { input.focus(); }, 30);
+            }
+
+            function close() {
+                backdrop.classList.remove('is-open');
+                document.body.classList.remove('cmd-open');
+            }
+
+            function setActive(idx) {
+                const items = resultsEl.querySelectorAll('.pergament-cmd-result');
+                items.forEach(function(el, i) { el.classList.toggle('is-active', i === idx); });
+                activeIdx = idx;
+                if (idx >= 0 && items[idx]) {
+                    items[idx].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            function navigate() {
+                if (activeIdx >= 0 && results[activeIdx]) {
+                    window.location.href = results[activeIdx].url;
+                    close();
+                }
+            }
+
+            function typeLabel(type) {
+                if (type === 'doc')  return 'Doc';
+                if (type === 'post') return 'Post';
+                if (type === 'page') return 'Page';
+                return type.charAt(0).toUpperCase() + type.slice(1);
+            }
+
+            function render(data) {
+                results   = data;
+                activeIdx = -1;
+                resultsEl.innerHTML = '';
+
+                if (data.length === 0) {
+                    const empty = document.createElement('p');
+                    empty.className = 'pergament-cmd-empty';
+                    empty.textContent = 'No results found.';
+                    resultsEl.appendChild(empty);
+                    return;
+                }
+
+                data.forEach(function(result, i) {
+                    const a = document.createElement('a');
+                    a.href = result.url;
+                    a.className = 'pergament-cmd-result';
+                    a.setAttribute('role', 'option');
+
+                    const badge = document.createElement('span');
+                    badge.className = 'pergament-cmd-result-badge';
+                    badge.textContent = typeLabel(result.type);
+
+                    const body = document.createElement('div');
+                    body.className = 'pergament-cmd-result-body';
+
+                    const title = document.createElement('div');
+                    title.className = 'pergament-cmd-result-title';
+                    title.textContent = result.title;
+                    body.appendChild(title);
+
+                    if (result.excerpt) {
+                        const excerpt = document.createElement('div');
+                        excerpt.className = 'pergament-cmd-result-excerpt';
+                        excerpt.textContent = result.excerpt;
+                        body.appendChild(excerpt);
+                    }
+
+                    a.appendChild(badge);
+                    a.appendChild(body);
+
+                    a.addEventListener('mouseenter', function() { setActive(i); });
+                    a.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.location.href = result.url;
+                        close();
+                    });
+
+                    resultsEl.appendChild(a);
+                });
+            }
+
+            function doSearch(q) {
+                if (q.length < 2) { resultsEl.innerHTML = ''; results = []; return; }
+                fetch(searchUrl + '?q=' + encodeURIComponent(q), {
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                }).then(function(r) { return r.json(); }).then(render).catch(function() {});
+            }
+
+            input.addEventListener('input', function() {
+                clearTimeout(debounce);
+                debounce = setTimeout(function() { doSearch(input.value.trim()); }, 200);
+            });
+
+            input.addEventListener('keydown', function(e) {
+                const items = resultsEl.querySelectorAll('.pergament-cmd-result');
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setActive(Math.min(activeIdx + 1, items.length - 1));
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setActive(Math.max(activeIdx - 1, 0));
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    navigate();
+                } else if (e.key === 'Escape') {
+                    close();
+                }
+            });
+
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop) close();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    backdrop.classList.contains('is-open') ? close() : open();
+                }
+            });
+
+            // Nav search inputs open the palette instead of receiving focus
+            document.querySelectorAll('input[name="q"]').forEach(function(navInput) {
+                navInput.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    open();
+                });
+                navInput.addEventListener('focus', function() {
+                    navInput.blur();
+                    open();
+                });
+            });
+        })();
+    </script>
+    @endif
+
+    <script>
+        (function() {
+            document.querySelectorAll('main pre').forEach(function(pre) {
+                const btn = document.createElement('button');
+                btn.className = 'copy-code-btn';
+                btn.textContent = 'Copy';
+                btn.addEventListener('click', function() {
+                    const code = pre.querySelector('code');
+                    const text = code ? code.innerText : pre.innerText;
+                    navigator.clipboard.writeText(text).then(function() {
+                        btn.textContent = 'Copied';
+                        btn.classList.add('copy-done');
+                        setTimeout(function() {
+                            btn.textContent = 'Copy';
+                            btn.classList.remove('copy-done');
+                        }, 1500);
+                    });
+                });
+                pre.appendChild(btn);
+            });
+        })();
+    </script>
 </body>
 </html>

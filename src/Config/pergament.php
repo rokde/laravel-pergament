@@ -179,6 +179,23 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Colors
+    |--------------------------------------------------------------------------
+    |
+    | Primary color drives all interactive UI elements: active states, focus
+    | rings, badges, links, and highlights. Background sets the page surface
+    | in light mode; dark mode always uses a near-black surface.
+    | Both values accept any valid CSS color (hex, rgb, oklch, …).
+    |
+    */
+
+    'colors' => [
+        'primary' => '#3b82f6',
+        'background' => '#ffffff',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Search
     |--------------------------------------------------------------------------
     */
@@ -187,4 +204,59 @@ return [
         'enabled' => true,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Exports
+    |--------------------------------------------------------------------------
+    */
+
+    'exports' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | Markdown exports are made especially for llms
+        |--------------------------------------------------------------------------
+        */
+
+        'markdown' => [
+            'detection' => [
+                /*
+                |--------------------------------------------------------------------------
+                | Detect for given user agents
+                |--------------------------------------------------------------------------
+                |
+                | Requests from user agents containing any of these strings
+                | will automatically receive a markdown response. Matching
+                | is case-insensitive.
+                */
+                'user_agents' => [
+                    'GPTBot',
+                    'ClaudeBot',
+                    'Claude-Web',
+                    'Anthropic',
+                    'ChatGPT-User',
+                    'PerplexityBot',
+                    'Bytespider',
+                    'Google-Extended',
+                ],
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Content Signals is for llms
+            |--------------------------------------------------------------------------
+            |
+            | These signals are sent as a `Content-Signal` response header to
+            | inform AI agents what they are allowed to do with your content.
+            | Set to an empty array to disable the header entirely.
+            |
+            | See: https://contentstandards.org
+            */
+            'content_signals' => [
+                'ai-train' => 'disallow',
+                'ai-input' => 'allow',
+                'search' => 'allow',
+            ],
+        ],
+    ],
 ];

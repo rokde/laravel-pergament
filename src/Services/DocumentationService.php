@@ -168,7 +168,7 @@ final class DocumentationService
                 ) {
                     $results->push([
                         'title' => $page->title,
-                        'excerpt' => $page->excerpt,
+                        'excerpt' => $page->excerpt ?: Str::limit(trim(preg_replace('/\s+/', ' ', preg_replace('/[#*_`\[\]()!>~|]+/', '', $page->content))), 160),
                         'chapter' => $chapter->slug,
                         'chapterTitle' => $chapter->title,
                         'page' => $page->slug,

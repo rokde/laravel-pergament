@@ -12,7 +12,7 @@ it('searches across docs and blog', function (): void {
 
     expect($results)->not->toBeEmpty();
     expect($types)->toContain('doc');
-    expect($types)->toContain('blog');
+    expect($types)->toContain('post');
 });
 
 it('returns empty for no matches', function (): void {

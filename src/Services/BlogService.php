@@ -216,11 +216,11 @@ final class BlogService
                 str_contains(mb_strtolower($post->content), $query))
             ->map(fn (BlogPost $post): array => [
                 'title' => $post->title,
-                'excerpt' => $post->excerpt,
+                'excerpt' => $post->excerpt ?: Str::limit(trim(preg_replace('/\s+/', ' ', preg_replace('/[#*_`\[\]()!>~|]+/', '', $post->content))), 160),
                 'slug' => $post->slug,
                 'date' => $post->date,
                 'url' => UrlGenerator::path($blogPrefix, $post->slug),
-                'type' => 'blog',
+                'type' => 'post',
             ])
             ->values();
     }
