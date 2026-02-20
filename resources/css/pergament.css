@@ -2,6 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 @import "./highlight-light-lite.css";
+@import "./highlight-dark-lite.css";
 
 @source "../views";
 
