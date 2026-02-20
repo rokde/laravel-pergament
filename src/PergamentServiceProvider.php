@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Pergament\Console\Commands\GenerateStaticCommand;
 use Pergament\Console\Commands\MakeBlogPostCommand;
-use Pergament\Console\Commands\MakeDocPageCommand;
+use Pergament\Console\Commands\MakeDocCommand;
 
 final class PergamentServiceProvider extends ServiceProvider
 {
@@ -27,7 +27,7 @@ final class PergamentServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 GenerateStaticCommand::class,
-                MakeDocPageCommand::class,
+                MakeDocCommand::class,
                 MakeBlogPostCommand::class,
             ]);
 
