@@ -21,7 +21,7 @@
     </div>
 
     {{-- Previous / Next navigation --}}
-    <nav class="mt-12 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
+    <nav class="mt-12 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6 print:hidden">
         @if($page['previousPage'])
             <a href="{{ $page['previousPage']['url'] }}" class="group flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <svg class="size-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>

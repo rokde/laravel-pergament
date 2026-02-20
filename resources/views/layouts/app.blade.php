@@ -102,7 +102,7 @@
         </div>
 
         {{-- Mobile menu --}}
-        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-700">
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 dark:border-gray-700 print:hidden">
             <div class="px-4 py-3 space-y-2">
                 @if(config('pergament.docs.enabled'))
                     <a href="{{ route('pergament.docs.index') }}" class="block text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white py-1">
@@ -146,7 +146,7 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="border-t border-gray-200 dark:border-gray-700 pergament-bg">
+    <footer class="border-t border-gray-200 dark:border-gray-700 pergament-bg print:hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <p class="text-center text-sm text-gray-500 dark:text-gray-400">
                 &copy; {{ date('Y') }} {{ config('pergament.site.name', config('app.name', 'Pergament')) }}. All rights reserved.

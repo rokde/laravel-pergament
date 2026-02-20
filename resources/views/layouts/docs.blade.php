@@ -8,14 +8,14 @@
         <button
             id="docs-sidebar-toggle"
             type="button"
-            class="lg:hidden mb-4 flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+            class="lg:hidden mb-4 flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white print:hidden"
         >
             <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             Menu
         </button>
 
         {{-- Sidebar --}}
-        <aside id="docs-sidebar" class="hidden lg:block lg:col-span-3">
+        <aside id="docs-sidebar" class="hidden lg:block lg:col-span-3 print:hidden">
             <nav class="sticky top-24 overflow-y-auto max-h-[calc(100vh-8rem)] pb-8 pr-4">
                 @isset($navigation)
                     @foreach($navigation as $chapter)
@@ -51,7 +51,7 @@
 
         {{-- Table of contents --}}
         @if(isset($page['headings']) && count($page['headings']) > 0)
-            <aside class="hidden xl:block lg:col-span-3">
+            <aside class="hidden xl:block lg:col-span-3 print:hidden">
                 <div id="toc-container" class="sticky top-24 overflow-y-auto max-h-[calc(100vh-8rem)] pb-8 pl-4">
                     <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
                         On this page
