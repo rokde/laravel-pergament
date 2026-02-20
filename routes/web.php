@@ -12,6 +12,7 @@ use Pergament\Http\Controllers\PwaController;
 use Pergament\Http\Controllers\RobotsController;
 use Pergament\Http\Controllers\SearchController;
 use Pergament\Http\Controllers\SitemapController;
+use Pergament\Http\Middleware\MarkdownResponse;
 use Pergament\Support\UrlGenerator;
 
 // CSS asset — static file takes priority when vendor:published; this route is the fallback
@@ -69,18 +70,27 @@ Route::prefix($basePrefix)->group(function (): void {
         $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
         Route::prefix($blogPrefix)->name('pergament.blog.')->group(function (): void {
+            // Feed and media are not HTML pages — skip markdown middleware
             if (config('pergament.blog.feed.enabled', true)) {
                 Route::get('feed', FeedController::class)->name('feed');
             }
 
-            Route::get('/', [BlogController::class, 'index'])->name('index');
-            Route::get('category/{category}', [BlogController::class, 'category'])->name('category');
-            Route::get('tag/{tag}', [BlogController::class, 'tag'])->name('tag');
-            Route::get('author/{author}', [BlogController::class, 'author'])->name('author');
             Route::get('media/{slug}/{filename}', [BlogController::class, 'media'])
                 ->where('filename', '.*')
                 ->name('media');
-            Route::get('{slug}', [BlogController::class, 'show'])->name('show');
+
+            Route::get('/', [BlogController::class, 'index'])->name('index');
+            // Content pages — serve as markdown when requested
+            Route::middleware(MarkdownResponse::class)->group(function (): void {
+                Route::get('category/{category}', [BlogController::class, 'category'])->name('category');
+                Route::get('category/{category}.md', [BlogController::class, 'category'])->name('category.md');
+                Route::get('tag/{tag}', [BlogController::class, 'tag'])->name('tag');
+                Route::get('tag/{tag}.md', [BlogController::class, 'tag'])->name('tag.md');
+                Route::get('author/{author}', [BlogController::class, 'author'])->name('author');
+                Route::get('author/{author}.md', [BlogController::class, 'author'])->name('author.md');
+                Route::get('{slug}', [BlogController::class, 'show'])->name('show');
+                Route::get('{slug}.md', [BlogController::class, 'show'])->name('show.md');
+            });
         });
     }
 
@@ -89,21 +99,29 @@ Route::prefix($basePrefix)->group(function (): void {
         $docsPrefix = config('pergament.docs.url_prefix', 'docs');
 
         Route::prefix($docsPrefix)->name('pergament.docs.')->group(function (): void {
-            Route::get('/', [DocumentationController::class, 'index'])->name('index');
+            // Media files are not HTML pages — skip markdown middleware
             Route::get('media/{path}', [DocumentationController::class, 'media'])
                 ->where('path', '.*')
                 ->name('media');
-            Route::get('{chapter}/{page}', [DocumentationController::class, 'show'])->name('show');
+
+            Route::get('/', [DocumentationController::class, 'index'])->name('index');
+            // Content pages — serve as markdown when requested
+            Route::middleware(MarkdownResponse::class)->group(function (): void {
+                Route::get('{chapter}/{page}', [DocumentationController::class, 'show'])->name('show');
+                Route::get('{chapter}/{page}.md', [DocumentationController::class, 'show'])->name('show.md');
+            });
         });
     }
 
-    // Homepage (base of the Pergament prefix)
-    Route::get('/', HomeController::class)->name('pergament.home');
+    // Homepage and standalone pages — serve as markdown when requested
+    Route::middleware(MarkdownResponse::class)->group(function (): void {
+        Route::get('/', HomeController::class)->name('pergament.home');
+        Route::get('/index.md', HomeController::class)->name('pergament.home.md');
 
-    // Standalone pages (registered last as catch-all)
-    if (config('pergament.pages.enabled', true)) {
-        Route::get('{slug}', PageController::class)
-            ->where('slug', '[a-z0-9\-]+')
-            ->name('pergament.page');
-    }
+        if (config('pergament.pages.enabled', true)) {
+            Route::get('{slug}', PageController::class)
+                ->where('slug', '[a-z0-9\-]+')
+                ->name('pergament.page');
+        }
+    });
 });

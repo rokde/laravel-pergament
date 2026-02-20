@@ -32,6 +32,10 @@ final class BlogController
 
     public function show(string $slug, BlogService $service, SeoService $seoService): View
     {
+        if (str_ends_with($slug, '.md')) {
+            $slug = substr($slug, 0, -3);
+        }
+
         $post = $service->getRenderedPost($slug);
 
         abort_unless($post !== null, 404);
@@ -46,6 +50,10 @@ final class BlogController
 
     public function category(string $category, BlogService $service, SeoService $seoService): View
     {
+        if (str_ends_with($category, '.md')) {
+            $category = substr($category, 0, -3);
+        }
+
         $posts = $service->getPostsByCategory($category);
         $categoryTitle = Str::title(str_replace('-', ' ', $category));
         $seo = $seoService->resolve([], $categoryTitle);
@@ -60,6 +68,10 @@ final class BlogController
 
     public function tag(string $tag, BlogService $service, SeoService $seoService): View
     {
+        if (str_ends_with($tag, '.md')) {
+            $tag = substr($tag, 0, -3);
+        }
+
         $posts = $service->getPostsByTag($tag);
         $tagTitle = Str::title(str_replace('-', ' ', $tag));
         $seo = $seoService->resolve([], $tagTitle);
@@ -74,6 +86,10 @@ final class BlogController
 
     public function author(string $author, BlogService $service, SeoService $seoService): View
     {
+        if (str_ends_with($author, '.md')) {
+            $author = substr($author, 0, -3);
+        }
+
         $posts = $service->getPostsByAuthor($author);
         $authorName = $posts->isNotEmpty()
             ? collect($posts->first()->authors)->first(fn ($a) => $a->slug() === $author)?->name ?? Str::title(str_replace('-', ' ', $author))
