@@ -159,8 +159,7 @@ it('places page after a given page when position select returns after:N', functi
 });
 
 it('creates a new blog post', function (): void {
-    $this->artisan('pergament:make-blog-post', [
-        'slug' => 'my-first-post',
+    $this->artisan('pergament:make:post', [
         '--title' => 'My First Post',
         '--category' => 'General',
         '--tags' => 'laravel, php',
@@ -183,7 +182,6 @@ it('creates a new blog post', function (): void {
 
 it('fails when blog post directory already exists', function (): void {
     $allOptions = [
-        'slug' => 'test-post',
         '--title' => 'Test',
         '--date' => '2024-01-01',
         '--excerpt' => '',
@@ -192,6 +190,6 @@ it('fails when blog post directory already exists', function (): void {
         '--author' => '',
     ];
 
-    $this->artisan('pergament:make-blog-post', $allOptions)->assertSuccessful();
-    $this->artisan('pergament:make-blog-post', $allOptions)->assertFailed();
+    $this->artisan('pergament:make:post', $allOptions)->assertSuccessful();
+    $this->artisan('pergament:make:post', $allOptions)->assertFailed();
 });

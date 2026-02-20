@@ -433,10 +433,10 @@ php artisan pergament:make:doc --chapter=getting-started --title="Installation G
 ### Create a blog post
 
 ```bash
-php artisan pergament:make-blog-post
+php artisan pergament:make:post
 
 # Or with arguments
-php artisan pergament:make-blog-post my-first-post \
+php artisan pergament:make:post \
     --title="My First Post" \
     --category="Tutorials" \
     --tags="laravel, php" \

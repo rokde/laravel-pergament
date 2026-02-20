@@ -119,8 +119,8 @@ Views use the `pergament::` namespace. Components use @verbatim`<x-pergament::co
 
 @verbatim
 <code-snippet name="Available commands" lang="bash">
-php artisan pergament:make-blog-post {slug}       # Create a new blog post
-php artisan pergament:make-doc-page {chapter} {page}  # Create a new doc page
+php artisan pergament:make:post {slug}       # Create a new blog post
+php artisan pergament:make:page {chapter} {page}  # Create a new doc page
 php artisan pergament:generate-static {output-dir}    # Export static HTML site
 </code-snippet>
 @endverbatim

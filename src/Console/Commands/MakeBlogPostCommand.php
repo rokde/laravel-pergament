@@ -13,8 +13,7 @@ use function Laravel\Prompts\textarea;
 
 final class MakeBlogPostCommand extends Command
 {
-    protected $signature = 'pergament:make-blog-post
-                            {slug? : The post slug (e.g. my-first-post)}
+    protected $signature = 'pergament:make:post
                             {--title= : The post title}
                             {--category= : The post category}
                             {--tags= : Comma-separated list of tags}
@@ -26,17 +25,12 @@ final class MakeBlogPostCommand extends Command
 
     public function handle(): int
     {
-        $slug = $this->argument('slug') ?? text(
-            label: 'What is the post slug?',
-            placeholder: 'my-first-post',
-            required: true,
-            hint: 'Use kebab-case, e.g. "my-first-post"',
-        );
-
         $title = $this->option('title') ?? text(
             label: 'What is the post title?',
-            default: Str::title(str_replace('-', ' ', $slug)),
+            default: Str::title(str_replace('-', ' ', 'hello-world')),
         );
+
+        $slug = Str::slug($title);
 
         $date = $this->option('date') ?? text(
             label: 'What is the publish date?',
