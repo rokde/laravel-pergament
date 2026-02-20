@@ -421,11 +421,13 @@ Search covers all three content types:
 
 ### Create a documentation page
 
+We have an interactive docs creation command. All arguments are optional, you will be guided through all necessary things.
+
 ```bash
-php artisan pergament:make-doc-page
+php artisan pergament:make:doc
 
 # Or with arguments
-php artisan pergament:make-doc-page getting-started installation --title="Installation Guide" --order=02
+php artisan pergament:make:doc --chapter=getting-started --title="Installation Guide" --order=02
 ```
 
 ### Create a blog post
