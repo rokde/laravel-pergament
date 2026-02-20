@@ -450,6 +450,9 @@ With `prefix` set to `docs`, all routes become `/docs/...`, `/docs/blog/...`, et
 - **Dark mode** — Class-based, themed image variants
 - **Syntax highlighting** — Server-side via tempest/highlight
 - **Configurable prefix** — Mount the CMS at any URL path
+- **Zoomable images** — Hovering an image lets you click to zoom in
+- **Copy code** — Each code block can be copied to clipboard
+- **Brand color** — Configure your brand color and the whole page will be rendered in that colors (primary and background)
 
 ## Testing
 
