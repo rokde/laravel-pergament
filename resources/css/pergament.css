@@ -5,6 +5,7 @@
 @import "./highlight-dark-lite.css";
 
 @source "../views";
+@source inline("{m,p}{x,y,t,b,l,r}-{1..20}");
 
 @custom-variant dark (&:where(.dark, .dark *));
 
