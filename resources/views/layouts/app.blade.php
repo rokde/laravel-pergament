@@ -18,27 +18,9 @@
         <link rel="manifest" href="/manifest.json">
     @endif
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
+    <link rel="stylesheet" href="{{ asset('vendor/pergament/app.css') }}">
 
     <link rel="stylesheet" href="https://unpkg.com/@tempest-php/highlight@3/src/Themes/highlight-light-lite.css" />
-
-    <style>
-        .pergament-code-block {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-        }
-        .pergament-img-dark { display: none; }
-        .dark .pergament-img-light { display: none; }
-        .dark .pergament-img-dark { display: block; }
-    </style>
 
     @stack('styles')
 </head>
