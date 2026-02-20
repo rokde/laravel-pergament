@@ -40,14 +40,6 @@
     </nav>
 </article>
 
-@push('styles')
-<style>
-    .pergament-img-dark { display: none; }
-    .dark .pergament-img-light { display: none; }
-    .dark .pergament-img-dark { display: block; }
-</style>
-@endpush
-
 @push('scripts')
 <script>
     document.querySelectorAll('.prose h2[id], .prose h3[id], .prose h4[id]').forEach(function(heading) {
