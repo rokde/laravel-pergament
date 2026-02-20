@@ -396,6 +396,18 @@
                     backdrop.classList.contains('is-open') ? close() : open();
                 }
             });
+
+            // Nav search inputs open the palette instead of receiving focus
+            document.querySelectorAll('input[name="q"]').forEach(function(navInput) {
+                navInput.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    open();
+                });
+                navInput.addEventListener('focus', function() {
+                    navInput.blur();
+                    open();
+                });
+            });
         })();
     </script>
     @endif

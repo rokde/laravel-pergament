@@ -94,7 +94,7 @@ final class PageService
                 str_contains(mb_strtolower($page->content), $query))
             ->map(fn (Page $page): array => [
                 'title' => $page->title,
-                'excerpt' => $page->excerpt,
+                'excerpt' => $page->excerpt ?: Str::limit(trim(preg_replace('/\s+/', ' ', preg_replace('/[#*_`\[\]()!>~|]+/', '', $page->content))), 160),
                 'url' => UrlGenerator::path($page->slug),
                 'type' => 'page',
             ])
