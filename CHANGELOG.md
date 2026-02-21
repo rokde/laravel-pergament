@@ -2,6 +2,32 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.0 - 2026-02-21
+
+### What's Changed
+
+All changes done by @rokde:
+
+* Update page route to dynamically resolve slugs using PageService
+* Mark `PageService` class as `readonly`
+* Set default value for `pergament.content_path` in `PageService::basePath` method
+* Add test to handle non-existent content path in PageService
+* Update `test:unit` script to generate HTML coverage output
+* Change `Carbon` to `CarbonImmutable` for `date` property in `BlogPost` class
+* Set default for `pergament.content_path` and mark `BlogService` as `readonly`
+* Mark `DocumentationService` class as `readonly`
+* Set default value for `pergament.content_path` across services
+* Add tests for handling empty or non-existent content paths in `DocumentationService`
+* Add comprehensive tests for `FrontMatterParser` and `MarkdownRenderer` functionality
+* Add comprehensive feature tests for controllers and utilities
+* Add `MakePageCommand` with feature tests and register it in service provider
+* Mark service classes as `readonly`
+* Remove unnecessary newlines in XML generation across services for cleaner output
+* Remove redundant newlines in `MakePageCommand` class
+* Add `assertHeaderCaseInsensitive` macro and update tests to use it for flexible header value assertions
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.0.0...v1.1.0
+
 ## First release - 2026-02-20
 
 ### What's Changed
