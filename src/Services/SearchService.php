@@ -6,7 +6,7 @@ namespace Pergament\Services;
 
 use Illuminate\Support\Collection;
 
-final class SearchService
+final readonly class SearchService
 {
     public function __construct(
         private DocumentationService $docs,

@@ -7,7 +7,7 @@ namespace Pergament\Services;
 use Illuminate\Support\Str;
 use Pergament\Support\UrlGenerator;
 
-final class SitemapService
+final readonly class SitemapService
 {
     public function __construct(
         private DocumentationService $docs,

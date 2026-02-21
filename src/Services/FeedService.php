@@ -6,7 +6,7 @@ namespace Pergament\Services;
 
 use Pergament\Support\UrlGenerator;
 
-final class FeedService
+final readonly class FeedService
 {
     public function __construct(
         private BlogService $blog,
