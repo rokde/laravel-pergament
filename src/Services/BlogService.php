@@ -14,7 +14,7 @@ use Pergament\Data\BlogPost;
 use Pergament\Support\FrontMatterParser;
 use Pergament\Support\UrlGenerator;
 
-final class BlogService
+final readonly class BlogService
 {
     public function __construct(
         private FrontMatterParser $frontMatter,
@@ -387,6 +387,6 @@ final class BlogService
 
     private function basePath(): string
     {
-        return config('pergament.content_path').'/'.config('pergament.blog.path', 'blog');
+        return config('pergament.content_path', 'content').'/'.config('pergament.blog.path', 'blog');
     }
 }
