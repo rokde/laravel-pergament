@@ -122,6 +122,6 @@ final readonly class PageService
 
     private function basePath(): string
     {
-        return config('pergament.content_path').'/'.config('pergament.pages.path', 'pages');
+        return config('pergament.content_path', 'content').'/'.config('pergament.pages.path', 'pages');
     }
 }
