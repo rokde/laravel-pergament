@@ -100,6 +100,4 @@ final class MakePageCommand extends Command
             '',
         ]));
     }
-
-
 }
