@@ -24,39 +24,39 @@ final readonly class FeedService
 
         $updated = $posts->isNotEmpty() ? $posts->first()->date->toAtomString() : now()->toAtomString();
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-        $xml .= '<feed xmlns="http://www.w3.org/2005/Atom">'."\n";
-        $xml .= '  <title>'.e($feedTitle).'</title>'."\n";
-        $xml .= '  <subtitle>'.e($feedDescription).'</subtitle>'."\n";
-        $xml .= '  <link href="'.e(UrlGenerator::url($blogPrefix, 'feed')).'" rel="self" type="application/atom+xml"/>'."\n";
-        $xml .= '  <link href="'.e(UrlGenerator::url($blogPrefix)).'" rel="alternate" type="text/html"/>'."\n";
-        $xml .= '  <id>'.e(UrlGenerator::url($blogPrefix)).'</id>'."\n";
-        $xml .= '  <updated>'.$updated.'</updated>'."\n";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<feed xmlns="http://www.w3.org/2005/Atom">';
+        $xml .= '<title>'.e($feedTitle).'</title>';
+        $xml .= '<subtitle>'.e($feedDescription).'</subtitle>';
+        $xml .= '<link href="'.e(UrlGenerator::url($blogPrefix, 'feed')).'" rel="self" type="application/atom+xml"/>';
+        $xml .= '<link href="'.e(UrlGenerator::url($blogPrefix)).'" rel="alternate" type="text/html"/>';
+        $xml .= '<id>'.e(UrlGenerator::url($blogPrefix)).'</id>';
+        $xml .= '<updated>'.$updated.'</updated>';
 
         foreach ($posts as $post) {
             $postUrl = UrlGenerator::url($blogPrefix, $post->slug);
-            $xml .= '  <entry>'."\n";
-            $xml .= '    <title>'.e($post->title).'</title>'."\n";
-            $xml .= '    <link href="'.e($postUrl).'" rel="alternate" type="text/html"/>'."\n";
-            $xml .= '    <id>'.e($postUrl).'</id>'."\n";
-            $xml .= '    <published>'.$post->date->toAtomString().'</published>'."\n";
-            $xml .= '    <updated>'.$post->date->toAtomString().'</updated>'."\n";
-            $xml .= '    <summary>'.e($post->excerpt).'</summary>'."\n";
+            $xml .= '<entry>';
+            $xml .= '<title>'.e($post->title).'</title>';
+            $xml .= '<link href="'.e($postUrl).'" rel="alternate" type="text/html"/>';
+            $xml .= '<id>'.e($postUrl).'</id>';
+            $xml .= '<published>'.$post->date->toAtomString().'</published>';
+            $xml .= '<updated>'.$post->date->toAtomString().'</updated>';
+            $xml .= '<summary>'.e($post->excerpt).'</summary>';
 
             foreach ($post->authors as $author) {
-                $xml .= '    <author>'."\n";
-                $xml .= '      <name>'.e($author->name).'</name>'."\n";
+                $xml .= '<author>';
+                $xml .= '<name>'.e($author->name).'</name>';
                 if ($author->email !== null) {
-                    $xml .= '      <email>'.e($author->email).'</email>'."\n";
+                    $xml .= '<email>'.e($author->email).'</email>';
                 }
-                $xml .= '    </author>'."\n";
+                $xml .= '</author>';
             }
 
             if ($post->category !== null) {
-                $xml .= '    <category term="'.e($post->category).'"/>'."\n";
+                $xml .= '<category term="'.e($post->category).'"/>';
             }
 
-            $xml .= '  </entry>'."\n";
+            $xml .= '</entry>';
         }
 
         $xml .= '</feed>';
@@ -74,40 +74,40 @@ final readonly class FeedService
         $feedDescription = config('pergament.blog.feed.description', '');
         $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-        $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";
-        $xml .= '  <channel>'."\n";
-        $xml .= '    <title>'.e($feedTitle).'</title>'."\n";
-        $xml .= '    <link>'.e(UrlGenerator::url($blogPrefix)).'</link>'."\n";
-        $xml .= '    <description>'.e($feedDescription).'</description>'."\n";
-        $xml .= '    <atom:link href="'.e(UrlGenerator::url($blogPrefix, 'feed')).'" rel="self" type="application/rss+xml"/>'."\n";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
+        $xml .= '<channel>';
+        $xml .= '<title>'.e($feedTitle).'</title>';
+        $xml .= '<link>'.e(UrlGenerator::url($blogPrefix)).'</link>';
+        $xml .= '<description>'.e($feedDescription).'</description>';
+        $xml .= '<atom:link href="'.e(UrlGenerator::url($blogPrefix, 'feed')).'" rel="self" type="application/rss+xml"/>';
 
         if ($posts->isNotEmpty()) {
-            $xml .= '    <lastBuildDate>'.$posts->first()->date->toRssString().'</lastBuildDate>'."\n";
+            $xml .= '<lastBuildDate>'.$posts->first()->date->toRssString().'</lastBuildDate>';
         }
 
         foreach ($posts as $post) {
             $postUrl = UrlGenerator::url($blogPrefix, $post->slug);
-            $xml .= '    <item>'."\n";
-            $xml .= '      <title>'.e($post->title).'</title>'."\n";
-            $xml .= '      <link>'.e($postUrl).'</link>'."\n";
-            $xml .= '      <guid isPermaLink="true">'.e($postUrl).'</guid>'."\n";
-            $xml .= '      <pubDate>'.$post->date->toRssString().'</pubDate>'."\n";
-            $xml .= '      <description>'.e($post->excerpt).'</description>'."\n";
+            $xml .= '<item>';
+            $xml .= '<title>'.e($post->title).'</title>';
+            $xml .= '<link>'.e($postUrl).'</link>';
+            $xml .= '<guid isPermaLink="true">'.e($postUrl).'</guid>';
+            $xml .= '<pubDate>'.$post->date->toRssString().'</pubDate>';
+            $xml .= '<description>'.e($post->excerpt).'</description>';
 
             foreach ($post->authors as $author) {
                 $authorStr = $author->email !== null ? $author->email.' ('.$author->name.')' : $author->name;
-                $xml .= '      <author>'.e($authorStr).'</author>'."\n";
+                $xml .= '<author>'.e($authorStr).'</author>';
             }
 
             if ($post->category !== null) {
-                $xml .= '      <category>'.e($post->category).'</category>'."\n";
+                $xml .= '<category>'.e($post->category).'</category>';
             }
 
-            $xml .= '    </item>'."\n";
+            $xml .= '</item>';
         }
 
-        $xml .= '  </channel>'."\n";
+        $xml .= '</channel>';
         $xml .= '</rss>';
 
         return $xml;

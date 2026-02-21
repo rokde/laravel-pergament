@@ -63,19 +63,19 @@ final readonly class SitemapService
             }
         }
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
         foreach ($urls as $url) {
-            $xml .= '  <url>'."\n";
-            $xml .= '    <loc>'.e($url['loc']).'</loc>'."\n";
+            $xml .= '<url>';
+            $xml .= '<loc>'.e($url['loc']).'</loc>';
             if (isset($url['lastmod'])) {
-                $xml .= '    <lastmod>'.$url['lastmod'].'</lastmod>'."\n";
+                $xml .= '<lastmod>'.$url['lastmod'].'</lastmod>';
             }
             if (isset($url['priority'])) {
-                $xml .= '    <priority>'.$url['priority'].'</priority>'."\n";
+                $xml .= '<priority>'.$url['priority'].'</priority>';
             }
-            $xml .= '  </url>'."\n";
+            $xml .= '</url>';
         }
 
         $xml .= '</urlset>';
