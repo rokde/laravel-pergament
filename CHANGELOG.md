@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.1 - 2026-02-21
+
+### What's Changed
+
+* Add Markdown support handling in PageController and routes by @rokde in https://github.com/rokde/laravel-pergament/pull/7
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.0...v1.1.1
+
 ## v1.1.0 - 2026-02-21
 
 ### What's Changed
