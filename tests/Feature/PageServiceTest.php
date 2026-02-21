@@ -36,3 +36,11 @@ it('preserves layout from front matter', function (): void {
 
     expect($page->layout)->toBe('landing');
 });
+
+it('returns an empty collection of pages when the content path does not exists', function (): void {
+    config()->set('pergament.content_path', __DIR__.'/fixtures/content_path_does_not_exist');
+
+    $service = resolve(PageService::class);
+
+    expect($service->getSlugs())->toBeEmpty();
+});
