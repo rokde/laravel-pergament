@@ -13,7 +13,7 @@ use Pergament\Data\DocPage;
 use Pergament\Support\FrontMatterParser;
 use Pergament\Support\UrlGenerator;
 
-final class DocumentationService
+final readonly class DocumentationService
 {
     public function __construct(
         private FrontMatterParser $frontMatter,
