@@ -337,3 +337,87 @@ it('adds new tags after selecting existing ones from multiselect', function (): 
     expect($content)->toContain('- "laravel"');
     expect($content)->toContain('- "vue"');
 });
+
+it('creates a new page', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'Contact',
+        '--layout' => '',
+    ])->assertSuccessful();
+
+    $file = $this->tempDir.'/pages/contact.md';
+    expect(file_exists($file))->toBeTrue();
+    expect(file_get_contents($file))->toContain('title: Contact');
+});
+
+it('derives slug from page title', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'Privacy Policy',
+        '--layout' => '',
+    ])->assertSuccessful();
+
+    expect(file_exists($this->tempDir.'/pages/privacy-policy.md'))->toBeTrue();
+});
+
+it('fails when page already exists', function (): void {
+    $pagesPath = $this->tempDir.'/pages';
+    mkdir($pagesPath, 0755, true);
+    file_put_contents($pagesPath.'/contact.md', "---\ntitle: Contact\nexcerpt: \"\"\n---\n\n# Contact\n");
+
+    $this->artisan('pergament:make:page', [
+        '--title' => 'Contact',
+        '--layout' => '',
+    ])->assertFailed();
+});
+
+it('includes excerpt in page front matter', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'About',
+        '--excerpt' => 'About us.',
+        '--layout' => '',
+    ])->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/pages/about.md');
+    expect($content)->toContain('excerpt: "About us."');
+});
+
+it('includes layout in page front matter when provided', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'Home',
+        '--layout' => 'landing',
+    ])->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/pages/home.md');
+    expect($content)->toContain('layout: landing');
+});
+
+it('does not include layout in page front matter when layout is empty', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'Simple',
+        '--layout' => '',
+    ])->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/pages/simple.md');
+    expect($content)->not->toContain('layout:');
+});
+
+it('shows layout select with default and landing options', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'About',
+    ])
+        ->expectsQuestion('Layout', 'landing')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/pages/about.md');
+    expect($content)->toContain('layout: landing');
+});
+
+it('uses default layout when select returns empty', function (): void {
+    $this->artisan('pergament:make:page', [
+        '--title' => 'Simple Page',
+    ])
+        ->expectsQuestion('Layout', '')
+        ->assertSuccessful();
+
+    $content = file_get_contents($this->tempDir.'/pages/simple-page.md');
+    expect($content)->not->toContain('layout:');
+});
