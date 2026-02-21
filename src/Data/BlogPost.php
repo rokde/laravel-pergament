@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Pergament\Data;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 
 final readonly class BlogPost
 {
@@ -18,7 +18,7 @@ final readonly class BlogPost
         public string $excerpt,
         public string $slug,
         public string $content,
-        public Carbon $date,
+        public CarbonImmutable $date,
         public ?string $category = null,
         public array $tags = [],
         public array $authors = [],

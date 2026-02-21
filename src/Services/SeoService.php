@@ -7,7 +7,7 @@ namespace Pergament\Services;
 use Pergament\Data\SeoMeta;
 use Pergament\Support\FrontMatterParser;
 
-final class SeoService
+final readonly class SeoService
 {
     public function __construct(
         private FrontMatterParser $parser,

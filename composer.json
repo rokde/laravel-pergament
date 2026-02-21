@@ -17,7 +17,7 @@
     "scripts": {
         "lint": "pint --parallel",
         "test:lint": "pint --parallel --test",
-        "test:unit": "pest --parallel --coverage --min=80",
+        "test:unit": "pest --parallel --coverage --coverage-html ./coverage --min=80",
         "test": [
            "@test:lint",
            "@test:unit"

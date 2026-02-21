@@ -9,7 +9,7 @@ use Pergament\Data\DocHeading;
 use Pergament\Support\SyntaxHighlighter;
 use Pergament\Support\UrlGenerator;
 
-final class MarkdownRenderer
+final readonly class MarkdownRenderer
 {
     public function __construct(
         private SyntaxHighlighter $highlighter,
@@ -121,7 +121,7 @@ final class MarkdownRenderer
     private function resolveFileToUrl(string $filePath): ?string
     {
         $filePath = str_replace('\\', '/', $filePath);
-        $contentPath = str_replace('\\', '/', mb_rtrim((string) config('pergament.content_path'), '/'));
+        $contentPath = str_replace('\\', '/', mb_rtrim((string) config('pergament.content_path', 'content'), '/'));
 
         $docsPath = $contentPath.'/'.config('pergament.docs.path', 'docs');
         $blogPath = $contentPath.'/'.config('pergament.blog.path', 'blog');

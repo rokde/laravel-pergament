@@ -11,7 +11,7 @@ use Pergament\Data\Page;
 use Pergament\Support\FrontMatterParser;
 use Pergament\Support\UrlGenerator;
 
-final class PageService
+final readonly class PageService
 {
     public function __construct(
         private FrontMatterParser $frontMatter,
@@ -122,6 +122,6 @@ final class PageService
 
     private function basePath(): string
     {
-        return config('pergament.content_path').'/'.config('pergament.pages.path', 'pages');
+        return config('pergament.content_path', 'content').'/'.config('pergament.pages.path', 'pages');
     }
 }

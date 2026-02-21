@@ -16,6 +16,14 @@ it('returns chapters ordered by directory prefix', function (): void {
     expect($chapters->last()->slug)->toBe('advanced');
 });
 
+it('returns empty list of chapters when no docs path exists', function (): void {
+    config()->set('pergament.content_path', __DIR__.'/fixtures/content_path_does_not_exist');
+
+    $service = resolve(DocumentationService::class);
+
+    expect($service->getChapters())->toBeEmpty();
+});
+
 it('returns navigation structure', function (): void {
     $service = resolve(DocumentationService::class);
     $navigation = $service->getNavigation();
@@ -42,6 +50,7 @@ it('returns null for non-existent page', function (): void {
     $service = resolve(DocumentationService::class);
 
     expect($service->getPage('nonexistent', 'x'))->toBeNull();
+    expect($service->getPage('getting-started', 'x'))->toBeNull();
 });
 
 it('renders a page with HTML content', function (): void {
@@ -105,6 +114,22 @@ it('returns first page', function (): void {
     expect($first)->not->toBeNull();
     expect($first['chapter'])->toBe('getting-started');
     expect($first['page'])->toBe('introduction');
+});
+
+it('returns no first page when no chapters exists', function (): void {
+    config()->set('pergament.content_path', __DIR__.'/fixtures/content_path_does_not_exist');
+
+    $service = resolve(DocumentationService::class);
+
+    expect($service->getFirstPage())->toBeNull();
+});
+
+it('returns no first page when no pages in chapter exists', function (): void {
+    config()->set('pergament.docs.path', 'docs-with-empty-chapters');
+
+    $service = resolve(DocumentationService::class);
+
+    expect($service->getFirstPage())->toBeNull();
 });
 
 it('includes linkErrors key in rendered page', function (): void {

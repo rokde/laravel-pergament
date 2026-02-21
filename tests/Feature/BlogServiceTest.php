@@ -33,7 +33,7 @@ it('renders a post with HTML content', function (): void {
     expect($rendered)->not->toBeNull();
     expect($rendered)->toHaveKeys(['title', 'excerpt', 'htmlContent', 'slug', 'date', 'authors']);
     expect($rendered['htmlContent'])->toContain('Welcome to our blog');
-    expect($rendered['date'])->toBeInstanceOf(Carbon\Carbon::class);
+    expect($rendered['date'])->toBeInstanceOf(Carbon\CarbonImmutable::class);
     expect($rendered['authors'])->toHaveCount(1);
 });
 

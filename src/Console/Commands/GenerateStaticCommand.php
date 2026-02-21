@@ -529,7 +529,7 @@ final class GenerateStaticCommand extends Command
     private function copyDocMedia(DocumentationService $docsService, string $outputDir): void
     {
         $docsPrefix = config('pergament.docs.url_prefix', 'docs');
-        $contentPath = config('pergament.content_path').'/'.config('pergament.docs.path', 'docs');
+        $contentPath = config('pergament.content_path', 'content').'/'.config('pergament.docs.path', 'docs');
 
         if (! is_dir($contentPath)) {
             return;
@@ -562,7 +562,7 @@ final class GenerateStaticCommand extends Command
     private function copyBlogMedia(BlogService $blogService, string $outputDir): void
     {
         $blogPrefix = config('pergament.blog.url_prefix', 'blog');
-        $contentPath = config('pergament.content_path').'/'.config('pergament.blog.path', 'blog');
+        $contentPath = config('pergament.content_path', 'content').'/'.config('pergament.blog.path', 'blog');
 
         if (! is_dir($contentPath)) {
             return;

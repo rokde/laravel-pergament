@@ -4,11 +4,24 @@ declare(strict_types=1);
 
 namespace Pergament\Tests;
 
+use Illuminate\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Pergament\PergamentServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        TestResponse::macro('assertHeaderCaseInsensitive', function (string $headerName, string $value): static {
+            /** @var TestResponse $this */
+            expect(strtolower((string) $this->headers->get($headerName)))->toBe(strtolower($value));
+
+            return $this;
+        });
+    }
+
     protected function getPackageProviders($app): array
     {
         return [PergamentServiceProvider::class];

@@ -13,7 +13,7 @@ use Pergament\Data\DocPage;
 use Pergament\Support\FrontMatterParser;
 use Pergament\Support\UrlGenerator;
 
-final class DocumentationService
+final readonly class DocumentationService
 {
     public function __construct(
         private FrontMatterParser $frontMatter,
@@ -320,7 +320,7 @@ final class DocumentationService
 
     private function basePath(): string
     {
-        return config('pergament.content_path').'/'.config('pergament.docs.path', 'docs');
+        return config('pergament.content_path', 'content').'/'.config('pergament.docs.path', 'docs');
     }
 
     /**

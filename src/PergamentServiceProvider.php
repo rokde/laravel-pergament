@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use Pergament\Console\Commands\GenerateStaticCommand;
 use Pergament\Console\Commands\MakeBlogPostCommand;
 use Pergament\Console\Commands\MakeDocCommand;
+use Pergament\Console\Commands\MakePageCommand;
 
 final class PergamentServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,7 @@ final class PergamentServiceProvider extends ServiceProvider
                 GenerateStaticCommand::class,
                 MakeDocCommand::class,
                 MakeBlogPostCommand::class,
+                MakePageCommand::class,
             ]);
 
             $this->publishes([

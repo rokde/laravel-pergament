@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pergament\Services;
 
 use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -13,7 +14,7 @@ use Pergament\Data\BlogPost;
 use Pergament\Support\FrontMatterParser;
 use Pergament\Support\UrlGenerator;
 
-final class BlogService
+final readonly class BlogService
 {
     public function __construct(
         private FrontMatterParser $frontMatter,
@@ -347,13 +348,13 @@ final class BlogService
         );
     }
 
-    private function extractDate(string $dirName): Carbon
+    private function extractDate(string $dirName): CarbonImmutable
     {
         if (preg_match('/^(\d{4}-\d{2}-\d{2})/', $dirName, $match)) {
-            return Carbon::parse($match[1]);
+            return CarbonImmutable::parse($match[1]);
         }
 
-        return Carbon::now();
+        return CarbonImmutable::now();
     }
 
     private function extractSlug(string $dirName): string
@@ -386,6 +387,6 @@ final class BlogService
 
     private function basePath(): string
     {
-        return config('pergament.content_path').'/'.config('pergament.blog.path', 'blog');
+        return config('pergament.content_path', 'content').'/'.config('pergament.blog.path', 'blog');
     }
 }
