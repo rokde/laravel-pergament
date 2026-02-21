@@ -12,6 +12,10 @@ final class PageController
 {
     public function __invoke(string $slug, PageService $pageService, SeoService $seoService): View
     {
+        if (str_ends_with($slug, '.md')) {
+            $slug = substr($slug, 0, -3);
+        }
+
         $page = $pageService->getRenderedPage($slug);
 
         abort_unless($page !== null, 404);
