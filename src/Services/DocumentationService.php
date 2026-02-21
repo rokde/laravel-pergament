@@ -320,7 +320,7 @@ final readonly class DocumentationService
 
     private function basePath(): string
     {
-        return config('pergament.content_path').'/'.config('pergament.docs.path', 'docs');
+        return config('pergament.content_path', 'content').'/'.config('pergament.docs.path', 'docs');
     }
 
     /**

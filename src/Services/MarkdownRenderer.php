@@ -121,7 +121,7 @@ final class MarkdownRenderer
     private function resolveFileToUrl(string $filePath): ?string
     {
         $filePath = str_replace('\\', '/', $filePath);
-        $contentPath = str_replace('\\', '/', mb_rtrim((string) config('pergament.content_path'), '/'));
+        $contentPath = str_replace('\\', '/', mb_rtrim((string) config('pergament.content_path', 'content'), '/'));
 
         $docsPath = $contentPath.'/'.config('pergament.docs.path', 'docs');
         $blogPath = $contentPath.'/'.config('pergament.blog.path', 'blog');
