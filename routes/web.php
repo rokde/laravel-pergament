@@ -13,6 +13,7 @@ use Pergament\Http\Controllers\RobotsController;
 use Pergament\Http\Controllers\SearchController;
 use Pergament\Http\Controllers\SitemapController;
 use Pergament\Http\Middleware\MarkdownResponse;
+use Pergament\Services\PageService;
 use Pergament\Support\UrlGenerator;
 
 // CSS asset — static file takes priority when vendor:published; this route is the fallback
@@ -119,8 +120,11 @@ Route::prefix($basePrefix)->group(function (): void {
         Route::get('/index.md', HomeController::class)->name('pergament.home.md');
 
         if (config('pergament.pages.enabled', true)) {
+            /** @var PageService $pageService */
+            $pageService = resolve(PageService::class);
+
             Route::get('{slug}', PageController::class)
-                ->where('slug', '[a-z0-9\-]+')
+                ->whereIn('slug', $pageService->getSlugs()->toArray())
                 ->name('pergament.page');
         }
     });
