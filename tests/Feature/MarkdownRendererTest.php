@@ -175,3 +175,50 @@ it('resolves links to blog posts', function (): void {
     expect($result['html'])->toContain('href="/blog/hello-world"');
     expect($result['linkErrors'])->toBeEmpty();
 });
+
+it('reports cannot resolve URL error for .md file outside content paths', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+
+    // Create a temp directory with two .md files, neither under docs/blog/pages
+    $tmpDir = sys_get_temp_dir().'/pergament_test_'.uniqid();
+    mkdir($tmpDir);
+    file_put_contents($tmpDir.'/source.md', '# Source');
+    file_put_contents($tmpDir.'/target.md', '# Target');
+
+    $html = '<a href="./target.md">Target</a>';
+    $result = $renderer->resolveContentLinks($html, $tmpDir.'/source.md');
+
+    // Link is stripped to just the link text, and an error is recorded
+    expect($result['html'])->toBe('Target');
+    expect($result['html'])->not->toContain('<a');
+    expect($result['linkErrors'])->toHaveCount(1);
+    expect($result['linkErrors'][0])->toContain('Cannot resolve URL');
+
+    // Cleanup
+    unlink($tmpDir.'/source.md');
+    unlink($tmpDir.'/target.md');
+    rmdir($tmpDir);
+});
+
+it('highlights code blocks with a named language', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("```php\n<?php echo 'hello';\n```");
+
+    expect($html)->toContain('class="pergament-code-block"');
+    expect($html)->toContain('data-language="php"');
+});
+
+it('highlights code blocks without a language', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("```\nplain code\n```");
+
+    expect($html)->toContain('class="pergament-code-block"');
+    expect($html)->not->toContain('data-language');
+});
+
+it('returns empty array when no headings present', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = '<p>Just a paragraph</p>';
+
+    expect($renderer->extractHeadings($html))->toBeEmpty();
+});
