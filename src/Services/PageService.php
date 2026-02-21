@@ -11,7 +11,7 @@ use Pergament\Data\Page;
 use Pergament\Support\FrontMatterParser;
 use Pergament\Support\UrlGenerator;
 
-final class PageService
+final readonly class PageService
 {
     public function __construct(
         private FrontMatterParser $frontMatter,
