@@ -126,6 +126,9 @@ Route::prefix($basePrefix)->group(function (): void {
             Route::get('{slug}', PageController::class)
                 ->whereIn('slug', $pageService->getSlugs()->toArray())
                 ->name('pergament.page');
+            Route::get('{slug}.md', PageController::class)
+                ->whereIn('slug', $pageService->getSlugs()->toArray())
+                ->name('pergament.page.md');
         }
     });
 });
