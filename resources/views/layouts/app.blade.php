@@ -265,12 +265,38 @@
             const FONT_STEPS = [75, 87.5, 100, 112.5, 125, 137.5, 150];
             const DEFAULT_IDX = 2; // 100%
 
+            const btnDec = document.getElementById('font-size-decrease');
+            const btnInc = document.getElementById('font-size-increase');
+            const btnDecMobile = document.getElementById('font-size-decrease-mobile');
+            const btnIncMobile = document.getElementById('font-size-increase-mobile');
+
             function getCurrentFontIdx() {
                 const stored = localStorage.getItem('pergament-font-size');
                 if (!stored) return DEFAULT_IDX;
                 const pct = parseFloat(stored);
                 const idx = FONT_STEPS.indexOf(pct);
                 return idx >= 0 ? idx : DEFAULT_IDX;
+            }
+
+            function updateButtonStates(idx) {
+                const atMin = idx === 0;
+                const atMax = idx === FONT_STEPS.length - 1;
+                btnDec.disabled = atMin;
+                btnDec.classList.toggle('opacity-30', atMin);
+                btnDec.classList.toggle('cursor-not-allowed', atMin);
+                btnInc.disabled = atMax;
+                btnInc.classList.toggle('opacity-30', atMax);
+                btnInc.classList.toggle('cursor-not-allowed', atMax);
+                if (btnDecMobile) {
+                    btnDecMobile.disabled = atMin;
+                    btnDecMobile.classList.toggle('opacity-30', atMin);
+                    btnDecMobile.classList.toggle('cursor-not-allowed', atMin);
+                }
+                if (btnIncMobile) {
+                    btnIncMobile.disabled = atMax;
+                    btnIncMobile.classList.toggle('opacity-30', atMax);
+                    btnIncMobile.classList.toggle('cursor-not-allowed', atMax);
+                }
             }
 
             function applyFontSize(idx) {
@@ -283,6 +309,7 @@
                     document.head.appendChild(style);
                 }
                 style.textContent = '.prose { font-size: ' + pct + '%; }';
+                updateButtonStates(idx);
             }
 
             function decreaseFontSize() {
@@ -295,13 +322,12 @@
                 if (idx < FONT_STEPS.length - 1) applyFontSize(idx + 1);
             }
 
-            document.getElementById('font-size-decrease').addEventListener('click', decreaseFontSize);
-            document.getElementById('font-size-increase').addEventListener('click', increaseFontSize);
+            btnDec.addEventListener('click', decreaseFontSize);
+            btnInc.addEventListener('click', increaseFontSize);
+            if (btnDecMobile) btnDecMobile.addEventListener('click', decreaseFontSize);
+            if (btnIncMobile) btnIncMobile.addEventListener('click', increaseFontSize);
 
-            const fsDecMobile = document.getElementById('font-size-decrease-mobile');
-            const fsIncMobile = document.getElementById('font-size-increase-mobile');
-            if (fsDecMobile) fsDecMobile.addEventListener('click', decreaseFontSize);
-            if (fsIncMobile) fsIncMobile.addEventListener('click', increaseFontSize);
+            updateButtonStates(getCurrentFontIdx());
         })();
     </script>
 
