@@ -97,21 +97,21 @@
                         <button
                             id="font-size-decrease"
                             type="button"
-                            class="px-2 py-1 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                            class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
                             aria-label="Decrease font size"
                             title="Decrease font size"
                         >A−</button>
                         <button
                             id="font-size-increase"
                             type="button"
-                            class="px-2 py-1 rounded-lg text-base font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                            class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
                             aria-label="Increase font size"
                             title="Increase font size"
                         >A+</button>
                         <button
                             id="dyslexic-toggle"
                             type="button"
-                            class="px-2 py-1 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                            class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
                             aria-label="Toggle OpenDyslexic font"
                             title="Switch to OpenDyslexic font"
                         >Aᴅ</button>
@@ -178,27 +178,26 @@
                 </button>
 
                 {{-- Font size controls (mobile) --}}
-                <div class="flex items-center gap-2 pt-1">
+                <div class="flex items-center gap-1 pt-1">
                     <button
                         id="font-size-decrease-mobile"
                         type="button"
-                        class="px-2 py-1 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                        class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
                         aria-label="Decrease font size"
                     >A−</button>
                     <button
                         id="font-size-increase-mobile"
                         type="button"
-                        class="px-2 py-1 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                        class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
                         aria-label="Increase font size"
                     >A+</button>
                     <button
                         id="dyslexic-toggle-mobile"
                         type="button"
-                        class="px-2 py-1 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                        class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors select-none"
                         aria-label="Toggle OpenDyslexic font"
                         title="Switch to OpenDyslexic font"
                     >Aᴅ</button>
-                    <span class="text-sm text-gray-500 dark:text-gray-400">Font size</span>
                 </div>
             </div>
         </div>
