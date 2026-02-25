@@ -37,6 +37,18 @@
     </style>
 
     @stack('styles')
+
+    <script>
+        (function() {
+            const size = localStorage.getItem('pergament-font-size');
+            if (size) {
+                const s = document.createElement('style');
+                s.id = 'pergament-font-size-style';
+                s.textContent = '.prose { font-size: ' + size + '%; }';
+                document.head.appendChild(s);
+            }
+        })();
+    </script>
 </head>
 <body class="min-h-screen flex flex-col pergament-bg text-gray-900 dark:text-gray-100 antialiased">
 
@@ -76,6 +88,24 @@
                             </button>
                         </form>
                     @endif
+
+                    {{-- Font size controls --}}
+                    <div class="flex items-center gap-1">
+                        <button
+                            id="font-size-decrease"
+                            type="button"
+                            class="px-2 py-1 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                            aria-label="Decrease font size"
+                            title="Decrease font size"
+                        >A−</button>
+                        <button
+                            id="font-size-increase"
+                            type="button"
+                            class="px-2 py-1 rounded-lg text-base font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                            aria-label="Increase font size"
+                            title="Increase font size"
+                        >A+</button>
+                    </div>
 
                     {{-- Dark mode toggle --}}
                     <button
@@ -136,6 +166,23 @@
                     <svg class="size-4 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                     Toggle dark mode
                 </button>
+
+                {{-- Font size controls (mobile) --}}
+                <div class="flex items-center gap-2 pt-1">
+                    <button
+                        id="font-size-decrease-mobile"
+                        type="button"
+                        class="px-2 py-1 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                        aria-label="Decrease font size"
+                    >A−</button>
+                    <button
+                        id="font-size-increase-mobile"
+                        type="button"
+                        class="px-2 py-1 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                        aria-label="Increase font size"
+                    >A+</button>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Font size</span>
+                </div>
             </div>
         </div>
     </nav>
@@ -213,6 +260,85 @@
             document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
                 document.getElementById('mobile-menu').classList.toggle('hidden');
             });
+
+            // Font size
+            const FONT_STEPS = [75, 87.5, 100, 112.5, 125, 137.5, 150];
+            const DEFAULT_IDX = 2; // 100%
+
+            const btnDec = document.getElementById('font-size-decrease');
+            const btnInc = document.getElementById('font-size-increase');
+            const btnDecMobile = document.getElementById('font-size-decrease-mobile');
+            const btnIncMobile = document.getElementById('font-size-increase-mobile');
+
+            function getCurrentFontIdx() {
+                const stored = localStorage.getItem('pergament-font-size');
+                if (!stored) return DEFAULT_IDX;
+                const pct = parseFloat(stored);
+                const idx = FONT_STEPS.indexOf(pct);
+                return idx >= 0 ? idx : DEFAULT_IDX;
+            }
+
+            function updateButtonStates(idx) {
+                const atMin = idx === 0;
+                const atMax = idx === FONT_STEPS.length - 1;
+                const decTitle = atMin
+                    ? 'You are on the smallest font size'
+                    : 'Decrease font size to ' + FONT_STEPS[idx - 1] + '%';
+                const incTitle = atMax
+                    ? 'You are on the biggest font size'
+                    : 'Increase font size to ' + FONT_STEPS[idx + 1] + '%';
+
+                btnDec.disabled = atMin;
+                btnDec.title = decTitle;
+                btnDec.classList.toggle('opacity-30', atMin);
+                btnDec.classList.toggle('cursor-not-allowed', atMin);
+                btnInc.disabled = atMax;
+                btnInc.title = incTitle;
+                btnInc.classList.toggle('opacity-30', atMax);
+                btnInc.classList.toggle('cursor-not-allowed', atMax);
+                if (btnDecMobile) {
+                    btnDecMobile.disabled = atMin;
+                    btnDecMobile.title = decTitle;
+                    btnDecMobile.classList.toggle('opacity-30', atMin);
+                    btnDecMobile.classList.toggle('cursor-not-allowed', atMin);
+                }
+                if (btnIncMobile) {
+                    btnIncMobile.disabled = atMax;
+                    btnIncMobile.title = incTitle;
+                    btnIncMobile.classList.toggle('opacity-30', atMax);
+                    btnIncMobile.classList.toggle('cursor-not-allowed', atMax);
+                }
+            }
+
+            function applyFontSize(idx) {
+                const pct = FONT_STEPS[idx];
+                localStorage.setItem('pergament-font-size', pct);
+                let style = document.getElementById('pergament-font-size-style');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'pergament-font-size-style';
+                    document.head.appendChild(style);
+                }
+                style.textContent = '.prose { font-size: ' + pct + '%; }';
+                updateButtonStates(idx);
+            }
+
+            function decreaseFontSize() {
+                const idx = getCurrentFontIdx();
+                if (idx > 0) applyFontSize(idx - 1);
+            }
+
+            function increaseFontSize() {
+                const idx = getCurrentFontIdx();
+                if (idx < FONT_STEPS.length - 1) applyFontSize(idx + 1);
+            }
+
+            btnDec.addEventListener('click', decreaseFontSize);
+            btnInc.addEventListener('click', increaseFontSize);
+            if (btnDecMobile) btnDecMobile.addEventListener('click', decreaseFontSize);
+            if (btnIncMobile) btnIncMobile.addEventListener('click', increaseFontSize);
+
+            updateButtonStates(getCurrentFontIdx());
         })();
     </script>
 
