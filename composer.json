@@ -26,6 +26,7 @@
     },
     "require": {
         "php": "^8.4",
+        "ext-fileinfo": "*",
         "illuminate/support": "^11.0|^12.0",
         "league/commonmark": "^2.0",
         "league/html-to-markdown": "^5.1",

@@ -43,6 +43,7 @@ final class PergamentServiceProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../dist' => public_path('vendor/pergament'),
+                __DIR__.'/../resources/fonts' => public_path('vendor/pergament/fonts'),
             ], 'pergament-assets');
         }
     }
