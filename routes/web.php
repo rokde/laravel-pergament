@@ -39,7 +39,7 @@ Route::get('vendor/pergament/pergament.css', function () {
 Route::get('vendor/pergament/fonts/{file}', function (?string $file = null) {
     abort_if(empty($file), 404, 'File not found');
 
-    $path = resource_path('fonts/'.$file);
+    $path = __DIR__.'/../resources/fonts/'.$file;
     abort_if(! file_exists($path), 404, 'File not found');
 
     $content = file_get_contents($path);
