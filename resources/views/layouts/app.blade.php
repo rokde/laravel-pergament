@@ -47,6 +47,9 @@
                 s.textContent = '.prose { font-size: ' + size + '%; }';
                 document.head.appendChild(s);
             }
+            if (localStorage.getItem('pergament-dyslexic') === '1') {
+                document.documentElement.classList.add('dyslexic');
+            }
         })();
     </script>
 </head>
@@ -105,6 +108,13 @@
                             aria-label="Increase font size"
                             title="Increase font size"
                         >A+</button>
+                        <button
+                            id="dyslexic-toggle"
+                            type="button"
+                            class="px-2 py-1 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                            aria-label="Toggle OpenDyslexic font"
+                            title="Switch to OpenDyslexic font"
+                        >Aᴅ</button>
                     </div>
 
                     {{-- Dark mode toggle --}}
@@ -181,6 +191,13 @@
                         class="px-2 py-1 rounded-lg text-base font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
                         aria-label="Increase font size"
                     >A+</button>
+                    <button
+                        id="dyslexic-toggle-mobile"
+                        type="button"
+                        class="px-2 py-1 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors leading-none select-none"
+                        aria-label="Toggle OpenDyslexic font"
+                        title="Switch to OpenDyslexic font"
+                    >Aᴅ</button>
                     <span class="text-sm text-gray-500 dark:text-gray-400">Font size</span>
                 </div>
             </div>
@@ -339,6 +356,31 @@
             if (btnIncMobile) btnIncMobile.addEventListener('click', increaseFontSize);
 
             updateButtonStates(getCurrentFontIdx());
+
+            // Dyslexic font toggle
+            const btnDyslexic = document.getElementById('dyslexic-toggle');
+            const btnDyslexicMobile = document.getElementById('dyslexic-toggle-mobile');
+
+            function updateDyslexicButton(enabled) {
+                const title = enabled ? 'Switch to normal font' : 'Switch to OpenDyslexic font';
+                btnDyslexic.title = title;
+                btnDyslexic.classList.toggle('pergament-active-nav', enabled);
+                if (btnDyslexicMobile) {
+                    btnDyslexicMobile.title = title;
+                    btnDyslexicMobile.classList.toggle('pergament-active-nav', enabled);
+                }
+            }
+
+            function toggleDyslexic() {
+                const enabled = document.documentElement.classList.toggle('dyslexic');
+                localStorage.setItem('pergament-dyslexic', enabled ? '1' : '0');
+                updateDyslexicButton(enabled);
+            }
+
+            btnDyslexic.addEventListener('click', toggleDyslexic);
+            if (btnDyslexicMobile) btnDyslexicMobile.addEventListener('click', toggleDyslexic);
+
+            updateDyslexicButton(document.documentElement.classList.contains('dyslexic'));
         })();
     </script>
 
