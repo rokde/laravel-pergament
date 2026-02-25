@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.2 - 2026-02-25
+
+### What's Changed
+
+* font sizes by @rokde in https://github.com/rokde/laravel-pergament/pull/17
+* dyslexic font by @rokde in https://github.com/rokde/laravel-pergament/pull/19
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.1...v1.1.2
+
 ## v1.1.1 - 2026-02-21
 
 ### What's Changed
