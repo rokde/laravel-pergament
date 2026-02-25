@@ -40,8 +40,13 @@
 
     <script>
         (function() {
-            var size = localStorage.getItem('pergament-font-size');
-            if (size) document.documentElement.style.fontSize = size;
+            const size = localStorage.getItem('pergament-font-size');
+            if (size) {
+                const s = document.createElement('style');
+                s.id = 'pergament-font-size-style';
+                s.textContent = 'body > main { font-size: ' + size + '%; }';
+                document.head.appendChild(s);
+            }
         })();
     </script>
 </head>
@@ -257,38 +262,44 @@
             });
 
             // Font size
-            var FONT_STEPS = [75, 87.5, 100, 112.5, 125, 137.5, 150];
-            var DEFAULT_IDX = 2; // 100%
+            const FONT_STEPS = [75, 87.5, 100, 112.5, 125, 137.5, 150];
+            const DEFAULT_IDX = 2; // 100%
 
             function getCurrentFontIdx() {
-                var stored = localStorage.getItem('pergament-font-size');
+                const stored = localStorage.getItem('pergament-font-size');
                 if (!stored) return DEFAULT_IDX;
-                var pct = parseFloat(stored);
-                var idx = FONT_STEPS.indexOf(pct);
+                const pct = parseFloat(stored);
+                const idx = FONT_STEPS.indexOf(pct);
                 return idx >= 0 ? idx : DEFAULT_IDX;
             }
 
             function applyFontSize(idx) {
-                var pct = FONT_STEPS[idx] + '%';
-                document.documentElement.style.fontSize = pct;
-                localStorage.setItem('pergament-font-size', FONT_STEPS[idx]);
+                const pct = FONT_STEPS[idx];
+                localStorage.setItem('pergament-font-size', pct);
+                let style = document.getElementById('pergament-font-size-style');
+                if (!style) {
+                    style = document.createElement('style');
+                    style.id = 'pergament-font-size-style';
+                    document.head.appendChild(style);
+                }
+                style.textContent = 'body > main { font-size: ' + pct + '%; }';
             }
 
             function decreaseFontSize() {
-                var idx = getCurrentFontIdx();
+                const idx = getCurrentFontIdx();
                 if (idx > 0) applyFontSize(idx - 1);
             }
 
             function increaseFontSize() {
-                var idx = getCurrentFontIdx();
+                const idx = getCurrentFontIdx();
                 if (idx < FONT_STEPS.length - 1) applyFontSize(idx + 1);
             }
 
             document.getElementById('font-size-decrease').addEventListener('click', decreaseFontSize);
             document.getElementById('font-size-increase').addEventListener('click', increaseFontSize);
 
-            var fsDecMobile = document.getElementById('font-size-decrease-mobile');
-            var fsIncMobile = document.getElementById('font-size-increase-mobile');
+            const fsDecMobile = document.getElementById('font-size-decrease-mobile');
+            const fsIncMobile = document.getElementById('font-size-increase-mobile');
             if (fsDecMobile) fsDecMobile.addEventListener('click', decreaseFontSize);
             if (fsIncMobile) fsIncMobile.addEventListener('click', increaseFontSize);
         })();
