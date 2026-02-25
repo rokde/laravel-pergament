@@ -36,6 +36,31 @@ Route::get('vendor/pergament/pergament.css', function () {
     ]);
 })->name('pergament.css');
 
+Route::get('vendor/pergament/fonts/{file}', function (?string $file = null) {
+    abort_if(empty($file), 404, 'File not found');
+
+    $path = resource_path('fonts/'.$file);
+    abort_if(! file_exists($path), 404, 'File not found');
+
+    $content = file_get_contents($path);
+    $etag = '"'.md5($content).'"';
+
+    if (request()->header('If-None-Match') === $etag) {
+        return response('', 304, [
+            'ETag' => $etag,
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+
+    $mimeType = mime_content_type($path) ?? 'application/octet-stream';
+
+    return response($content, 200, [
+        'Content-Type' => $mimeType.'; charset=utf-8',
+        'Cache-Control' => 'public, max-age=86400',
+        'ETag' => $etag,
+    ]);
+})->name('pergament.fonts');
+
 $basePrefix = UrlGenerator::basePrefix();
 
 Route::prefix($basePrefix)->group(function (): void {
