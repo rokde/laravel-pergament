@@ -9,6 +9,38 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/vendor/pergament/fonts/OpenDyslexic-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/vendor/pergament/fonts/OpenDyslexic-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/vendor/pergament/fonts/OpenDyslexic-Italic.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'OpenDyslexic';
+    src: url('/vendor/pergament/fonts/OpenDyslexic-BoldItalic.otf') format('opentype');
+    font-weight: 700;
+    font-style: italic;
+    font-display: swap;
+}
+
 @layer base {
     ::selection {
         background-color: color-mix(in oklch, var(--p-primary) 30%, var(--p-bg));
@@ -236,6 +268,12 @@
 
     .dark .pergament-img-dark {
         display: block;
+    }
+
+    /* OpenDyslexic font toggle */
+    html.dyslexic,
+    html.dyslexic * {
+        font-family: 'OpenDyslexic', sans-serif !important;
     }
 
     /* Command palette */
