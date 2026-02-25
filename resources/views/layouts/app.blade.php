@@ -281,19 +281,30 @@
             function updateButtonStates(idx) {
                 const atMin = idx === 0;
                 const atMax = idx === FONT_STEPS.length - 1;
+                const decTitle = atMin
+                    ? 'You are on the smallest font size'
+                    : 'Decrease font size to ' + FONT_STEPS[idx - 1] + '%';
+                const incTitle = atMax
+                    ? 'You are on the biggest font size'
+                    : 'Increase font size to ' + FONT_STEPS[idx + 1] + '%';
+
                 btnDec.disabled = atMin;
+                btnDec.title = decTitle;
                 btnDec.classList.toggle('opacity-30', atMin);
                 btnDec.classList.toggle('cursor-not-allowed', atMin);
                 btnInc.disabled = atMax;
+                btnInc.title = incTitle;
                 btnInc.classList.toggle('opacity-30', atMax);
                 btnInc.classList.toggle('cursor-not-allowed', atMax);
                 if (btnDecMobile) {
                     btnDecMobile.disabled = atMin;
+                    btnDecMobile.title = decTitle;
                     btnDecMobile.classList.toggle('opacity-30', atMin);
                     btnDecMobile.classList.toggle('cursor-not-allowed', atMin);
                 }
                 if (btnIncMobile) {
                     btnIncMobile.disabled = atMax;
+                    btnIncMobile.title = incTitle;
                     btnIncMobile.classList.toggle('opacity-30', atMax);
                     btnIncMobile.classList.toggle('cursor-not-allowed', atMax);
                 }
