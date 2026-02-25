@@ -25,13 +25,13 @@ Route::get('vendor/pergament/pergament.css', function () {
     if (request()->header('If-None-Match') === $etag) {
         return response('', 304, [
             'ETag' => $etag,
-            'Cache-Control' => 'public, max-age=86400',
+            'Cache-Control' => 'public, max-age=86400, stale-while-revalidate=604800',
         ]);
     }
 
     return response($content, 200, [
         'Content-Type' => 'text/css; charset=utf-8',
-        'Cache-Control' => 'public, max-age=86400',
+        'Cache-Control' => 'public, max-age=86400, stale-while-revalidate=604800',
         'ETag' => $etag,
     ]);
 })->name('pergament.css');
@@ -48,7 +48,7 @@ Route::get('vendor/pergament/fonts/{file}', function (?string $file = null) {
     if (request()->header('If-None-Match') === $etag) {
         return response('', 304, [
             'ETag' => $etag,
-            'Cache-Control' => 'public, max-age=86400',
+            'Cache-Control' => 'public, max-age=31536000, immutable',
         ]);
     }
 
@@ -56,7 +56,7 @@ Route::get('vendor/pergament/fonts/{file}', function (?string $file = null) {
 
     return response($content, 200, [
         'Content-Type' => $mimeType.'; charset=utf-8',
-        'Cache-Control' => 'public, max-age=86400',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
         'ETag' => $etag,
     ]);
 })->name('pergament.fonts');
