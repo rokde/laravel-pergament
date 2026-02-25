@@ -44,7 +44,7 @@
             if (size) {
                 const s = document.createElement('style');
                 s.id = 'pergament-font-size-style';
-                s.textContent = 'html { font-size: ' + size + '%; } body > nav, body > footer { font-size: 16px; }';
+                s.textContent = '.prose { font-size: ' + size + '%; }';
                 document.head.appendChild(s);
             }
         })();
@@ -282,7 +282,7 @@
                     style.id = 'pergament-font-size-style';
                     document.head.appendChild(style);
                 }
-                style.textContent = 'html { font-size: ' + pct + '%; } body > nav, body > footer { font-size: 16px; }';
+                style.textContent = '.prose { font-size: ' + pct + '%; }';
             }
 
             function decreaseFontSize() {
