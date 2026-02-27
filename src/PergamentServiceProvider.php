@@ -42,6 +42,14 @@ final class PergamentServiceProvider extends ServiceProvider
             ], 'pergament-views');
 
             $this->publishes([
+                __DIR__.'/../resources/views/components/header.blade.php' => resource_path('views/vendor/pergament/components/header.blade.php'),
+            ], 'pergament-header');
+
+            $this->publishes([
+                __DIR__.'/../resources/views/components/footer.blade.php' => resource_path('views/vendor/pergament/components/footer.blade.php'),
+            ], 'pergament-footer');
+
+            $this->publishes([
                 __DIR__.'/../dist' => public_path('vendor/pergament'),
                 __DIR__.'/../resources/fonts' => public_path('vendor/pergament/fonts'),
             ], 'pergament-assets');

@@ -26,6 +26,18 @@ Publish the views (optional, for customization):
 php artisan vendor:publish --tag=pergament-views
 ```
 
+Publish only the header component (navigation bar, search, font controls, dark mode toggle):
+
+```bash
+php artisan vendor:publish --tag=pergament-header
+```
+
+Publish only the footer component (copyright bar):
+
+```bash
+php artisan vendor:publish --tag=pergament-footer
+```
+
 ## Configuration
 
 The main config file is `config/pergament.php`. Key options:
@@ -416,6 +428,44 @@ Search covers all three content types:
 | Doc | Documentation pages |
 | Post | Blog posts |
 | Page | Standalone pages |
+
+## Blade Components
+
+The header and footer are extracted as anonymous Blade components so you can publish and customise them independently without overriding the entire view set.
+
+### Header (`<x-pergament::header />`)
+
+The header component renders the sticky navigation bar and includes:
+
+- Site name / logo link
+- Documentation and Blog navigation links (shown when the respective feature is enabled)
+- Search input (shown when search is enabled)
+- Font-size controls (A− / A+ / OpenDyslexic toggle)
+- Dark mode toggle
+- Mobile hamburger menu with all of the above
+- Command palette overlay (shown when search is enabled)
+
+Publish just the header to customise it:
+
+```bash
+php artisan vendor:publish --tag=pergament-header
+```
+
+This publishes `resources/views/vendor/pergament/components/header.blade.php` into your application. Laravel's view resolution automatically prefers the published file over the package default.
+
+### Footer (`<x-pergament::footer />`)
+
+The footer component renders the bottom bar containing the copyright notice.
+
+Publish just the footer to customise it:
+
+```bash
+php artisan vendor:publish --tag=pergament-footer
+```
+
+This publishes `resources/views/vendor/pergament/components/footer.blade.php` into your application.
+
+> Both components are also included when you run `php artisan vendor:publish --tag=pergament-views`.
 
 ## Artisan Commands
 
