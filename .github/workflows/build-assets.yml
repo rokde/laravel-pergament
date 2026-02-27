@@ -1,4 +1,4 @@
-name: build-css
+name: build-assets
 
 on:
   pull_request:
@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-css:
+  build-assets:
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -33,15 +33,20 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Build CSS
+      - name: Build CSS and JS
         run: npm run build
 
-      - name: Commit dist/pergament.css if changed
+      - name: Commit dist/pergament.css and dist/pergament.js if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet dist/pergament.css; then
             git add dist/pergament.css
             git commit -m "chore: rebuild dist/pergament.css"
+            git push
+          fi
+          if ! git diff --quiet dist/pergament.js; then
+            git add dist/pergament.js
+            git commit -m "chore: rebuild dist/pergament.js"
             git push
           fi
