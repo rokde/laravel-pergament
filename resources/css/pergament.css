@@ -88,7 +88,7 @@
         opacity: 0;
         margin-left: 0.35em;
         color: var(--color-gray-400);
-        vertical-align: middle;
+        vertical-align: baseline;
         transition: opacity 0.15s ease, color 0.15s ease;
     }
 
