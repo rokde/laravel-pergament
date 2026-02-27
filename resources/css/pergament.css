@@ -87,14 +87,8 @@
     .heading-anchor {
         opacity: 0;
         margin-left: 0.35em;
-        font-size: 0.8em;
-        font-weight: 400;
         color: var(--color-gray-400);
-        background: none;
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        vertical-align: baseline;
+        vertical-align: middle;
         transition: opacity 0.15s ease, color 0.15s ease;
     }
 
@@ -163,6 +157,18 @@
         color: var(--p-primary);
     }
 
+    /* Copy button (shared by code blocks and heading anchors) */
+    .copy-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.125rem;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        transition: color 0.2s;
+    }
+
     /* Code copy button */
     main pre {
         position: relative;
@@ -172,16 +178,10 @@
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
-        padding: 0.2rem 0.55rem;
-        font-size: 0.7rem;
-        font-family: var(--font-sans);
-        font-weight: 500;
-        line-height: 1.5;
         color: color-mix(in oklch, var(--p-primary) 70%, white);
         background: color-mix(in oklch, var(--p-primary) 12%, #1e293b);
         border: 1px solid color-mix(in oklch, var(--p-primary) 25%, #334155);
         border-radius: 0.25rem;
-        cursor: pointer;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
@@ -196,12 +196,6 @@
     .copy-code-btn:hover {
         color: white;
         background: color-mix(in oklch, var(--p-primary) 25%, #1e293b);
-    }
-
-    .copy-code-btn.copy-done {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.4s ease;
     }
 
     /* Lightbox */

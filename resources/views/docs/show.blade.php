@@ -42,21 +42,25 @@
 
 @push('scripts')
 <script>
-    document.querySelectorAll('.prose h2[id], .prose h3[id], .prose h4[id]').forEach(function(heading) {
-        const btn = document.createElement('button');
-        btn.className = 'heading-anchor';
-        btn.setAttribute('aria-label', 'Copy link to section');
-        btn.textContent = '¶';
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const url = window.location.origin + window.location.pathname + '#' + heading.id;
-            navigator.clipboard.writeText(url).then(function() {
-                btn.textContent = 'Copied';
-                setTimeout(function() { btn.textContent = '¶'; }, 1500);
+    (function() {
+        var copySvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+        var checkSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+        document.querySelectorAll('.prose h2[id], .prose h3[id], .prose h4[id]').forEach(function(heading) {
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn heading-anchor';
+            btn.setAttribute('aria-label', 'Copy link to section');
+            btn.innerHTML = copySvg;
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const url = window.location.origin + window.location.pathname + '#' + heading.id;
+                navigator.clipboard.writeText(url).then(function() {
+                    btn.innerHTML = checkSvg;
+                    setTimeout(function() { btn.innerHTML = copySvg; }, 2000);
+                });
             });
+            heading.appendChild(btn);
         });
-        heading.appendChild(btn);
-    });
+    })();
 </script>
 @endpush
 @endsection
