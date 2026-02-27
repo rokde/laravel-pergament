@@ -198,7 +198,14 @@
         if (q.length < 2) { resultsEl.innerHTML = ''; results = []; return; }
         fetch(searchUrl + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-        }).then(function (r) { return r.json(); }).then(render).catch(function () {});
+        }).then(function (r) { return r.json(); })
+            .then(function (data) {
+                const lowercasedTerm = q.toLowerCase();
+                const matchedCommands = COMMANDS.filter(function (cmd) {
+                    return cmd.title.toLowerCase().includes(lowercasedTerm) || cmd.excerpt.toLowerCase().includes(lowercasedTerm);
+                });
+                render(data.concat(matchedCommands));
+            }).catch(function () {});
     }
 
     input.addEventListener('input', function () {
