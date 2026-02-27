@@ -1,0 +1,11 @@
+import './dark-mode.js';
+import './mobile-menu.js';
+import './font-size.js';
+import './dyslexic.js';
+import './lightbox.js';
+import './copy-code.js';
+import './command-palette.js';
+import './service-worker.js';
+import './docs-sidebar.js';
+import './toc.js';
+import './heading-anchors.js';
