@@ -18,16 +18,32 @@
     let results = [];
     let debounce = null;
 
+    /**
+     * Executes a command based on the specified action by simulating a click event on a corresponding button.
+     *
+     * @param {string} action - The action to execute. Valid values are:
+     *   - 'dark-mode' to toggle dark mode
+     *   - 'font-size-increase' to increase font size
+     *   - 'font-size-decrease' to decrease font size
+     *   - 'dyslexic' to toggle dyslexic mode
+     * @return {void} This method does not return a value.
+     */
     function executeCommand(action) {
-        var btnId = action === 'dark-mode' ? 'dark-mode-toggle'
-            : action === 'font-size-increase' ? 'font-size-increase'
-            : action === 'font-size-decrease' ? 'font-size-decrease'
-            : action === 'dyslexic' ? 'dyslexic-toggle'
-            : null;
+        const btnId = action === 'dark-mode'
+            ? 'dark-mode-toggle'
+            : action === 'font-size-increase'
+                ? 'font-size-increase'
+                : action === 'font-size-decrease'
+                    ? 'font-size-decrease'
+                    : action === 'dyslexic'
+                        ? 'dyslexic-toggle'
+                        : null;
 
         if (btnId) {
-            var btn = document.getElementById(btnId);
-            if (btn) btn.click();
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.click();
+            }
         }
     }
 
@@ -46,6 +62,12 @@
         document.body.classList.remove('cmd-open');
     }
 
+    /**
+     * Sets the active state for an item in a list based on the provided index.
+     *
+     * @param {number} idx - The index of the item to set as active. If the index is within range, the corresponding item is given the 'is-active' class and scrolled into view.
+     * @return {void}
+     */
     function setActive(idx) {
         const items = resultsEl.querySelectorAll('.pergament-cmd-result');
         items.forEach(function (el, i) { el.classList.toggle('is-active', i === idx); });
@@ -57,7 +79,7 @@
 
     function navigate() {
         if (activeIdx >= 0 && results[activeIdx]) {
-            var result = results[activeIdx];
+            const result = results[activeIdx];
             if (result.type === 'cmd') {
                 executeCommand(result.action);
             } else {
@@ -67,6 +89,12 @@
         }
     }
 
+    /**
+     * Returns a formatted label based on the provided type.
+     *
+     * @param {string} type - The input type to format.
+     * @return {string} The formatted label corresponding to the input type.
+     */
     function typeLabel(type) {
         if (type === 'doc') return 'Doc';
         if (type === 'post') return 'Post';
@@ -75,6 +103,17 @@
         return type.charAt(0).toUpperCase() + type.slice(1);
     }
 
+    /**
+     * Renders the search results and adds them to the DOM, including event listeners for interactions.
+     *
+     * @param {Array<Object>} data - The search results to render. Each object should contain the following properties:
+     *   - type {string}: The type of the result ('cmd' or other types).
+     *   - url {string}: The URL associated with the result (if applicable).
+     *   - title {string}: The title of the result.
+     *   - excerpt {string} [optional]: A short description or excerpt for the result.
+     *   - action {string} [optional]: The command action to execute (for type 'cmd').
+     * @return {void} This function does not return a value.
+     */
     function render(data) {
         results = data;
         activeIdx = -1;
@@ -141,6 +180,16 @@
         });
     }
 
+    /**
+     * Performs a search operation based on the provided query string.
+     * If the query is empty, it loads suggestions instead. Short queries are ignored.
+     * Makes a request to fetch search results and handles rendering or errors.
+     *
+     * @param {string} q The query string for the search operation.
+     *                   If empty, loads suggestions.
+     *                   If fewer than 2 characters, clears results.
+     * @return {void} No return value.
+     */
     function doSearch(q) {
         if (q.length === 0) {
             loadSuggestions();
