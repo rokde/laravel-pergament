@@ -16,6 +16,26 @@ use Pergament\Http\Middleware\MarkdownResponse;
 use Pergament\Services\PageService;
 use Pergament\Support\UrlGenerator;
 
+// JS asset — static file takes priority when vendor:published; this route is the fallback
+Route::get('vendor/pergament/pergament.js', function () {
+    $path = __DIR__.'/../dist/pergament.js';
+    $content = file_get_contents($path);
+    $etag = '"'.md5($content).'"';
+
+    if (request()->header('If-None-Match') === $etag) {
+        return response('', 304, [
+            'ETag' => $etag,
+            'Cache-Control' => 'public, max-age=86400, stale-while-revalidate=604800',
+        ]);
+    }
+
+    return response($content, 200, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+        'Cache-Control' => 'public, max-age=86400, stale-while-revalidate=604800',
+        'ETag' => $etag,
+    ]);
+})->name('pergament.js');
+
 // CSS asset — static file takes priority when vendor:published; this route is the fallback
 Route::get('vendor/pergament/pergament.css', function () {
     $path = __DIR__.'/../dist/pergament.css';

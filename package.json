@@ -2,12 +2,17 @@
     "name": "laravel-pergament",
     "private": true,
     "scripts": {
-        "build": "tailwindcss -i resources/css/pergament.css -o dist/pergament.css --minify",
-        "dev": "tailwindcss -i resources/css/pergament.css -o dist/pergament.css --watch"
+        "build": "npm run build:css && npm run build:js",
+        "build:css": "tailwindcss -i resources/css/pergament.css -o dist/pergament.css --minify",
+        "build:js": "vite build",
+        "dev": "npm run dev:css",
+        "dev:css": "tailwindcss -i resources/css/pergament.css -o dist/pergament.css --watch",
+        "dev:js": "vite build --watch"
     },
     "devDependencies": {
         "@tailwindcss/cli": "^4.0",
         "@tailwindcss/typography": "^0.5",
-        "tailwindcss": "^4.0"
+        "tailwindcss": "^4.0",
+        "vite": "^6.0"
     }
 }
