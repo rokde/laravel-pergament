@@ -2,6 +2,19 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.3 - 2026-02-27
+
+### What's Changed
+
+* Add claude GitHub actions 1772197192167 by @rokde in https://github.com/rokde/laravel-pergament/pull/20
+* Fix copy buttons: unify to use SVG copy/check icons by @rokde in https://github.com/rokde/laravel-pergament/pull/21
+* Claude/issue 22 20260227 1446 by @rokde in https://github.com/rokde/laravel-pergament/pull/26
+* feat: extract header and footer as publishable Blade components by @rokde in https://github.com/rokde/laravel-pergament/pull/27
+* feat: make prose tables horizontally scrollable by @rokde in https://github.com/rokde/laravel-pergament/pull/28
+* feat: improve search with default entries and Cmd+K indicator by @rokde in https://github.com/rokde/laravel-pergament/pull/29
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.2...v1.1.3
+
 ## v1.1.2 - 2026-02-25
 
 ### What's Changed
