@@ -18,6 +18,10 @@ final class SearchController
         $results = $query !== '' ? $searchService->search($query) : collect();
 
         if ($request->wantsJson()) {
+            if ($query === '') {
+                $results = $searchService->suggestions();
+            }
+
             return response()->json($results->values());
         }
 
