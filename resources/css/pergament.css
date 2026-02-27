@@ -157,6 +157,13 @@
         color: var(--p-primary);
     }
 
+    /* Scrollable tables */
+    .prose table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
     /* Code copy button */
     main pre {
         position: relative;
