@@ -330,11 +330,9 @@
 
     .pergament-cmd-esc {
         flex-shrink: 0;
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         font-family: var(--font-mono, monospace);
-        padding: 0.15rem 0.4rem;
-        border-radius: 0.25rem;
-        border: 1px solid color-mix(in oklch, var(--p-primary) 15%, var(--p-bg));
+        padding-right: 0.1rem;
         color: color-mix(in oklch, currentColor 45%, transparent);
         user-select: none;
     }
