@@ -157,18 +157,6 @@
         color: var(--p-primary);
     }
 
-    /* Copy button (shared by code blocks and heading anchors) */
-    .copy-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.125rem;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        transition: color 0.2s;
-    }
-
     /* Code copy button */
     main pre {
         position: relative;

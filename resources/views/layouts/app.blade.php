@@ -586,7 +586,7 @@
 
             document.querySelectorAll('main pre').forEach(function(pre) {
                 const btn = document.createElement('button');
-                btn.className = 'copy-btn copy-code-btn';
+                btn.className = 'copy-code-btn';
                 btn.setAttribute('aria-label', 'Copy code to clipboard');
                 btn.innerHTML = copySvg;
                 btn.addEventListener('click', function() {
