@@ -382,6 +382,24 @@
         color: var(--p-primary-fg);
     }
 
+    .pergament-cmd-result-badge--post {
+        background: color-mix(in oklch, #22c55e 15%, var(--p-bg));
+        color: color-mix(in oklch, #16a34a 75%, black);
+    }
+
+    .dark .pergament-cmd-result-badge--post {
+        color: color-mix(in oklch, #22c55e 65%, white);
+    }
+
+    .pergament-cmd-result-badge--cmd {
+        background: color-mix(in oklch, #6b7280 15%, var(--p-bg));
+        color: color-mix(in oklch, #6b7280 75%, black);
+    }
+
+    .dark .pergament-cmd-result-badge--cmd {
+        color: color-mix(in oklch, #9ca3af 65%, white);
+    }
+
     .pergament-cmd-result-body {
         flex: 1;
         min-width: 0;

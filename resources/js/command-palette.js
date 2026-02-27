@@ -7,18 +7,38 @@
     const searchUrl = (window.PergamentConfig && window.PergamentConfig.searchUrl) || null;
     if (!searchUrl) return;
 
+    const COMMANDS = [
+        { title: 'Toggle dark mode', excerpt: 'Switch between light and dark theme', type: 'cmd', action: 'dark-mode' },
+        { title: 'Increase font size', excerpt: 'Make text larger', type: 'cmd', action: 'font-size-increase' },
+        { title: 'Decrease font size', excerpt: 'Make text smaller', type: 'cmd', action: 'font-size-decrease' },
+        { title: 'Toggle dyslexic font', excerpt: 'Switch to OpenDyslexic font', type: 'cmd', action: 'dyslexic' },
+    ];
+
     let activeIdx = -1;
     let results = [];
     let debounce = null;
+
+    function executeCommand(action) {
+        var btnId = action === 'dark-mode' ? 'dark-mode-toggle'
+            : action === 'font-size-increase' ? 'font-size-increase'
+            : action === 'font-size-decrease' ? 'font-size-decrease'
+            : action === 'dyslexic' ? 'dyslexic-toggle'
+            : null;
+
+        if (btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) btn.click();
+        }
+    }
 
     function open() {
         backdrop.classList.add('is-open');
         document.body.classList.add('cmd-open');
         input.value = '';
-        resultsEl.innerHTML = '';
         results = [];
         activeIdx = -1;
         setTimeout(function () { input.focus(); }, 30);
+        loadSuggestions();
     }
 
     function close() {
@@ -37,7 +57,12 @@
 
     function navigate() {
         if (activeIdx >= 0 && results[activeIdx]) {
-            window.location.href = results[activeIdx].url;
+            var result = results[activeIdx];
+            if (result.type === 'cmd') {
+                executeCommand(result.action);
+            } else {
+                window.location.href = result.url;
+            }
             close();
         }
     }
@@ -46,6 +71,7 @@
         if (type === 'doc') return 'Doc';
         if (type === 'post') return 'Post';
         if (type === 'page') return 'Page';
+        if (type === 'cmd') return 'Cmd';
         return type.charAt(0).toUpperCase() + type.slice(1);
     }
 
@@ -64,12 +90,12 @@
 
         data.forEach(function (result, i) {
             const a = document.createElement('a');
-            a.href = result.url;
+            a.href = result.type === 'cmd' ? '#' : result.url;
             a.className = 'pergament-cmd-result';
             a.setAttribute('role', 'option');
 
             const badge = document.createElement('span');
-            badge.className = 'pergament-cmd-result-badge';
+            badge.className = 'pergament-cmd-result-badge pergament-cmd-result-badge--' + result.type;
             badge.textContent = typeLabel(result.type);
 
             const body = document.createElement('div');
@@ -93,7 +119,11 @@
             a.addEventListener('mouseenter', function () { setActive(i); });
             a.addEventListener('click', function (e) {
                 e.preventDefault();
-                window.location.href = result.url;
+                if (result.type === 'cmd') {
+                    executeCommand(result.action);
+                } else {
+                    window.location.href = result.url;
+                }
                 close();
             });
 
@@ -101,7 +131,21 @@
         });
     }
 
+    function loadSuggestions() {
+        fetch(searchUrl + '?q=', {
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        }).then(function (r) { return r.json(); }).then(function (data) {
+            render(data.concat(COMMANDS));
+        }).catch(function () {
+            render(COMMANDS);
+        });
+    }
+
     function doSearch(q) {
+        if (q.length === 0) {
+            loadSuggestions();
+            return;
+        }
         if (q.length < 2) { resultsEl.innerHTML = ''; results = []; return; }
         fetch(searchUrl + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
