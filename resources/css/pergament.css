@@ -183,8 +183,8 @@
     }
 
     .copy-code-btn:hover {
-        color: white;
-        background: color-mix(in oklch, var(--p-primary) 25%, #1e293b);
+        /*color: white;*/
+        /*background: color-mix(in oklch, var(--p-primary) 25%, #1e293b);*/
     }
 
     /* Lightbox */
