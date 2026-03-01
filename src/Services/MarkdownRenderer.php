@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pergament\Services;
 
 use Illuminate\Support\Str;
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
 use Pergament\Data\DocHeading;
 use Pergament\Support\SyntaxHighlighter;
 use Pergament\Support\UrlGenerator;
@@ -22,10 +23,16 @@ final readonly class MarkdownRenderer
     {
         $markdown = str_replace(' -- ', ' — ', $markdown);
 
+        $extensions = [];
+
+        if (config('pergament.markdown.footnotes', false)) {
+            $extensions[] = new FootnoteExtension;
+        }
+
         $html = Str::markdown($markdown, [
             'allow_unsafe_links' => false,
             'html_input' => 'allow',
-        ]);
+        ], $extensions);
 
         $html = $this->highlightCodeBlocks($html);
         $html = $this->addHeadingIds($html);

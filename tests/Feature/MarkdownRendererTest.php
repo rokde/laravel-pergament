@@ -222,3 +222,36 @@ it('returns empty array when no headings present', function (): void {
 
     expect($renderer->extractHeadings($html))->toBeEmpty();
 });
+
+it('does not render footnotes when disabled', function (): void {
+    config(['pergament.markdown.footnotes' => false]);
+    $renderer = resolve(MarkdownRenderer::class);
+
+    $markdown = "Here is a footnote[^1].\n\n[^1]: My reference.";
+    $html = $renderer->toHtml($markdown);
+
+    expect($html)->not->toContain('footnote');
+    expect($html)->not->toContain('fn:');
+});
+
+it('renders footnotes when enabled', function (): void {
+    config(['pergament.markdown.footnotes' => true]);
+    $renderer = resolve(MarkdownRenderer::class);
+
+    $markdown = "Here is a footnote[^1].\n\n[^1]: My reference.";
+    $html = $renderer->toHtml($markdown);
+
+    expect($html)->toContain('footnote');
+    expect($html)->toContain('My reference.');
+});
+
+it('renders multi-line footnotes when enabled', function (): void {
+    config(['pergament.markdown.footnotes' => true]);
+    $renderer = resolve(MarkdownRenderer::class);
+
+    $markdown = "A footnote[^1] and another[^2].\n\n[^1]: First reference.\n[^2]: Second reference.";
+    $html = $renderer->toHtml($markdown);
+
+    expect($html)->toContain('First reference.');
+    expect($html)->toContain('Second reference.');
+});

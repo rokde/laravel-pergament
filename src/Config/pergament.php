@@ -206,6 +206,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Markdown
+    |--------------------------------------------------------------------------
+    |
+    | Configure Markdown rendering extensions and behavior.
+    |
+    */
+
+    'markdown' => [
+
+        /*
+        |----------------------------------------------------------------------
+        | Footnotes
+        |----------------------------------------------------------------------
+        |
+        | Enable footnote support using the [^1] syntax. When enabled, footnote
+        | references like [^1] in the text link to definitions at the bottom
+        | of the document, similar to GitHub Flavored Markdown footnotes.
+        |
+        */
+
+        'footnotes' => false,
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Exports
     |--------------------------------------------------------------------------
     */
