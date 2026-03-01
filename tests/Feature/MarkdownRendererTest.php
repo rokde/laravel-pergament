@@ -222,3 +222,81 @@ it('returns empty array when no headings present', function (): void {
 
     expect($renderer->extractHeadings($html))->toBeEmpty();
 });
+
+it('renders note alert', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!NOTE]\n> Useful information.");
+
+    expect($html)->toContain('pergament-alert');
+    expect($html)->toContain('pergament-alert-note');
+    expect($html)->toContain('role="alert"');
+    expect($html)->toContain('Note');
+    expect($html)->toContain('Useful information.');
+    expect($html)->not->toContain('<blockquote>');
+    expect($html)->not->toContain('[!NOTE]');
+});
+
+it('renders tip alert', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!TIP]\n> Helpful advice.");
+
+    expect($html)->toContain('pergament-alert-tip');
+    expect($html)->toContain('Tip');
+    expect($html)->toContain('Helpful advice.');
+});
+
+it('renders important alert', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!IMPORTANT]\n> Key information.");
+
+    expect($html)->toContain('pergament-alert-important');
+    expect($html)->toContain('Important');
+    expect($html)->toContain('Key information.');
+});
+
+it('renders warning alert', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!WARNING]\n> Urgent info.");
+
+    expect($html)->toContain('pergament-alert-warning');
+    expect($html)->toContain('Warning');
+    expect($html)->toContain('Urgent info.');
+});
+
+it('renders caution alert', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!CAUTION]\n> Risk of negative outcomes.");
+
+    expect($html)->toContain('pergament-alert-caution');
+    expect($html)->toContain('Caution');
+    expect($html)->toContain('Risk of negative outcomes.');
+});
+
+it('renders alert icon svg', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!NOTE]\n> Content.");
+
+    expect($html)->toContain('<svg');
+    expect($html)->toContain('aria-hidden="true"');
+});
+
+it('does not render alerts when disabled via config', function (): void {
+    config(['pergament.markdown.alerts.enabled' => false]);
+
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!NOTE]\n> Useful information.");
+
+    expect($html)->toContain('<blockquote>');
+    expect($html)->not->toContain('pergament-alert');
+
+    config(['pergament.markdown.alerts.enabled' => true]);
+});
+
+it('renders alert with multiple paragraphs', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml("> [!NOTE]\n> First paragraph.\n>\n> Second paragraph.");
+
+    expect($html)->toContain('pergament-alert-note');
+    expect($html)->toContain('First paragraph.');
+    expect($html)->toContain('Second paragraph.');
+});
