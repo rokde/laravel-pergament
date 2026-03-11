@@ -75,4 +75,10 @@ if (btn && 'speechSynthesis' in window) {
         synth.speak(utterance);
         showPlaying();
     });
+
+    window.addEventListener('pagehide', function () {
+        if (synth.speaking || synth.paused) {
+            synth.cancel();
+        }
+    });
 }
