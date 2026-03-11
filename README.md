@@ -133,6 +133,30 @@ Dark mode is handled automatically: the background switches to a dark slate (`#1
 ],
 ```
 
+### Text-to-Speech
+
+Add a play/pause button that reads page content aloud using the browser's [Speech Synthesis API](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis). Each content type can be enabled independently:
+
+```php
+'tts' => [
+    'blog'  => true,            // show on blog posts
+    'docs'  => true,            // show on documentation pages
+    'pages' => false,           // show on standalone pages
+    'voice' => 'Samantha',      // preferred voice name (null = browser default)
+    'rate'  => 1.0,             // speech rate: 0.5 (slow) to 2.0 (fast)
+],
+```
+
+The `voice` value is browser- and OS-dependent. Common options:
+
+| Platform | Voices |
+|----------|--------|
+| macOS / iOS | `Samantha`, `Alex`, `Daniel`, `Karen`, `Moira`, `Thomas` |
+| Chrome | `Google UK English Female`, `Google UK English Male`, `Google US English` |
+| Windows | `Microsoft David`, `Microsoft Zira`, `Microsoft Mark` |
+
+If the chosen voice is unavailable, the browser's default voice is used as fallback.
+
 ## Content Structure
 
 ```
@@ -624,6 +648,7 @@ Media files, feeds, sitemaps, and search results are excluded — only rendered 
 - **Theming** — Configure `colors.primary` and `colors.background`; the entire UI (nav, links, badges, scrollbars, focus rings, text selection) derives from these two values via CSS custom properties
 - **Zoomable images** — Click any image to enlarge it in a lightbox; Escape or click outside to close
 - **Copy code** — Hover a code block to reveal a Copy button; switches to "Copied" on success
+- **Text-to-speech** — Optional play/pause button that reads content aloud using the browser Speech Synthesis API; configurable per content type, with selectable voice and speech rate
 - **Configurable prefix** — Mount the CMS at any URL path
 
 ## Testing

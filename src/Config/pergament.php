@@ -220,6 +220,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Text-to-Speech
+    |--------------------------------------------------------------------------
+    |
+    | Enable a play button that reads content aloud using the browser's
+    | Speech Synthesis API. Each content type can be toggled independently.
+    | The "voice" and "rate" options apply to all content types.
+    |
+    | voice: preferred voice name (browser-dependent). Set to null to use the
+    |        browser default. Common voices across platforms:
+    |
+    |        macOS / iOS:
+    |          "Samantha", "Alex", "Daniel", "Karen", "Moira",
+    |          "Tessa", "Thomas", "Anna" (de), "Amelie" (fr)
+    |
+    |        Chrome (online):
+    |          "Google UK English Female", "Google UK English Male",
+    |          "Google US English", "Google Deutsch", "Google français"
+    |
+    |        Windows:
+    |          "Microsoft David", "Microsoft Zira", "Microsoft Mark",
+    |          "Microsoft Hedda" (de), "Microsoft Hortense" (fr)
+    |
+    |        Android:
+    |          varies by device — typically uses the system TTS engine
+    |
+    | rate:  speech rate between 0.5 and 2.0 (1.0 = normal speed).
+    |
+    */
+
+    'tts' => [
+        'blog' => false,
+        'docs' => false,
+        'pages' => false,
+        'voice' => null,
+        'rate' => 1.0,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Search
     |--------------------------------------------------------------------------
     */
