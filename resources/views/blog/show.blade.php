@@ -45,6 +45,12 @@
                     @endforeach
                 </div>
             @endif
+
+            @if(config('pergament.tts.blog'))
+                <div class="mt-4">
+                    <x-pergament::tts-button />
+                </div>
+            @endif
         </header>
 
         {{-- Content --}}

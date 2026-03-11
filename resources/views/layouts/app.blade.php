@@ -68,6 +68,8 @@
         window.PergamentConfig = {
             searchUrl: @json(config('pergament.search.enabled') ? route('pergament.search') : null),
             swUrl: @json(config('pergament.pwa.enabled') ? route('pergament.sw') : null),
+            ttsVoice: @json(config('pergament.tts.voice')),
+            ttsRate: @json((float) config('pergament.tts.rate', 1.0)),
         };
     </script>
 

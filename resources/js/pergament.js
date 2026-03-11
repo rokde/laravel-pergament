@@ -9,3 +9,4 @@ import './service-worker.js';
 import './docs-sidebar.js';
 import './toc.js';
 import './heading-anchors.js';
+import './tts.js';
