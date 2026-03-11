@@ -110,14 +110,31 @@ All views use the `pergament::` namespace. After publishing, edit them at `resou
 ### Feature Toggles
 
 ```php
-'docs' => ['enabled' => true, 'url_prefix' => 'docs'],
-'blog' => ['enabled' => true, 'url_prefix' => 'blog', 'per_page' => 12],
-'pages' => ['enabled' => true],
+'docs' => ['enabled' => true, 'url_prefix' => 'docs', 'tts' => false],
+'blog' => ['enabled' => true, 'url_prefix' => 'blog', 'per_page' => 12, 'tts' => false],
+'pages' => ['enabled' => true, 'tts' => false],
 'search' => ['enabled' => true],
 'sitemap' => ['enabled' => true],
 'robots' => ['enabled' => true],
 'llms' => ['enabled' => true],
 'pwa' => ['enabled' => false],
+```
+
+### Text-to-Speech
+
+Enable a read-aloud button per content type. Voice and rate apply globally:
+
+```php
+// Enable per content type (in their respective sections):
+'docs'  => ['tts' => true],
+'blog'  => ['tts' => true],
+'pages' => ['tts' => false],
+
+// Global voice and rate settings:
+'tts' => [
+    'voice' => null,    // null = browser default; e.g. "Samantha", "Google US English"
+    'rate'  => 1.0,     // 0.5–2.0, 1.0 = normal speed
+],
 ```
 
 ### Blog Feed

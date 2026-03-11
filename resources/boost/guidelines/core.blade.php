@@ -89,6 +89,8 @@ Key config options in `config/pergament.php`:
 - `site.name`, `site.url`, `site.seo.*` — global site and SEO settings
 - `homepage.type` — what serves at the base URL: `page`, `blog-index`, `doc-page`, or `redirect`
 - `docs.enabled`, `blog.enabled`, `pages.enabled` — toggle content types
+- `docs.tts`, `blog.tts`, `pages.tts` — enable read-aloud button per content type (boolean)
+- `tts.voice`, `tts.rate` — global voice name and speech rate for text-to-speech
 - `blog.per_page`, `blog.feed.*` — blog pagination and feed settings
 - `pwa.enabled`, `pwa.*` — PWA configuration
 
