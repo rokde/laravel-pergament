@@ -18,6 +18,7 @@ final readonly class DocumentationService
     public function __construct(
         private FrontMatterParser $frontMatter,
         private MarkdownRenderer $renderer,
+        private ContentStatisticsService $statistics,
     ) {}
 
     /**
@@ -108,6 +109,8 @@ final readonly class DocumentationService
         $headings = $this->renderer->extractHeadings($html);
         $adjacent = $this->getAdjacentPages($chapterSlug, $pageSlug);
         $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+        $statsConfig = config('pergament.docs.statistics', []);
+        $contentStats = $this->statistics->compute($page->content, $sourceFile, $statsConfig);
 
         return [
             'title' => $page->title,
@@ -116,6 +119,7 @@ final readonly class DocumentationService
             'headings' => $headings,
             'slug' => $page->slug,
             'meta' => $page->meta,
+            'statistics' => $contentStats,
             'previousPage' => $adjacent['previous'] ? [
                 'title' => $adjacent['previous']['title'],
                 'url' => UrlGenerator::path($docsPrefix, $adjacent['previous']['chapter'], $adjacent['previous']['page']),

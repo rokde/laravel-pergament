@@ -33,6 +33,8 @@
             </p>
         @endif
 
+        <x-pergament::content-statistics :statistics="$page['statistics'] ?? []" />
+
         <div class="prose dark:prose-invert max-w-none">
             {!! $page['htmlContent'] !!}
         </div>

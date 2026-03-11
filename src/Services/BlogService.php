@@ -19,6 +19,7 @@ final readonly class BlogService
     public function __construct(
         private FrontMatterParser $frontMatter,
         private MarkdownRenderer $renderer,
+        private ContentStatisticsService $statistics,
     ) {}
 
     /**
@@ -85,6 +86,8 @@ final readonly class BlogService
 
         $index = $posts->search(fn (BlogPost $p): bool => $p->slug === $slug);
         $blogPrefix = config('pergament.blog.url_prefix', 'blog');
+        $statsConfig = config('pergament.blog.statistics', []);
+        $contentStats = $this->statistics->compute($post->content, $sourceFile, $statsConfig);
 
         return [
             'title' => $post->title,
@@ -97,6 +100,7 @@ final readonly class BlogService
             'tags' => $post->tags,
             'authors' => $post->authors,
             'meta' => $post->meta,
+            'statistics' => $contentStats,
             'previousPost' => $index !== false && $index > 0 ? [
                 'title' => $posts->get($index - 1)->title,
                 'url' => UrlGenerator::path($blogPrefix, $posts->get($index - 1)->slug),
