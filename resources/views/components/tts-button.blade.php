@@ -6,7 +6,7 @@
     type="button"
     aria-label="Read content aloud"
     title="Read aloud"
-    class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer"
+    class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer print:hidden"
 >
     {{-- Play icon (shown by default) --}}
     <svg id="pergament-tts-icon-play" class="size-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
