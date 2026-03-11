@@ -2,6 +2,17 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.4 - 2026-03-11
+
+### What's Changed
+
+* Support GitHub-style alert components by @rokde in https://github.com/rokde/laravel-pergament/pull/33
+* feat: configure canonical url (#34) by @rokde in https://github.com/rokde/laravel-pergament/pull/35
+* Add configurable footnote support by @rokde in https://github.com/rokde/laravel-pergament/pull/32
+* improve code by @rokde in https://github.com/rokde/laravel-pergament/pull/36
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.3...v1.1.4
+
 ## v1.1.3 - 2026-02-27
 
 ### What's Changed
