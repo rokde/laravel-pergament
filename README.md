@@ -252,6 +252,79 @@ seo.robots: "noindex, nofollow"
 
 These override the corresponding values from `config('pergament.site.seo.*')`.
 
+## GitHub-Style Alerts
+
+Pergament supports GitHub-style alert blocks for highlighting important information. Alerts are enabled by default.
+
+### Syntax
+
+```markdown
+> [!NOTE]
+> Useful information that users should know, even when skimming.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+```
+
+### Alert Types
+
+| Type | Purpose | Color |
+|------|---------|-------|
+| `NOTE` | Supplementary information | Blue |
+| `TIP` | Helpful advice | Green |
+| `IMPORTANT` | Key information | Purple |
+| `WARNING` | Urgent notices | Amber |
+| `CAUTION` | Risk warnings | Red |
+
+Each alert renders as a styled `<div>` with an icon, title, and content. Dark mode variants are included automatically.
+
+### Configuration
+
+```php
+'markdown' => [
+    'alerts' => [
+        'enabled' => true,   // set to false to disable alert rendering
+    ],
+],
+```
+
+When disabled, alert syntax is rendered as a plain blockquote.
+
+## Footnotes
+
+Pergament supports inline footnotes via the CommonMark `FootnoteExtension`. Footnotes are disabled by default.
+
+### Syntax
+
+```markdown
+Here is a sentence with a footnote.[^1]
+
+You can have multiple footnotes[^2] in a single document[^3].
+
+[^1]: This is the first footnote.
+[^2]: This is the second footnote.
+[^3]: Footnotes can contain **Markdown** formatting.
+```
+
+Footnote references render as superscript links (`<sup>`) that anchor to the footnote list at the bottom of the page. Each footnote includes a backlink to return to the reference in the text.
+
+### Configuration
+
+```php
+'markdown' => [
+    'footnotes' => false,   // set to true to enable footnote support
+],
+```
+
 ## Block-Based Landing Pages
 
 For landing pages and homepages, you can use block directives in Markdown to create structured sections. Block directives wrap content in `<div>` elements with CSS classes for styling.
@@ -545,6 +618,8 @@ Media files, feeds, sitemaps, and search results are excluded — only rendered 
 - **Markdown responses** — All content pages served as plain Markdown via `Accept: text/markdown`, `.md` suffix, or known AI user-agents (powered by spatie/laravel-markdown-response)
 - **Command palette search** — `Cmd+K`/`Ctrl+K` opens a live search dialog across docs, posts, and pages; keyboard navigable; no-JS form fallback
 - **PWA** — Optional manifest.json and service worker
+- **GitHub-style alerts** — `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]` blocks with icons and color coding; dark mode included
+- **Footnotes** — Inline `[^ref]` syntax with superscript links and back-references; opt-in via config
 - **Landing pages** — Block-based content with `:::directive` syntax
 - **Dark mode** — Class-based toggle with system preference detection; dark-mode syntax highlighting
 - **Syntax highlighting** — Server-side via tempest/highlight, light and dark themes included
