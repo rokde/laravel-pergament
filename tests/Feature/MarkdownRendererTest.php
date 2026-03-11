@@ -281,7 +281,7 @@ it('renders alert icon svg', function (): void {
 });
 
 it('does not render alerts when disabled via config', function (): void {
-    config(['pergament.markdown.alerts.enabled' => false]);
+    config(['pergament.markdown.alerts' => false]);
 
     $renderer = resolve(MarkdownRenderer::class);
     $html = $renderer->toHtml("> [!NOTE]\n> Useful information.");
@@ -289,7 +289,7 @@ it('does not render alerts when disabled via config', function (): void {
     expect($html)->toContain('<blockquote>');
     expect($html)->not->toContain('pergament-alert');
 
-    config(['pergament.markdown.alerts.enabled' => true]);
+    config(['pergament.markdown.alerts' => true]);
 });
 
 it('renders alert with multiple paragraphs', function (): void {
