@@ -53,6 +53,8 @@
             @endif
         </header>
 
+        <x-pergament::content-statistics :statistics="$post['statistics'] ?? []" />
+
         {{-- Content --}}
         <div class="prose dark:prose-invert max-w-none">
             {!! $post['htmlContent'] !!}

@@ -16,6 +16,7 @@ final readonly class PageService
     public function __construct(
         private FrontMatterParser $frontMatter,
         private MarkdownRenderer $renderer,
+        private ContentStatisticsService $statistics,
     ) {}
 
     public function getPage(string $slug): ?Page
@@ -64,6 +65,8 @@ final readonly class PageService
         }
 
         $headings = $this->renderer->extractHeadings($html);
+        $statsConfig = config('pergament.pages.statistics', []);
+        $contentStats = $this->statistics->compute($page->content, $sourceFile, $statsConfig);
 
         return [
             'title' => $page->title,
@@ -73,6 +76,7 @@ final readonly class PageService
             'slug' => $page->slug,
             'layout' => $page->layout,
             'meta' => $page->meta,
+            'statistics' => $contentStats,
             'linkErrors' => $linkErrors,
         ];
     }

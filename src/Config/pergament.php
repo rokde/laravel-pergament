@@ -82,6 +82,14 @@ return [
         'path' => 'docs',
         'url_prefix' => 'docs',
         'title' => 'Documentation',
+        'statistics' => [
+            'reading_time' => false,
+            'word_count' => false,
+            'character_count' => false,
+            'paragraph_count' => false,
+            'last_modified' => false,
+            'content_age' => false,
+        ],
     ],
 
     /*
@@ -104,6 +112,14 @@ return [
             'description' => '',
             'limit' => 20,
         ],
+        'statistics' => [
+            'reading_time' => false,
+            'word_count' => false,
+            'character_count' => false,
+            'paragraph_count' => false,
+            'last_modified' => false,
+            'content_age' => false,
+        ],
     ],
 
     /*
@@ -115,6 +131,14 @@ return [
     'pages' => [
         'enabled' => true,
         'path' => 'pages',
+        'statistics' => [
+            'reading_time' => false,
+            'word_count' => false,
+            'character_count' => false,
+            'paragraph_count' => false,
+            'last_modified' => false,
+            'content_age' => false,
+        ],
     ],
 
     /*
