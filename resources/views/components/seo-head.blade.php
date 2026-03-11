@@ -26,7 +26,7 @@
 
 @if($seo->canonical)
     <meta property="og:url" content="{{ $seo->canonical }}">
-    <link rel="canonical" href="{{ $seo->canonical }}">
+    <link rel="canonical" href="{{ $seo->canonical }}" />
 @endif
 
 <meta name="twitter:card" content="{{ $seo->twitterCard }}">

@@ -40,7 +40,9 @@ final class DocumentationController
 
         abort_unless($pageData !== null, 404);
 
-        $seo = $seoService->resolve($pageData['meta'], $pageData['title']);
+        $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+        $canonicalUrl = UrlGenerator::url($docsPrefix, $chapter, $page);
+        $seo = $seoService->resolve($pageData['meta'], $pageData['title'], $canonicalUrl);
 
         return view('pergament::docs.show', [
             'page' => $pageData,

@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Pergament\Services\BlogService;
 use Pergament\Services\SeoService;
+use Pergament\Support\UrlGenerator;
 
 final class BlogController
 {
@@ -17,7 +18,8 @@ final class BlogController
     {
         $page = (int) $request->query('page', '1');
         $paginated = $service->paginate($page);
-        $seo = $seoService->resolve([], config('pergament.blog.title', 'Blog'));
+        $canonicalUrl = UrlGenerator::url(config('pergament.blog.url_prefix', 'blog'));
+        $seo = $seoService->resolve([], config('pergament.blog.title', 'Blog'), $canonicalUrl);
 
         return view('pergament::blog.index', [
             'posts' => $paginated['posts'],
@@ -40,7 +42,8 @@ final class BlogController
 
         abort_unless($post !== null, 404);
 
-        $seo = $seoService->resolve($post['meta'], $post['title']);
+        $canonicalUrl = UrlGenerator::url(config('pergament.blog.url_prefix', 'blog'), $slug);
+        $seo = $seoService->resolve($post['meta'], $post['title'], $canonicalUrl);
 
         return view('pergament::blog.show', [
             'post' => $post,
@@ -56,7 +59,8 @@ final class BlogController
 
         $posts = $service->getPostsByCategory($category);
         $categoryTitle = Str::title(str_replace('-', ' ', $category));
-        $seo = $seoService->resolve([], $categoryTitle);
+        $canonicalUrl = UrlGenerator::url(config('pergament.blog.url_prefix', 'blog'), 'category', $category);
+        $seo = $seoService->resolve([], $categoryTitle, $canonicalUrl);
 
         return view('pergament::blog.category', [
             'posts' => $posts,
@@ -74,7 +78,8 @@ final class BlogController
 
         $posts = $service->getPostsByTag($tag);
         $tagTitle = Str::title(str_replace('-', ' ', $tag));
-        $seo = $seoService->resolve([], $tagTitle);
+        $canonicalUrl = UrlGenerator::url(config('pergament.blog.url_prefix', 'blog'), 'tag', $tag);
+        $seo = $seoService->resolve([], $tagTitle, $canonicalUrl);
 
         return view('pergament::blog.tag', [
             'posts' => $posts,
@@ -95,7 +100,8 @@ final class BlogController
             ? collect($posts->first()->authors)->first(fn ($a) => $a->slug() === $author)?->name ?? Str::title(str_replace('-', ' ', $author))
             : Str::title(str_replace('-', ' ', $author));
 
-        $seo = $seoService->resolve([], $authorName);
+        $canonicalUrl = UrlGenerator::url(config('pergament.blog.url_prefix', 'blog'), 'author', $author);
+        $seo = $seoService->resolve([], $authorName, $canonicalUrl);
 
         return view('pergament::blog.author', [
             'posts' => $posts,

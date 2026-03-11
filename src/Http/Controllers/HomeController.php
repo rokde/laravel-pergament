@@ -11,6 +11,7 @@ use Pergament\Services\BlogService;
 use Pergament\Services\DocumentationService;
 use Pergament\Services\PageService;
 use Pergament\Services\SeoService;
+use Pergament\Support\UrlGenerator;
 
 final class HomeController
 {
@@ -39,7 +40,8 @@ final class HomeController
 
         abort_unless($page !== null, 404);
 
-        $seo = $seoService->resolve($page['meta'], $page['title']);
+        $canonicalUrl = UrlGenerator::url();
+        $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
         $layout = $page['layout'] ?? 'default';
 
         return view('pergament::pages.show', [
@@ -63,7 +65,8 @@ final class HomeController
         $page = $docsService->getRenderedPage($parts[0], $parts[1]);
         abort_unless($page !== null, 404);
 
-        $seo = $seoService->resolve($page['meta'], $page['title']);
+        $canonicalUrl = UrlGenerator::url();
+        $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
 
         return view('pergament::docs.show', [
             'page' => $page,
@@ -77,7 +80,8 @@ final class HomeController
     private function renderBlogIndex(BlogService $blogService, SeoService $seoService): View
     {
         $paginated = $blogService->paginate(1);
-        $seo = $seoService->resolve([], config('pergament.blog.title', 'Blog'));
+        $canonicalUrl = UrlGenerator::url();
+        $seo = $seoService->resolve([], config('pergament.blog.title', 'Blog'), $canonicalUrl);
 
         return view('pergament::blog.index', [
             'posts' => $paginated['posts'],

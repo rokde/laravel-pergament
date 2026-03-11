@@ -7,6 +7,7 @@ namespace Pergament\Http\Controllers;
 use Illuminate\View\View;
 use Pergament\Services\PageService;
 use Pergament\Services\SeoService;
+use Pergament\Support\UrlGenerator;
 
 final class PageController
 {
@@ -20,7 +21,8 @@ final class PageController
 
         abort_unless($page !== null, 404);
 
-        $seo = $seoService->resolve($page['meta'], $page['title']);
+        $canonicalUrl = UrlGenerator::url($slug);
+        $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
         $layout = $page['layout'] ?? 'default';
 
         return view('pergament::pages.show', [
