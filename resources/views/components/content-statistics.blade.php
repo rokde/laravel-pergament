@@ -1,7 +1,7 @@
 @props(['statistics' => []])
 
 @if(count($statistics) > 0)
-    <div class="pergament-content-statistics text-xs text-gray-500 dark:text-gray-400 space-y-1.5 mt-4">
+    <div class="pergament-content-statistics text-xs text-gray-500 dark:text-gray-400 space-y-1.5 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         @isset($statistics['reading_time'])
             <div class="flex items-center gap-1.5">
                 <svg class="size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
