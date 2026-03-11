@@ -19,10 +19,12 @@
     @endif
 
     @php
-        $pergamentCssPath = public_path('vendor/pergament/pergament.css');
-        $pergamentCssVersion = is_file($pergamentCssPath) ? substr(md5_file($pergamentCssPath), 0, 8) : null;
+        $pergamentCssPath = is_file(public_path('vendor/pergament/pergament.css'))
+            ? public_path('vendor/pergament/pergament.css')
+            : __DIR__ . '/../../css/pergament.css';
+        $pergamentCssVersion = substr(md5_file($pergamentCssPath), 0, 8);
     @endphp
-    <link rel="stylesheet" href="{{ asset('vendor/pergament/pergament.css') }}{{ $pergamentCssVersion ? '?v=' . $pergamentCssVersion : '' }}">
+    <link rel="stylesheet" href="{{ asset('vendor/pergament/pergament.css') }}?v={{ $pergamentCssVersion }}">
 
     <style>
         :root {
@@ -78,9 +80,11 @@
     @stack('scripts')
 
     @php
-        $pergamentJsPath = public_path('vendor/pergament/pergament.js');
-        $pergamentJsVersion = is_file($pergamentJsPath) ? substr(md5_file($pergamentJsPath), 0, 8) : null;
+        $pergamentJsPath = is_file(public_path('vendor/pergament/pergament.js'))
+            ? public_path('vendor/pergament/pergament.js')
+            : __DIR__ . '/../../js/pergament.js';
+        $pergamentJsVersion = substr(md5_file($pergamentJsPath), 0, 8);
     @endphp
-    <script src="{{ asset('vendor/pergament/pergament.js') }}{{ $pergamentJsVersion ? '?v=' . $pergamentJsVersion : '' }}"></script>
+    <script src="{{ asset('vendor/pergament/pergament.js') }}?v={{ $pergamentJsVersion }}"></script>
 </body>
 </html>
