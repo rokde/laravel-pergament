@@ -305,10 +305,11 @@ it('does not render footnotes when disabled', function (): void {
     config(['pergament.markdown.footnotes' => false]);
     $renderer = resolve(MarkdownRenderer::class);
 
-    $markdown = "Here is a footnote[^1].\n\n[^1]: My reference.";
+    $markdown = "Here is a note[^1].\n\n[^1]: My reference.";
     $html = $renderer->toHtml($markdown);
 
-    expect($html)->not->toContain('footnote');
+    expect($html)->not->toContain('class="footnote-ref"');
+    expect($html)->not->toContain('class="footnotes"');
     expect($html)->not->toContain('fn:');
 });
 
@@ -316,20 +317,38 @@ it('renders footnotes when enabled', function (): void {
     config(['pergament.markdown.footnotes' => true]);
     $renderer = resolve(MarkdownRenderer::class);
 
-    $markdown = "Here is a footnote[^1].\n\n[^1]: My reference.";
+    $markdown = "Here is a note[^1].\n\n[^1]: My reference.";
     $html = $renderer->toHtml($markdown);
 
-    expect($html)->toContain('footnote');
+    // Inline superscript link to the footnote
+    expect($html)->toContain('<sup');
+    expect($html)->toContain('class="footnote-ref"');
+    expect($html)->toContain('href="#fn:fn-1"');
+
+    // Separator before footnote list
+    expect($html)->toContain('<hr');
+
+    // Footnote list with content and backlink
+    expect($html)->toContain('class="footnotes"');
     expect($html)->toContain('My reference.');
+    expect($html)->toContain('class="footnote-back"');
+    expect($html)->toContain('href="#fnref:fn-1"');
 });
 
 it('renders multi-line footnotes when enabled', function (): void {
     config(['pergament.markdown.footnotes' => true]);
     $renderer = resolve(MarkdownRenderer::class);
 
-    $markdown = "A footnote[^1] and another[^2].\n\n[^1]: First reference.\n[^2]: Second reference.";
+    $markdown = "A note[^1] and another[^2].\n\n[^1]: First reference.\n[^2]: Second reference.";
     $html = $renderer->toHtml($markdown);
 
+    // Both inline links
+    expect($html)->toContain('href="#fn:fn-1"');
+    expect($html)->toContain('href="#fn:fn-2"');
+
+    // Both footnote entries with backlinks
     expect($html)->toContain('First reference.');
     expect($html)->toContain('Second reference.');
+    expect($html)->toContain('href="#fnref:fn-1"');
+    expect($html)->toContain('href="#fnref:fn-2"');
 });
