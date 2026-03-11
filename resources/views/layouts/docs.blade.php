@@ -69,6 +69,8 @@
                             </li>
                         @endforeach
                     </ul>
+
+                    <x-pergament::content-statistics :statistics="$page['statistics'] ?? []" />
                 </div>
             </aside>
         @endif
