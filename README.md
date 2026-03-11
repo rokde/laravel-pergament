@@ -291,9 +291,7 @@ Each alert renders as a styled `<div>` with an icon, title, and content. Dark mo
 
 ```php
 'markdown' => [
-    'alerts' => [
-        'enabled' => true,   // set to false to disable alert rendering
-    ],
+    'alerts' => true,   // set to false to disable alert rendering
 ],
 ```
 

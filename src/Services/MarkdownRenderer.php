@@ -38,7 +38,7 @@ final readonly class MarkdownRenderer
         $html = $this->addHeadingIds($html);
         $html = $this->processBlockDirectives($html);
 
-        if (config('pergament.markdown.alerts.enabled', true)) {
+        if (config('pergament.markdown.alerts', true)) {
             $html = $this->processAlerts($html);
         }
 
