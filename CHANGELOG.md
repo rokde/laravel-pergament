@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.6 - 2026-03-11
+
+### What's Changed
+
+* Add visual separator between TOC and content statistics by @rokde in https://github.com/rokde/laravel-pergament/pull/44
+* feat: hide listen button on print by @rokde in https://github.com/rokde/laravel-pergament/pull/45
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.5...v1.1.6
+
 ## v1.1.5 - 2026-03-11
 
 ### What's Changed
