@@ -51,7 +51,7 @@
 
         {{-- Table of contents --}}
         @if(isset($page['headings']) && count($page['headings']) > 0)
-            <aside class="hidden xl:block lg:col-span-3 print:hidden">
+            <aside class="xl:block lg:col-span-3 print:hidden">
                 <div id="toc-container" class="sticky top-24 overflow-y-auto max-h-[calc(100vh-8rem)] pb-8 pl-4">
                     <h4 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
                         On this page
