@@ -11,21 +11,23 @@
     </h1>
 
     {{-- Search form --}}
-    <form action="{{ route('pergament.search') }}" method="GET" class="mb-8">
-        <div class="relative">
-            <input
-                type="text"
-                name="q"
-                value="{{ $query }}"
-                placeholder="Search documentation and blog..."
-                class="w-full pl-4 pr-12 py-3 text-base rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
-                autofocus
-            >
-            <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </button>
-        </div>
-    </form>
+    <search>
+        <form action="{{ route('pergament.search') }}" method="GET" class="mb-8">
+            <div class="relative">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ $query }}"
+                    placeholder="Search documentation and blog..."
+                    class="w-full pl-4 pr-12 py-3 text-base rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
+                    autofocus
+                >
+                <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+            </div>
+        </form>
+    </search>
 
     {{-- Results --}}
     @if($query !== '')
