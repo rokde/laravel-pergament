@@ -79,6 +79,27 @@ final readonly class DocumentationService
     }
 
     /**
+     * Get the raw markdown body for a doc page.
+     *
+     * Returns the content body as-is. If the body does not start with an H1 heading,
+     * the page title is prepended so LLMs always have full context.
+     */
+    public function getRawMarkdown(string $chapterSlug, string $pageSlug): ?string
+    {
+        $page = $this->getPage($chapterSlug, $pageSlug);
+
+        if ($page === null) {
+            return null;
+        }
+
+        if (! preg_match('/^\s*#\s/', $page->content)) {
+            return '# '.$page->title."\n\n".$page->content;
+        }
+
+        return $page->content;
+    }
+
+    /**
      * @return array{title: string, excerpt: string, htmlContent: string, headings: array<int, DocHeading>, slug: string, previousPage: array{title: string, url: string}|null, nextPage: array{title: string, url: string}|null, linkErrors: array<int, string>}|null
      */
     public function getRenderedPage(string $chapterSlug, string $pageSlug): ?array

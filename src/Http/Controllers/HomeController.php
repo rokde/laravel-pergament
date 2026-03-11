@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pergament\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Pergament\Services\BlogService;
@@ -16,6 +17,7 @@ use Pergament\Support\UrlGenerator;
 final class HomeController
 {
     public function __invoke(
+        Request $request,
         PageService $pageService,
         DocumentationService $docsService,
         BlogService $blogService,
@@ -25,9 +27,54 @@ final class HomeController
         $type = $homepage['type'] ?? 'page';
         $source = $homepage['source'] ?? 'home';
 
+        if ($request->attributes->get('pergament.wants_raw_markdown')) {
+            return match ($type) {
+                'page' => $this->rawMarkdownPage($pageService, $source),
+                'doc-page' => $this->rawMarkdownDocPage($docsService, $source),
+                default => $this->fallbackHtml($type, $source, $blogService, $seoService),
+            };
+        }
+
         return match ($type) {
             'page' => $this->renderPage($pageService, $seoService, $source),
             'doc-page' => $this->renderDocPage($docsService, $seoService, $source),
+            'blog-index' => $this->renderBlogIndex($blogService, $seoService),
+            'redirect' => redirect($source),
+            default => abort(404),
+        };
+    }
+
+    private function rawMarkdownPage(PageService $pageService, string $slug): Response
+    {
+        $markdown = $pageService->getRawMarkdown($slug);
+        abort_unless($markdown !== null, 404);
+
+        return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+    }
+
+    private function rawMarkdownDocPage(DocumentationService $docsService, string $source): Response
+    {
+        $parts = explode('/', $source, 2);
+
+        if (count($parts) < 2) {
+            $first = $docsService->getFirstPage();
+            abort_unless($first !== null, 404);
+            $parts = [$first['chapter'], $first['page']];
+        }
+
+        $markdown = $docsService->getRawMarkdown($parts[0], $parts[1]);
+        abort_unless($markdown !== null, 404);
+
+        return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+    }
+
+    private function fallbackHtml(
+        string $type,
+        string $source,
+        BlogService $blogService,
+        SeoService $seoService,
+    ): View|RedirectResponse|Response {
+        return match ($type) {
             'blog-index' => $this->renderBlogIndex($blogService, $seoService),
             'redirect' => redirect($source),
             default => abort(404),

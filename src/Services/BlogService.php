@@ -52,6 +52,27 @@ final readonly class BlogService
     }
 
     /**
+     * Get the raw markdown body for a blog post.
+     *
+     * Returns the content body as-is. If the body does not start with an H1 heading,
+     * the post title is prepended so LLMs always have full context.
+     */
+    public function getRawMarkdown(string $slug): ?string
+    {
+        $post = $this->getPost($slug);
+
+        if ($post === null) {
+            return null;
+        }
+
+        if (! preg_match('/^\s*#\s/', $post->content)) {
+            return '# '.$post->title."\n\n".$post->content;
+        }
+
+        return $post->content;
+    }
+
+    /**
      * Get a rendered post with HTML content.
      *
      * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, date: Carbon, category: ?string, tags: array, authors: array, meta: array, previousPost: array|null, nextPost: array|null, linkErrors: array<int, string>}|null

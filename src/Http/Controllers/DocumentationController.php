@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pergament\Http\Controllers;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Pergament\Services\DocumentationService;
@@ -27,13 +28,21 @@ final class DocumentationController
     }
 
     public function show(
+        Request $request,
         string $chapter,
         string $page,
         DocumentationService $service,
         SeoService $seoService,
-    ): View {
+    ): View|Response {
         if (str_ends_with($page, '.md')) {
             $page = substr($page, 0, -3);
+        }
+
+        if ($request->attributes->get('pergament.wants_raw_markdown')) {
+            $markdown = $service->getRawMarkdown($chapter, $page);
+            abort_unless($markdown !== null, 404);
+
+            return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
         }
 
         $pageData = $service->getRenderedPage($chapter, $page);

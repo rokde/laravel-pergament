@@ -19,13 +19,21 @@ class MarkdownResponse
             return $next($request);
         }
 
+        // Signal controllers that they should return raw markdown directly.
+        $request->attributes->set('pergament.wants_raw_markdown', true);
+
         $response = $this->getHtmlResponse($request, $next);
+
+        // If a controller already returned raw markdown, just add the LLM-specific headers.
+        if ($this->isMarkdownResponse($response)) {
+            return $this->buildMarkdownResponse($response->getContent());
+        }
 
         if (! $this->isHtmlResponse($response)) {
             return $response;
         }
 
-        return $this->convert($response);
+        return $this->convertHtmlToMarkdown($response);
     }
 
     private function shouldConvertToMarkdown(Request $request): bool
@@ -76,7 +84,22 @@ class MarkdownResponse
         return str_contains($contentType, 'text/html');
     }
 
-    private function convert(Response $response): Response
+    private function isMarkdownResponse(mixed $response): bool
+    {
+        if (! $response instanceof Response) {
+            return false;
+        }
+
+        if ($response->getStatusCode() !== 200) {
+            return false;
+        }
+
+        $contentType = $response->headers->get('Content-Type', '');
+
+        return str_contains($contentType, 'text/markdown');
+    }
+
+    private function convertHtmlToMarkdown(Response $response): Response
     {
         $content = $response->getContent();
 
@@ -92,6 +115,11 @@ class MarkdownResponse
         $markdown = preg_replace('/[ \t]+$/m', '', $markdown);
         $markdown = preg_replace("/\n{3,}/", "\n\n", $markdown);
 
+        return $this->buildMarkdownResponse($markdown);
+    }
+
+    private function buildMarkdownResponse(string $markdown): Response
+    {
         $headers = [
             'Content-Type' => 'text/markdown; charset=UTF-8',
             'Vary' => 'Accept',
