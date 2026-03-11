@@ -323,7 +323,7 @@ it('renders footnotes when enabled', function (): void {
     // Inline superscript link to the footnote
     expect($html)->toContain('<sup');
     expect($html)->toContain('class="footnote-ref"');
-    expect($html)->toContain('href="#fn:fn-1"');
+    expect($html)->toContain('href="#fn:1"');
 
     // Separator before footnote list
     expect($html)->toContain('<hr');
@@ -331,8 +331,8 @@ it('renders footnotes when enabled', function (): void {
     // Footnote list with content and backlink
     expect($html)->toContain('class="footnotes"');
     expect($html)->toContain('My reference.');
-    expect($html)->toContain('class="footnote-back"');
-    expect($html)->toContain('href="#fnref:fn-1"');
+    expect($html)->toContain('class="footnote-backref"');
+    expect($html)->toContain('href="#fnref:1"');
 });
 
 it('renders multi-line footnotes when enabled', function (): void {
@@ -343,12 +343,12 @@ it('renders multi-line footnotes when enabled', function (): void {
     $html = $renderer->toHtml($markdown);
 
     // Both inline links
-    expect($html)->toContain('href="#fn:fn-1"');
-    expect($html)->toContain('href="#fn:fn-2"');
+    expect($html)->toContain('href="#fn:1"');
+    expect($html)->toContain('href="#fn:2"');
 
     // Both footnote entries with backlinks
     expect($html)->toContain('First reference.');
     expect($html)->toContain('Second reference.');
-    expect($html)->toContain('href="#fnref:fn-1"');
-    expect($html)->toContain('href="#fnref:fn-2"');
+    expect($html)->toContain('href="#fnref:1"');
+    expect($html)->toContain('href="#fnref:2"');
 });
