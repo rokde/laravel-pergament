@@ -18,7 +18,7 @@ final readonly class SeoService
      *
      * @param  array<string, mixed>  $pageMeta
      */
-    public function resolve(array $pageMeta = [], ?string $pageTitle = null): SeoMeta
+    public function resolve(array $pageMeta = [], ?string $pageTitle = null, ?string $canonicalUrl = null): SeoMeta
     {
         $siteConfig = config('pergament.site', []);
         $defaults = $siteConfig['seo'] ?? [];
@@ -45,7 +45,7 @@ final readonly class SeoService
             ogImage: (string) ($merged['og_image'] ?? ''),
             twitterCard: (string) ($merged['twitter_card'] ?? 'summary_large_image'),
             robots: (string) ($merged['robots'] ?? 'index, follow'),
-            canonical: isset($pageMeta['seo.canonical']) ? (string) $pageMeta['seo.canonical'] : null,
+            canonical: isset($pageMeta['seo.canonical']) ? (string) $pageMeta['seo.canonical'] : $canonicalUrl,
             ogType: isset($pageMeta['seo.og_type']) ? (string) $pageMeta['seo.og_type'] : null,
         );
     }
