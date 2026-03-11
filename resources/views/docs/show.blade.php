@@ -16,7 +16,7 @@
         </p>
     @endif
 
-    @if(config('pergament.tts.docs'))
+    @if(config('pergament.docs.tts'))
         <div class="mb-6">
             <x-pergament::tts-button />
         </div>

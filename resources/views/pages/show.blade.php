@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        @if(config('pergament.tts.pages'))
+        @if(config('pergament.pages.tts'))
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
                 <x-pergament::tts-button />
             </div>
@@ -39,7 +39,7 @@
             </p>
         @endif
 
-        @if(config('pergament.tts.pages'))
+        @if(config('pergament.pages.tts'))
             <div class="mb-6">
                 <x-pergament::tts-button />
             </div>

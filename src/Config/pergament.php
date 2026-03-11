@@ -82,6 +82,7 @@ return [
         'path' => 'docs',
         'url_prefix' => 'docs',
         'title' => 'Documentation',
+        'tts' => false,
         'statistics' => [
             'reading_time' => false,
             'word_count' => false,
@@ -104,6 +105,7 @@ return [
         'url_prefix' => 'blog',
         'title' => 'Blog',
         'per_page' => 12,
+        'tts' => false,
         'default_authors' => [],
         'feed' => [
             'enabled' => true,
@@ -131,6 +133,7 @@ return [
     'pages' => [
         'enabled' => true,
         'path' => 'pages',
+        'tts' => false,
         'statistics' => [
             'reading_time' => false,
             'word_count' => false,
@@ -223,9 +226,9 @@ return [
     | Text-to-Speech
     |--------------------------------------------------------------------------
     |
-    | Enable a play button that reads content aloud using the browser's
-    | Speech Synthesis API. Each content type can be toggled independently.
-    | The "voice" and "rate" options apply to all content types.
+    | Global voice and rate settings for the browser's Speech Synthesis API.
+    | To enable TTS per content type, set "tts" within the docs, blog, or
+    | pages section above.
     |
     | voice: preferred voice name (browser-dependent). Set to null to use the
     |        browser default. Common voices across platforms:
@@ -250,9 +253,6 @@ return [
     */
 
     'tts' => [
-        'blog' => false,
-        'docs' => false,
-        'pages' => false,
         'voice' => null,
         'rate' => 1.0,
     ],

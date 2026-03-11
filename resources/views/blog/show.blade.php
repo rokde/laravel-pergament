@@ -46,7 +46,7 @@
                 </div>
             @endif
 
-            @if(config('pergament.tts.blog'))
+            @if(config('pergament.blog.tts'))
                 <div class="mt-4">
                     <x-pergament::tts-button />
                 </div>
