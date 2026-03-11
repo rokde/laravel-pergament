@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.7 - 2026-03-11
+
+### What's Changed
+
+* feat: serve raw markdown files for LLM requests by @rokde in https://github.com/rokde/laravel-pergament/pull/46
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.6...v1.1.7
+
 ## v1.1.6 - 2026-03-11
 
 ### What's Changed
