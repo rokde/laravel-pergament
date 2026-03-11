@@ -2,6 +2,17 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.1.5 - 2026-03-11
+
+### What's Changed
+
+* Add semantic <search> HTML element to search UI by @rokde in https://github.com/rokde/laravel-pergament/pull/37
+* Add configurable content statistics component by @rokde in https://github.com/rokde/laravel-pergament/pull/38
+* Add text-to-speech audio playback for content pages by @rokde in https://github.com/rokde/laravel-pergament/pull/39
+* Improve tts by @rokde in https://github.com/rokde/laravel-pergament/pull/40
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.4...v1.1.5
+
 ## v1.1.4 - 2026-03-11
 
 ### What's Changed
