@@ -12,6 +12,7 @@ use Pergament\Services\BlogService;
 use Pergament\Services\SeoService;
 use Pergament\Support\UrlGenerator;
 
+
 final class BlogController
 {
     public function index(Request $request, BlogService $service, SeoService $seoService): View
@@ -32,10 +33,17 @@ final class BlogController
         ]);
     }
 
-    public function show(string $slug, BlogService $service, SeoService $seoService): View
+    public function show(Request $request, string $slug, BlogService $service, SeoService $seoService): View|Response
     {
         if (str_ends_with($slug, '.md')) {
             $slug = substr($slug, 0, -3);
+        }
+
+        if ($request->attributes->get('pergament.wants_raw_markdown')) {
+            $markdown = $service->getRawMarkdown($slug);
+            abort_unless($markdown !== null, 404);
+
+            return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
         }
 
         $post = $service->getRenderedPost($slug);
