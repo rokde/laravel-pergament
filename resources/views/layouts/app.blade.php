@@ -18,12 +18,6 @@
         <link rel="manifest" href="/manifest.json">
     @endif
 
-    @php
-        $pergamentCssPath = is_file(public_path('vendor/pergament/pergament.css'))
-            ? public_path('vendor/pergament/pergament.css')
-            : __DIR__ . '/../../css/pergament.css';
-        $pergamentCssVersion = substr(md5_file($pergamentCssPath), 0, 8);
-    @endphp
     <link rel="stylesheet" href="{{ asset('vendor/pergament/pergament.css') }}?v={{ $pergamentCssVersion }}">
 
     <style>
@@ -79,12 +73,6 @@
 
     @stack('scripts')
 
-    @php
-        $pergamentJsPath = is_file(public_path('vendor/pergament/pergament.js'))
-            ? public_path('vendor/pergament/pergament.js')
-            : __DIR__ . '/../../js/pergament.js';
-        $pergamentJsVersion = substr(md5_file($pergamentJsPath), 0, 8);
-    @endphp
     <script src="{{ asset('vendor/pergament/pergament.js') }}?v={{ $pergamentJsVersion }}"></script>
 </body>
 </html>

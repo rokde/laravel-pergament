@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pergament;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Pergament\Console\Commands\GenerateStaticCommand;
 use Pergament\Console\Commands\MakeBlogPostCommand;
@@ -18,12 +19,26 @@ final class PergamentServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/Config/pergament.php', 'pergament');
     }
 
+    private function shareAssetVersions(string $distPath): void
+    {
+        $hash = fn (string $file): string => substr(md5_file(
+            is_file(public_path('vendor/pergament/'.$file))
+                ? public_path('vendor/pergament/'.$file)
+                : $distPath.'/'.$file,
+        ), 0, 8);
+
+        View::share('pergamentCssVersion', $hash('pergament.css'));
+        View::share('pergamentJsVersion', $hash('pergament.js'));
+    }
+
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'pergament');
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         Blade::anonymousComponentPath(__DIR__.'/../resources/views/components', 'pergament');
+
+        $this->shareAssetVersions(__DIR__.'/../dist');
 
         if ($this->app->runningInConsole()) {
             $this->commands([
