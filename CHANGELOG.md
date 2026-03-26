@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.2.0 - 2026-03-26
+
+### What's Changed
+
+* Add Laravel 13 support by @rokde in https://github.com/rokde/laravel-pergament/pull/31
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.1.7...v1.2.0
+
 ## v1.1.7 - 2026-03-11
 
 ### What's Changed
