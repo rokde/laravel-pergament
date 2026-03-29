@@ -16,14 +16,15 @@ final class AnalyticsCommand extends Command
                             {--days=30 : Number of days to include in the summary}
                             {--summary : Show multi-day summary instead of single-day detail}
                             {--remote= : Base URL of the remote site to fetch analytics from}
-                            {--token= : Authentication token for the remote download endpoint}';
+                            {--token= : Authentication token for the remote download endpoint}
+                            {--sync : Download all remote data into local storage before displaying (useful for ephemeral remote environments)}';
 
     protected $description = 'View Pergament analytics (page view counts by URL)';
 
     public function handle(AnalyticsService $analytics): int
     {
         if ($this->option('remote')) {
-            return $this->handleRemote();
+            return $this->handleRemote($analytics);
         }
 
         if (! config('pergament.analytics.enabled', false)) {
@@ -39,7 +40,7 @@ final class AnalyticsCommand extends Command
         return $this->showDailyDetail($analytics);
     }
 
-    private function handleRemote(): int
+    private function handleRemote(AnalyticsService $analytics): int
     {
         $baseUrl = rtrim((string) $this->option('remote'), '/');
         $token = $this->option('token') ?? '';
@@ -53,6 +54,23 @@ final class AnalyticsCommand extends Command
         $basePrefix = config('pergament.url_prefix', '');
         $basePath = $basePrefix !== '' ? '/'.trim($basePrefix, '/') : '';
 
+        if ($this->option('sync')) {
+            $result = $this->syncFromRemote($analytics, $baseUrl, $basePath, $token);
+
+            if ($result !== self::SUCCESS) {
+                return $result;
+            }
+
+            // After sync, display from local storage
+            if ($this->option('summary')) {
+                return $this->showSummary($analytics);
+            }
+
+            $date = $this->option('date') ?? CarbonImmutable::today()->format('Y-m-d');
+
+            return $this->showDailyDetail($analytics, $date);
+        }
+
         if ($this->option('summary')) {
             return $this->showRemoteSummary($baseUrl, $basePath, $token);
         }
@@ -60,6 +78,67 @@ final class AnalyticsCommand extends Command
         $date = $this->option('date') ?? CarbonImmutable::today()->format('Y-m-d');
 
         return $this->showRemoteDailyDetail($baseUrl, $basePath, $token, $date);
+    }
+
+    private function syncFromRemote(AnalyticsService $analytics, string $baseUrl, string $basePath, string $token): int
+    {
+        $datesUrl = $baseUrl.$basePath.'/analytics/dates?token='.$token;
+
+        $this->line('Fetching available dates from remote…');
+
+        $response = Http::get($datesUrl);
+
+        if ($response->status() === 404) {
+            $this->error('Remote analytics endpoint not found. Ensure analytics.download.enabled is true on the remote.');
+
+            return self::FAILURE;
+        }
+
+        if ($response->status() === 403) {
+            $this->error('Access denied. Check your --token.');
+
+            return self::FAILURE;
+        }
+
+        if (! $response->successful()) {
+            $this->error("Remote returned HTTP {$response->status()}. Check the URL and token.");
+
+            return self::FAILURE;
+        }
+
+        /** @var list<string> $dates */
+        $dates = $response->json();
+
+        if (empty($dates)) {
+            $this->line('No data on remote to sync.');
+
+            return self::SUCCESS;
+        }
+
+        $this->line('Syncing '.count($dates).' day(s) from remote…');
+
+        $totalNew = 0;
+
+        foreach ($dates as $date) {
+            $downloadUrl = $baseUrl.$basePath.'/analytics/download?date='.$date.'&token='.$token;
+            $dlResponse = Http::get($downloadUrl);
+
+            if (! $dlResponse->successful() || $dlResponse->status() === 404) {
+                $this->line("  {$date} — skipped (no data)");
+
+                continue;
+            }
+
+            $new = $analytics->mergeFromNdjson($date, $dlResponse->body());
+            $totalNew += $new;
+
+            $this->line("  {$date} — {$new} new entry/entries merged");
+        }
+
+        $this->info("Sync complete. {$totalNew} new entry/entries written to local storage.");
+        $this->newLine();
+
+        return self::SUCCESS;
     }
 
     private function showRemoteDailyDetail(string $baseUrl, string $basePath, string $token, string $date): int
@@ -93,7 +172,7 @@ final class AnalyticsCommand extends Command
         return $this->displayDailyDetail($hits, $date);
     }
 
-    private function showRemoteSummary(string $baseUrl, string $basePath, string $token, int $days = 30): int
+    private function showRemoteSummary(string $baseUrl, string $basePath, string $token): int
     {
         $days = max(1, (int) $this->option('days'));
         $today = CarbonImmutable::today();
@@ -138,9 +217,9 @@ final class AnalyticsCommand extends Command
         return $this->displaySummary($summary, $days);
     }
 
-    private function showDailyDetail(AnalyticsService $analytics): int
+    private function showDailyDetail(AnalyticsService $analytics, ?string $date = null): int
     {
-        $date = $this->option('date') ?? CarbonImmutable::today()->format('Y-m-d');
+        $date ??= $this->option('date') ?? CarbonImmutable::today()->format('Y-m-d');
         $hits = $analytics->getHits($date);
 
         if (empty($hits)) {

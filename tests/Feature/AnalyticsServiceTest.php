@@ -136,3 +136,53 @@ it('returns empty dates list when storage directory does not exist', function ()
 
     expect($service->getAvailableDates())->toBe([]);
 });
+
+it('merges ndjson entries into local storage and skips duplicates', function (): void {
+    $service = resolve(AnalyticsService::class);
+    $timestamp = CarbonImmutable::parse('2026-03-01T10:00:00Z');
+
+    // Pre-seed one local entry
+    $service->record('/existing', $timestamp, false);
+
+    $ndjson = implode("\n", [
+        json_encode(['url' => '/existing', 'timestamp' => '2026-03-01T10:00:00+00:00', 'is_bot' => false]),
+        json_encode(['url' => '/new-page', 'timestamp' => '2026-03-01T11:00:00+00:00', 'is_bot' => true]),
+    ]);
+
+    $added = $service->mergeFromNdjson('2026-03-01', $ndjson);
+
+    expect($added)->toBe(1);
+
+    $hits = $service->getHits('2026-03-01');
+    expect($hits)->toHaveCount(2);
+    expect($hits[1]['url'])->toBe('/new-page');
+    expect($hits[1]['is_bot'])->toBeTrue();
+});
+
+it('merges into a new date file when no local data exists', function (): void {
+    $service = resolve(AnalyticsService::class);
+
+    $ndjson = implode("\n", [
+        json_encode(['url' => '/page-a', 'timestamp' => '2026-03-05T08:00:00+00:00', 'is_bot' => false]),
+        json_encode(['url' => '/page-b', 'timestamp' => '2026-03-05T09:00:00+00:00', 'is_bot' => false]),
+    ]);
+
+    $added = $service->mergeFromNdjson('2026-03-05', $ndjson);
+
+    expect($added)->toBe(2);
+    expect($service->getHits('2026-03-05'))->toHaveCount(2);
+});
+
+it('returns zero when all remote entries already exist locally', function (): void {
+    $service = resolve(AnalyticsService::class);
+    $timestamp = CarbonImmutable::parse('2026-03-10T10:00:00Z');
+
+    $service->record('/page', $timestamp, false);
+
+    $ndjson = json_encode(['url' => '/page', 'timestamp' => '2026-03-10T10:00:00+00:00', 'is_bot' => false]);
+
+    $added = $service->mergeFromNdjson('2026-03-10', $ndjson);
+
+    expect($added)->toBe(0);
+    expect($service->getHits('2026-03-10'))->toHaveCount(1);
+});

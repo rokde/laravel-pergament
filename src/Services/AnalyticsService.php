@@ -138,6 +138,73 @@ final class AnalyticsService
         return $dates;
     }
 
+    /**
+     * Merge hits from an NDJSON string into the local file for the given date.
+     * Entries are deduplicated by url+timestamp — already-present hits are skipped.
+     * Returns the number of new entries written.
+     */
+    public function mergeFromNdjson(string $date, string $ndjson): int
+    {
+        $storagePath = $this->storagePath();
+
+        if (! is_dir($storagePath)) {
+            mkdir($storagePath, 0755, true);
+        }
+
+        $file = $storagePath.'/'.$date.'.ndjson';
+
+        // Build a set of existing keys to avoid duplicates
+        $existing = [];
+        if (file_exists($file)) {
+            foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+                /** @var array{url: string, timestamp: string}|null $data */
+                $data = json_decode($line, true);
+                if ($data !== null) {
+                    $existing[($data['url'] ?? '').'|'.($data['timestamp'] ?? '')] = true;
+                }
+            }
+        }
+
+        $appended = 0;
+        $handle = fopen($file, 'a');
+
+        if ($handle === false) {
+            return 0;
+        }
+
+        flock($handle, LOCK_EX);
+
+        foreach (explode("\n", trim($ndjson)) as $line) {
+            $line = trim($line);
+
+            if ($line === '') {
+                continue;
+            }
+
+            /** @var array{url: string, timestamp: string}|null $data */
+            $data = json_decode($line, true);
+
+            if ($data === null) {
+                continue;
+            }
+
+            $key = ($data['url'] ?? '').'|'.($data['timestamp'] ?? '');
+
+            if (isset($existing[$key])) {
+                continue;
+            }
+
+            fwrite($handle, $line."\n");
+            $existing[$key] = true;
+            $appended++;
+        }
+
+        flock($handle, LOCK_UN);
+        fclose($handle);
+
+        return $appended;
+    }
+
     private function storagePath(): string
     {
         return config('pergament.analytics.storage_path') ?? storage_path('pergament/analytics');

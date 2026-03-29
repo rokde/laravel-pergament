@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Pergament\Http\Controllers\AnalyticsDatesController;
 use Pergament\Http\Controllers\AnalyticsDownloadController;
 use Pergament\Http\Controllers\BlogController;
 use Pergament\Http\Controllers\DocumentationController;
@@ -108,9 +109,10 @@ Route::prefix($basePrefix)->group(function (): void {
         Route::get('sw.js', [PwaController::class, 'serviceWorker'])->name('pergament.sw');
     }
 
-    // Analytics download — always registered, but gated by token + download.enabled inside the controller
+    // Analytics endpoints — always registered when analytics is enabled, gated by token + download.enabled inside controllers
     if (config('pergament.analytics.enabled', false)) {
         Route::get('analytics/download', AnalyticsDownloadController::class)->name('pergament.analytics.download');
+        Route::get('analytics/dates', AnalyticsDatesController::class)->name('pergament.analytics.dates');
     }
 
     // Search

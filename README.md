@@ -723,6 +723,47 @@ php artisan pergament:analytics \
 
 The command fetches the NDJSON files from the remote endpoint and renders the same tables as local mode.
 
+### Syncing remote data to local storage
+
+If your production environment has no persistent file storage (ephemeral/serverless deployments), analytics data is lost on every deploy. Use `--sync` to download all recorded dates from the remote and merge them into your local storage before they disappear:
+
+```bash
+php artisan pergament:analytics \
+    --remote=https://mysite.com \
+    --token=<your-token> \
+    --sync
+```
+
+The command:
+1. Calls `GET /analytics/dates?token=…` to discover which dates have data on the remote
+2. Downloads each date's NDJSON file
+3. Merges entries into local storage — **duplicates are skipped** (matched by `url + timestamp`), so running `--sync` multiple times is safe
+4. Displays today's stats from the now-merged local data
+
+Combine with `--summary` or `--date` to control what is displayed after the sync:
+
+```bash
+# Sync everything, then show a 7-day summary
+php artisan pergament:analytics \
+    --remote=https://mysite.com \
+    --token=<your-token> \
+    --sync \
+    --summary \
+    --days=7
+```
+
+**Typical workflow for ephemeral environments:**
+
+```bash
+# 1. Before deploying a new version, sync production data locally
+php artisan pergament:analytics --remote=https://mysite.com --token=… --sync
+
+# 2. Deploy — production storage is wiped
+
+# 3. View historical stats locally at any time (no remote needed)
+php artisan pergament:analytics --summary --days=90
+```
+
 ## Markdown Responses for AI & LLMs
 
 All content pages (documentation, blog posts, standalone pages, and the homepage) can be served as plain Markdown instead of HTML. This is configurable in the exports section of the configuration.
