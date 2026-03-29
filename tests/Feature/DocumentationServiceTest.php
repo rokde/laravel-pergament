@@ -139,3 +139,20 @@ it('includes linkErrors key in rendered page', function (): void {
     expect($rendered)->toHaveKey('linkErrors');
     expect($rendered['linkErrors'])->toBeArray();
 });
+
+it('rewrites relative file links in doc page content to media paths', function (): void {
+    $service = resolve(DocumentationService::class);
+    $rendered = $service->getRenderedPage('getting-started', 'introduction');
+
+    expect($rendered['htmlContent'])->toContain('href="/docs/media/getting-started/document.txt"');
+    expect($rendered['htmlContent'])->not->toContain('href="document.txt"');
+});
+
+it('does not rewrite absolute or anchor links in doc page content', function (): void {
+    $service = resolve(DocumentationService::class);
+    $rendered = $service->getRenderedPage('getting-started', 'introduction');
+
+    // The rendered page should not have mangled external links
+    expect($rendered['htmlContent'])->not->toContain('/docs/media/getting-started/http');
+    expect($rendered['htmlContent'])->not->toContain('/docs/media/getting-started/#');
+});

@@ -12,7 +12,6 @@ use Pergament\Services\BlogService;
 use Pergament\Services\SeoService;
 use Pergament\Support\UrlGenerator;
 
-
 final class BlogController
 {
     public function index(Request $request, BlogService $service, SeoService $seoService): View

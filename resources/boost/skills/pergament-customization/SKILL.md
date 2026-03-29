@@ -107,6 +107,19 @@ All views use the `pergament::` namespace. After publishing, edit them at `resou
 ],
 ```
 
+### Colors & Theming
+
+Configure brand color and page background. Both propagate as CSS custom properties (`--p-primary`, `--p-bg`) across the entire UI:
+
+```php
+'colors' => [
+    'primary'    => '#3b82f6',   // any CSS color: hex, oklch, named…
+    'background' => '#ffffff',
+],
+```
+
+These two values drive navigation highlights, badges, links, scrollbars, focus rings, text selection, and more. Dark mode automatically switches the background to a dark slate and re-resolves tints — no extra config needed.
+
 ### Feature Toggles
 
 ```php
@@ -151,6 +164,32 @@ Enable a read-aloud button per content type. Voice and rate apply globally:
     'default_authors' => [],    // fallback authors when post has none
 ],
 ```
+
+### Markdown Responses for AI & LLMs
+
+All content pages can be served as plain Markdown instead of HTML. Configured under `exports`:
+
+```php
+'exports' => [
+    'markdown' => [
+        'enabled' => true,
+        'user_agents' => [
+            // user-agent substrings that trigger a Markdown response
+            'GPTBot', 'Claude', 'PerplexityBot', // …
+        ],
+    ],
+],
+```
+
+A Markdown response is returned when any of these conditions is true:
+
+| Trigger | Example |
+|---------|---------|
+| `Accept: text/markdown` header | `curl -H "Accept: text/markdown" /docs/chapter/page` |
+| Known AI/LLM user-agent | Requests from ChatGPT, Claude, Perplexity, etc. |
+| `.md` URL suffix | `/blog/my-post.md` |
+
+Media files, feeds, sitemaps, and search results are excluded.
 
 ### PWA
 

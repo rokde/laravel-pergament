@@ -18,3 +18,11 @@ You need PHP 8.2+.
 ## Installation
 
 Run composer install.
+
+[Download our guide](document.txt)
+
+:::download
+
+[Download PDF](document.txt)
+
+:::

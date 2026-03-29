@@ -356,7 +356,7 @@ final readonly class BlogService
     {
         $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-        return (string) preg_replace_callback(
+        $html = (string) preg_replace_callback(
             '/(<(?:img|source)\s[^>]*?)src="([^"]*?)"([^>]*?>)/i',
             function (array $matches) use ($post, $blogPrefix): string {
                 $src = $matches[2];
@@ -368,6 +368,29 @@ final readonly class BlogService
                 $newSrc = UrlGenerator::path($blogPrefix, 'media', $post->slug, $src);
 
                 return $matches[1].'src="'.$newSrc.'"'.$matches[3];
+            },
+            $html,
+        );
+
+        return (string) preg_replace_callback(
+            '/<a\s+([^>]*?)href="([^"]*?)"([^>]*?)>/i',
+            function (array $matches) use ($post, $blogPrefix): string {
+                $href = $matches[2];
+
+                if (
+                    str_starts_with($href, 'http://') ||
+                    str_starts_with($href, 'https://') ||
+                    str_starts_with($href, '/') ||
+                    str_starts_with($href, '#') ||
+                    str_starts_with($href, 'mailto:') ||
+                    str_ends_with($href, '.md')
+                ) {
+                    return $matches[0];
+                }
+
+                $newHref = UrlGenerator::path($blogPrefix, 'media', $post->slug, $href);
+
+                return '<a '.$matches[1].'href="'.$newHref.'"'.$matches[3].'>';
             },
             $html,
         );
