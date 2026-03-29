@@ -169,6 +169,21 @@ seo.title: "About - My Site"
 
 Block names (`hero`, `features`, `cta`, etc.) map to CSS classes `pergament-block-{name}` for styling.
 
+**Download block directive:**
+
+Wrap links in a `:::download` block to add the HTML `download` attribute, prompting the browser to save the file rather than navigate to it:
+
+```markdown
+:::download
+
+[Download the report](report.pdf)
+[Download CSV](data.csv)
+
+:::
+```
+
+Works in blog posts, documentation pages, and standalone pages. Relative links are automatically rewritten to the correct media URL (see Downloads below). External links and anchors inside the block are not affected.
+
 ### Homepage Configuration
 
 The homepage is configured in `config/pergament.php` under `homepage`:
@@ -178,17 +193,68 @@ The homepage is configured in `config/pergament.php` under `homepage`:
 - `type: doc-page` + `source: getting-started/introduction` — shows a doc page
 - `type: redirect` + `source: /docs` — redirects to another URL
 
+## Downloads
+
+Any relative link in a blog post or documentation page that points to a file is automatically rewritten to the correct media URL — the same way images are resolved:
+
+```markdown
+[Download the guide](guide.pdf)
+[Get the source archive](src.zip)
+```
+
+In a blog post this becomes `/blog/media/{slug}/guide.pdf`. In a documentation page it resolves to the equivalent docs media path. Place the files alongside `post.md` or the doc Markdown file.
+
+External links (`http://`, `https://`), anchors (`#`), `mailto:` links, and links ending in `.md` are left unchanged.
+
+To make the browser save the file to disk instead of navigating to it, wrap the link in a `:::download` block (see Block directives above).
+
+## GitHub-Style Alerts
+
+Use GitHub-style alert blocks to highlight important information:
+
+```markdown
+> [!NOTE]
+> Useful information that users should know, even when skimming.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+```
+
+Each alert renders as a styled `<div>` with an icon and color coding. Dark mode is handled automatically. Alerts can be disabled in the config (`markdown.alerts: false`), which falls back to a plain blockquote.
+
+## Footnotes
+
+Add inline footnotes with the `[^ref]` syntax (opt-in via config):
+
+```markdown
+Here is a sentence with a footnote.[^1]
+
+[^1]: This is the footnote text. Supports **Markdown** formatting.
+```
+
+Footnote references render as superscript links that anchor to the footnote list at the bottom of the page. Enable in config: `markdown.footnotes: true`.
+
 ## Do and Don't
 
 Do:
 - Use kebab-case for all slugs
 - Include `title` and `excerpt` in all front matter
 - Use relative `.md` links for cross-references between content
-- Place media files in the same directory as the content that references them
+- Place media files (images, PDFs, ZIPs, etc.) in the same directory as the content that references them
 - Use numeric prefixes consistently for doc ordering (two digits: `01`, `02`, etc.)
+- Use `:::download` blocks when you want files saved to disk rather than opened in the browser
 
 Don't:
-- Use absolute filesystem paths for images in Markdown — use relative paths
+- Use absolute filesystem paths for images or files in Markdown — use relative paths
 - Skip the date prefix on blog directories — it's required for date extraction
 - Name blog post files anything other than `post.md`
 - Use spaces or underscores in slugs — always use hyphens
