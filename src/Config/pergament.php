@@ -327,6 +327,7 @@ return [
     | download.token:   secret token required to access the download URL.
     |                   Must be set by the developer before enabling the route.
     |                   Example: php artisan tinker --execute="echo bin2hex(random_bytes(32));"
+    |                   Can be set with the PERGAMENT_ANALYTICS_TOKEN environment variable.
     |
     */
 
@@ -336,7 +337,7 @@ return [
 
         'download' => [
             'enabled' => false,
-            'token' => null,
+            'token' => env('PERGAMENT_ANALYTICS_TOKEN'),
         ],
     ],
 
