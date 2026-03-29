@@ -306,6 +306,43 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Analytics
+    |--------------------------------------------------------------------------
+    |
+    | Privacy-first, server-side page view tracking. Records the URL path,
+    | a timestamp, and whether the request came from a bot — no IP addresses,
+    | no user agents, no cookies, and no personal data of any kind.
+    | No cookie banner required.
+    |
+    | Data is written as newline-delimited JSON (NDJSON) to one file per day:
+    |   storage/pergament/analytics/YYYY-MM-DD.ndjson
+    |
+    | storage_path: override the directory where analytics files are stored.
+    |               Defaults to storage_path('pergament/analytics').
+    |
+    | download.enabled: expose a URL to download the raw NDJSON log file.
+    |                   Disabled by default — enable explicitly for production
+    |                   access without shell.
+    |
+    | download.token:   secret token required to access the download URL.
+    |                   Must be set by the developer before enabling the route.
+    |                   Example: php artisan tinker --execute="echo bin2hex(random_bytes(32));"
+    |                   Can be set with the PERGAMENT_ANALYTICS_TOKEN environment variable.
+    |
+    */
+
+    'analytics' => [
+        'enabled' => false,
+        'storage_path' => null,
+
+        'download' => [
+            'enabled' => false,
+            'token' => env('PERGAMENT_ANALYTICS_TOKEN'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Exports
     |--------------------------------------------------------------------------
     */

@@ -7,6 +7,7 @@ namespace Pergament;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Pergament\Console\Commands\AnalyticsCommand;
 use Pergament\Console\Commands\GenerateStaticCommand;
 use Pergament\Console\Commands\MakeBlogPostCommand;
 use Pergament\Console\Commands\MakeDocCommand;
@@ -42,6 +43,7 @@ final class PergamentServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
+                AnalyticsCommand::class,
                 GenerateStaticCommand::class,
                 MakeDocCommand::class,
                 MakeBlogPostCommand::class,

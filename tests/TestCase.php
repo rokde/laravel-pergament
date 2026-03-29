@@ -40,5 +40,6 @@ abstract class TestCase extends BaseTestCase
         $app['config']->set('pergament.search.enabled', true);
         $app['config']->set('pergament.pages.enabled', true);
         $app['config']->set('pergament.pwa.enabled', true);
+        $app['config']->set('pergament.analytics.enabled', true);
     }
 }

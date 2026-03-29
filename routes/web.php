@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Pergament\Http\Controllers\AnalyticsDatesController;
+use Pergament\Http\Controllers\AnalyticsDownloadController;
 use Pergament\Http\Controllers\BlogController;
 use Pergament\Http\Controllers\DocumentationController;
 use Pergament\Http\Controllers\FeedController;
@@ -13,6 +15,7 @@ use Pergament\Http\Controllers\RobotsController;
 use Pergament\Http\Controllers\SearchController;
 use Pergament\Http\Controllers\SitemapController;
 use Pergament\Http\Middleware\MarkdownResponse;
+use Pergament\Http\Middleware\TrackPageView;
 use Pergament\Services\PageService;
 use Pergament\Support\UrlGenerator;
 
@@ -106,6 +109,12 @@ Route::prefix($basePrefix)->group(function (): void {
         Route::get('sw.js', [PwaController::class, 'serviceWorker'])->name('pergament.sw');
     }
 
+    // Analytics endpoints — always registered when analytics is enabled, gated by token + download.enabled inside controllers
+    if (config('pergament.analytics.enabled', false)) {
+        Route::get('analytics/download', AnalyticsDownloadController::class)->name('pergament.analytics.download');
+        Route::get('analytics/dates', AnalyticsDatesController::class)->name('pergament.analytics.dates');
+    }
+
     // Search
     if (config('pergament.search.enabled', true)) {
         Route::get('search', SearchController::class)->name('pergament.search');
@@ -125,9 +134,9 @@ Route::prefix($basePrefix)->group(function (): void {
                 ->where('filename', '.*')
                 ->name('media');
 
-            Route::get('/', [BlogController::class, 'index'])->name('index');
+            Route::get('/', [BlogController::class, 'index'])->middleware(TrackPageView::class)->name('index');
             // Content pages — serve as markdown when requested
-            Route::middleware(MarkdownResponse::class)->group(function (): void {
+            Route::middleware([MarkdownResponse::class, TrackPageView::class])->group(function (): void {
                 Route::get('category/{category}', [BlogController::class, 'category'])->name('category');
                 Route::get('category/{category}.md', [BlogController::class, 'category'])->name('category.md');
                 Route::get('tag/{tag}', [BlogController::class, 'tag'])->name('tag');
@@ -150,9 +159,9 @@ Route::prefix($basePrefix)->group(function (): void {
                 ->where('path', '.*')
                 ->name('media');
 
-            Route::get('/', [DocumentationController::class, 'index'])->name('index');
+            Route::get('/', [DocumentationController::class, 'index'])->middleware(TrackPageView::class)->name('index');
             // Content pages — serve as markdown when requested
-            Route::middleware(MarkdownResponse::class)->group(function (): void {
+            Route::middleware([MarkdownResponse::class, TrackPageView::class])->group(function (): void {
                 Route::get('{chapter}/{page}', [DocumentationController::class, 'show'])->name('show');
                 Route::get('{chapter}/{page}.md', [DocumentationController::class, 'show'])->name('show.md');
             });
@@ -160,7 +169,7 @@ Route::prefix($basePrefix)->group(function (): void {
     }
 
     // Homepage and standalone pages — serve as markdown when requested
-    Route::middleware(MarkdownResponse::class)->group(function (): void {
+    Route::middleware([MarkdownResponse::class, TrackPageView::class])->group(function (): void {
         Route::get('/', HomeController::class)->name('pergament.home');
         Route::get('/index.md', HomeController::class)->name('pergament.home.md');
 
