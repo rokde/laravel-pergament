@@ -321,6 +321,38 @@ Each alert renders as a styled `<div>` with an icon, title, and content. Dark mo
 
 When disabled, alert syntax is rendered as a plain blockquote.
 
+## Downloads
+
+Pergament automatically handles file download links in blog posts and documentation pages.
+
+### Relative download links
+
+Any relative link in a blog post or documentation page that points to a file (not an external URL, anchor, or another Markdown page) is automatically rewritten to the correct media URL:
+
+```markdown
+[Download the guide](guide.pdf)
+[Get the source archive](src.zip)
+```
+
+In a blog post, these become `/blog/media/{slug}/guide.pdf` and `/blog/media/{slug}/src.zip`. In a documentation page they resolve to the equivalent docs media path. Place the files in the same directory as your `post.md` or doc Markdown file.
+
+External links (`http://`, `https://`), anchors (`#`), `mailto:` links, and links to other Markdown pages (`.md`) are left unchanged.
+
+### `:::download` block directive
+
+Wrap one or more links in a `:::download` block to add the HTML `download` attribute, which instructs the browser to download the file instead of navigating to it:
+
+```markdown
+:::download
+
+[Download PDF](report.pdf)
+[Download CSV](data.csv)
+
+:::
+```
+
+Links inside a `:::download` block receive the `download` attribute — the browser saves the file to disk rather than opening it. The relative-path URL rewriting described above still applies. External links and anchors inside the block are not given the `download` attribute.
+
 ## Footnotes
 
 Pergament supports inline footnotes via the CommonMark `FootnoteExtension`. Footnotes are disabled by default.
@@ -642,6 +674,7 @@ Media files, feeds, sitemaps, and search results are excluded — only rendered 
 - **PWA** — Optional manifest.json and service worker
 - **GitHub-style alerts** — `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]` blocks with icons and color coding; dark mode included
 - **Footnotes** — Inline `[^ref]` syntax with superscript links and back-references; opt-in via config
+- **Downloads** — Relative file links in blog posts and docs are auto-rewritten to media URLs; `:::download` block directive adds the HTML `download` attribute to prompt browser saves
 - **Landing pages** — Block-based content with `:::directive` syntax
 - **Dark mode** — Class-based toggle with system preference detection; dark-mode syntax highlighting
 - **Syntax highlighting** — Server-side via tempest/highlight, light and dark themes included
