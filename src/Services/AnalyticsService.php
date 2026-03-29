@@ -1,0 +1,136 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Pergament\Services;
+
+use Carbon\CarbonImmutable;
+
+final class AnalyticsService
+{
+    /**
+     * Record a page view. Stores only the URL path and timestamp — no user data.
+     */
+    public function record(string $url, ?CarbonImmutable $timestamp = null): void
+    {
+        $storagePath = $this->storagePath();
+        $timestamp ??= CarbonImmutable::now();
+        $date = $timestamp->format('Y-m-d');
+        $file = $storagePath.'/'.$date.'.ndjson';
+
+        if (! is_dir($storagePath)) {
+            mkdir($storagePath, 0755, true);
+        }
+
+        $entry = json_encode([
+            'url' => $url,
+            'timestamp' => $timestamp->toIso8601String(),
+        ])."\n";
+
+        file_put_contents($file, $entry, FILE_APPEND | LOCK_EX);
+    }
+
+    /**
+     * Get all recorded hits for a given date (Y-m-d format).
+     *
+     * @return array<int, array{url: string, timestamp: string}>
+     */
+    public function getHits(string $date): array
+    {
+        $file = $this->storagePath().'/'.$date.'.ndjson';
+
+        if (! file_exists($file)) {
+            return [];
+        }
+
+        $hits = [];
+
+        foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            /** @var array{url: string, timestamp: string}|null $data */
+            $data = json_decode($line, true);
+
+            if ($data !== null) {
+                $hits[] = $data;
+            }
+        }
+
+        return $hits;
+    }
+
+    /**
+     * Get per-URL hit counts for a given date.
+     *
+     * @return array<string, int>
+     */
+    public function getHitsByUrl(string $date): array
+    {
+        $counts = [];
+
+        foreach ($this->getHits($date) as $hit) {
+            $url = $hit['url'];
+            $counts[$url] = ($counts[$url] ?? 0) + 1;
+        }
+
+        arsort($counts);
+
+        return $counts;
+    }
+
+    /**
+     * Get a summary of total hits and unique URLs per day for the last N days.
+     *
+     * @return array<string, array{total: int, unique_urls: int}>
+     */
+    public function getSummary(int $days = 30): array
+    {
+        $summary = [];
+        $today = CarbonImmutable::today();
+
+        for ($i = 0; $i < $days; $i++) {
+            $date = $today->subDays($i)->format('Y-m-d');
+            $hits = $this->getHits($date);
+
+            if (empty($hits)) {
+                continue;
+            }
+
+            $summary[$date] = [
+                'total' => count($hits),
+                'unique_urls' => count(array_unique(array_column($hits, 'url'))),
+            ];
+        }
+
+        ksort($summary);
+
+        return $summary;
+    }
+
+    /**
+     * List all dates that have recorded analytics data.
+     *
+     * @return list<string>
+     */
+    public function getAvailableDates(): array
+    {
+        $storagePath = $this->storagePath();
+
+        if (! is_dir($storagePath)) {
+            return [];
+        }
+
+        $dates = [];
+
+        foreach (glob($storagePath.'/*.ndjson') as $file) {
+            $dates[] = basename($file, '.ndjson');
+        }
+
+        sort($dates);
+
+        return $dates;
+    }
+
+    private function storagePath(): string
+    {
+        return config('pergament.analytics.storage_path') ?? storage_path('pergament/analytics');
+    }
+}

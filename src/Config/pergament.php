@@ -306,6 +306,32 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Analytics
+    |--------------------------------------------------------------------------
+    |
+    | Privacy-first, server-side page view tracking. Records only the URL path
+    | and a timestamp — no IP addresses, no user agents, no cookies, and no
+    | personal data of any kind. No cookie banner required.
+    |
+    | Data is written as newline-delimited JSON (NDJSON) to one file per day:
+    |   storage/pergament/analytics/YYYY-MM-DD.ndjson
+    |
+    | storage_path: override the directory where analytics files are stored.
+    |               Defaults to storage_path('pergament/analytics').
+    |
+    | exclude_bots: skip recording hits from known crawlers and bots based on
+    |               common user-agent patterns.
+    |
+    */
+
+    'analytics' => [
+        'enabled' => false,
+        'storage_path' => null,
+        'exclude_bots' => true,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Exports
     |--------------------------------------------------------------------------
     */

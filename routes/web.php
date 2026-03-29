@@ -13,6 +13,7 @@ use Pergament\Http\Controllers\RobotsController;
 use Pergament\Http\Controllers\SearchController;
 use Pergament\Http\Controllers\SitemapController;
 use Pergament\Http\Middleware\MarkdownResponse;
+use Pergament\Http\Middleware\TrackPageView;
 use Pergament\Services\PageService;
 use Pergament\Support\UrlGenerator;
 
@@ -125,9 +126,9 @@ Route::prefix($basePrefix)->group(function (): void {
                 ->where('filename', '.*')
                 ->name('media');
 
-            Route::get('/', [BlogController::class, 'index'])->name('index');
+            Route::get('/', [BlogController::class, 'index'])->middleware(TrackPageView::class)->name('index');
             // Content pages — serve as markdown when requested
-            Route::middleware(MarkdownResponse::class)->group(function (): void {
+            Route::middleware([MarkdownResponse::class, TrackPageView::class])->group(function (): void {
                 Route::get('category/{category}', [BlogController::class, 'category'])->name('category');
                 Route::get('category/{category}.md', [BlogController::class, 'category'])->name('category.md');
                 Route::get('tag/{tag}', [BlogController::class, 'tag'])->name('tag');
@@ -150,9 +151,9 @@ Route::prefix($basePrefix)->group(function (): void {
                 ->where('path', '.*')
                 ->name('media');
 
-            Route::get('/', [DocumentationController::class, 'index'])->name('index');
+            Route::get('/', [DocumentationController::class, 'index'])->middleware(TrackPageView::class)->name('index');
             // Content pages — serve as markdown when requested
-            Route::middleware(MarkdownResponse::class)->group(function (): void {
+            Route::middleware([MarkdownResponse::class, TrackPageView::class])->group(function (): void {
                 Route::get('{chapter}/{page}', [DocumentationController::class, 'show'])->name('show');
                 Route::get('{chapter}/{page}.md', [DocumentationController::class, 'show'])->name('show.md');
             });
@@ -160,7 +161,7 @@ Route::prefix($basePrefix)->group(function (): void {
     }
 
     // Homepage and standalone pages — serve as markdown when requested
-    Route::middleware(MarkdownResponse::class)->group(function (): void {
+    Route::middleware([MarkdownResponse::class, TrackPageView::class])->group(function (): void {
         Route::get('/', HomeController::class)->name('pergament.home');
         Route::get('/index.md', HomeController::class)->name('pergament.home.md');
 
