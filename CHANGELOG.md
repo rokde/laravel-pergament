@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.2.1 - 2026-03-29
+
+### What's Changed
+
+* feat: support downloads within page content by @rokde in https://github.com/rokde/laravel-pergament/pull/49
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.2.0...v1.2.1
+
 ## v1.2.0 - 2026-03-26
 
 ### What's Changed
