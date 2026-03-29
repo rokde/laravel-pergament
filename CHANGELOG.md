@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.2.2 - 2026-03-29
+
+### What's Changed
+
+* feat: add privacy-first server-side analytics by @rokde in https://github.com/rokde/laravel-pergament/pull/50
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.2.1...v1.2.2
+
 ## v1.2.1 - 2026-03-29
 
 ### What's Changed
