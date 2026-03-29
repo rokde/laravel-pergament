@@ -133,3 +133,20 @@ it('searches blog posts', function (): void {
     expect($results->first()['type'])->toBe('post');
     expect($results->first()['title'])->toBe('Getting Started with Laravel');
 });
+
+it('rewrites relative file links in blog post content to media paths', function (): void {
+    $service = resolve(BlogService::class);
+    $rendered = $service->getRenderedPost('hello-world');
+
+    expect($rendered['htmlContent'])->toContain('href="/blog/media/hello-world/document.txt"');
+    expect($rendered['htmlContent'])->not->toContain('href="document.txt"');
+});
+
+it('does not rewrite absolute or anchor links in blog post content', function (): void {
+    $service = resolve(BlogService::class);
+    $rendered = $service->getRenderedPost('hello-world');
+
+    // The rendered post should not have mangled external links
+    expect($rendered['htmlContent'])->not->toContain('/blog/media/hello-world/http');
+    expect($rendered['htmlContent'])->not->toContain('/blog/media/hello-world/#');
+});

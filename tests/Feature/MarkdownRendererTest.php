@@ -52,6 +52,37 @@ it('processes block directives', function (): void {
     expect($html)->toContain('Hero content here');
 });
 
+it('renders download block directive with correct class', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml(":::download\n\n[Download Guide](guide.pdf)\n\n:::");
+
+    expect($html)->toContain('pergament-block-download');
+    expect($html)->toContain('Download Guide');
+});
+
+it('adds download attribute to relative links in download blocks', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml(":::download\n\n[Download Guide](guide.pdf)\n\n:::");
+
+    expect($html)->toContain(' download>');
+    expect($html)->toContain('href="guide.pdf"');
+});
+
+it('does not add download attribute to external links in download blocks', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml(":::download\n\n[External](https://example.com/file.pdf)\n\n:::");
+
+    expect($html)->not->toContain(' download>');
+    expect($html)->toContain('href="https://example.com/file.pdf"');
+});
+
+it('does not add download attribute to anchor links in download blocks', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml(":::download\n\n[Section](#section)\n\n:::");
+
+    expect($html)->not->toContain(' download>');
+});
+
 it('replaces double dashes with em dashes', function (): void {
     $renderer = resolve(MarkdownRenderer::class);
     $html = $renderer->toHtml('This is a sentence -- with a dash.');

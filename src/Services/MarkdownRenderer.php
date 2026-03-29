@@ -285,6 +285,10 @@ final readonly class MarkdownRenderer
     /**
      * Process block directives like :::hero, :::features, etc.
      * These map to CSS classes for styling.
+     *
+     * The :::download directive additionally adds the HTML `download` attribute
+     * to any relative links within the block, prompting the browser to download
+     * the file rather than navigate to it.
      */
     private function processBlockDirectives(string $html): string
     {
@@ -293,6 +297,27 @@ final readonly class MarkdownRenderer
             function (array $matches): string {
                 $directive = $matches[1];
                 $content = mb_trim($matches[2]);
+
+                if ($directive === 'download') {
+                    $content = (string) preg_replace_callback(
+                        '/<a\s+([^>]*?)href="([^"]*?)"([^>]*?)>/i',
+                        function (array $linkMatches): string {
+                            $href = $linkMatches[2];
+
+                            if (
+                                str_starts_with($href, 'http://') ||
+                                str_starts_with($href, 'https://') ||
+                                str_starts_with($href, '#') ||
+                                str_starts_with($href, 'mailto:')
+                            ) {
+                                return $linkMatches[0];
+                            }
+
+                            return '<a '.$linkMatches[1].'href="'.$href.'"'.$linkMatches[3].' download>';
+                        },
+                        $content,
+                    );
+                }
 
                 return '<div class="pergament-block pergament-block-'.e($directive).'">'.$content.'</div>';
             },

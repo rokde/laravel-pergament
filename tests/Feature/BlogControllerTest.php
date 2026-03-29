@@ -22,6 +22,10 @@ it('returns 404 for a media file that does not exist', function (): void {
     $this->get('/blog/media/hello-world/image.png')->assertStatus(404);
 });
 
+it('serves a download file from a blog post directory', function (): void {
+    $this->get('/blog/media/hello-world/document.txt')->assertStatus(200);
+});
+
 it('returns 200 for an author with no matching posts using the Str::title fallback', function (): void {
     $this->get('/blog/author/nonexistent-author')->assertStatus(200);
 });

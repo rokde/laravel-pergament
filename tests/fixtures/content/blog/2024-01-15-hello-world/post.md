@@ -13,3 +13,11 @@ Welcome to our blog!
 ## What We Do
 
 We build great things.
+
+[Download our guide](document.txt)
+
+:::download
+
+[Download PDF](document.txt)
+
+:::
