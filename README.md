@@ -614,6 +614,115 @@ All routes are nested under the configured `prefix`. With the default `/` prefix
 
 With `prefix` set to `docs`, all routes become `/docs/...`, `/docs/blog/...`, etc.
 
+## Analytics
+
+Pergament includes a privacy-first, server-side analytics system. It records only the URL path, a timestamp, and whether the request came from a bot — no IP addresses, no cookies, no personal data, no third-party services. No cookie banner required.
+
+Data is written as newline-delimited JSON (NDJSON) to one file per day:
+
+```
+storage/pergament/analytics/YYYY-MM-DD.ndjson
+```
+
+Each line is a JSON object:
+
+```json
+{"url":"/blog/my-post","timestamp":"2026-03-29T10:23:45+00:00","is_bot":false}
+```
+
+### Enabling analytics
+
+Analytics is disabled by default. Enable it in your published config:
+
+```php
+'analytics' => [
+    'enabled' => true,
+    'storage_path' => null,  // defaults to storage/pergament/analytics
+],
+```
+
+### Viewing analytics locally
+
+```bash
+# Today's page views (URL + type + count)
+php artisan pergament:analytics
+
+# A specific date
+php artisan pergament:analytics --date=2026-03-01
+
+# Multi-day summary
+php artisan pergament:analytics --summary
+
+# Configurable window
+php artisan pergament:analytics --summary --days=7
+```
+
+Both modes display a `Users` and `Bots` breakdown. Bots are identified by their user-agent and always recorded — never silently dropped.
+
+### Remote download endpoint
+
+For production environments without shell access, you can expose a secure download URL that streams the raw NDJSON log for a given date.
+
+**The endpoint is disabled by default.** A developer must explicitly enable it and set a secret token:
+
+```php
+'analytics' => [
+    'enabled' => true,
+    'download' => [
+        'enabled' => true,
+        'token'   => env('PERGAMENT_ANALYTICS_TOKEN'),
+    ],
+],
+```
+
+Generate a token:
+
+```bash
+php -r "echo bin2hex(random_bytes(32));"
+```
+
+Once enabled, the endpoint is available at:
+
+```
+GET {prefix}/analytics/download?date=YYYY-MM-DD&token=<your-token>
+```
+
+The `date` parameter defaults to today if omitted. The response is an `application/x-ndjson` file download.
+
+| Response | Condition |
+|----------|-----------|
+| `404` | Download not enabled in config |
+| `403` | Token missing, wrong, or not configured |
+| `400` | Invalid date format |
+| `404` | No data recorded for that date |
+| `200` | NDJSON file download |
+
+### Fetching analytics from a remote site
+
+The `pergament:analytics` command can pull data from a remote site's download endpoint and display it locally — useful when you cannot SSH into production:
+
+```bash
+# Today's detail from remote
+php artisan pergament:analytics \
+    --remote=https://mysite.com \
+    --token=<your-token>
+
+# Specific date
+php artisan pergament:analytics \
+    --remote=https://mysite.com \
+    --token=<your-token> \
+    --date=2026-03-15
+
+# 7-day summary from remote
+php artisan pergament:analytics \
+    --remote=https://mysite.com \
+    --token=<your-token> \
+    --summary \
+    --days=7
+```
+
+The command fetches the NDJSON files from the remote endpoint and renders the same tables as local mode.
+
 ## Markdown Responses for AI & LLMs
 
 All content pages (documentation, blog posts, standalone pages, and the homepage) can be served as plain Markdown instead of HTML. This is configurable in the exports section of the configuration.
@@ -649,6 +758,7 @@ Media files, feeds, sitemaps, and search results are excluded — only rendered 
 - **Zoomable images** — Click any image to enlarge it in a lightbox; Escape or click outside to close
 - **Copy code** — Hover a code block to reveal a Copy button; switches to "Copied" on success
 - **Text-to-speech** — Optional play/pause button that reads content aloud using the browser Speech Synthesis API; configurable per content type, with selectable voice and speech rate
+- **Analytics** — Privacy-first page view tracking (URL + timestamp + bot flag), NDJSON storage, Artisan command with local and remote display, optional token-protected download endpoint
 - **Configurable prefix** — Mount the CMS at any URL path
 
 ## Testing
