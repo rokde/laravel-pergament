@@ -650,33 +650,14 @@ php artisan pergament:analytics
 # A specific date
 php artisan pergament:analytics --date=2026-03-01
 
-# Multi-day visits summary (totals per day)
+# Multi-day summary
 php artisan pergament:analytics --summary
-
-# Top 10 pages per day, most visited first
-php artisan pergament:analytics --summary=top
-
-# Flop 10 pages per day, least visited first
-php artisan pergament:analytics --summary=flop
 
 # Configurable window
 php artisan pergament:analytics --summary --days=7
-
-# Show all pages (not just top/flop 10)
-php artisan pergament:analytics --summary=top --all
 ```
 
-The daily detail view displays a `Users` and `Bots` breakdown. Bots are identified by their user-agent and always recorded — never silently dropped.
-
-#### Summary modes
-
-| Mode | Command | Output |
-|------|---------|--------|
-| `visits` | `--summary` or `--summary=visits` | One row per day: total views, users, bots, unique URLs |
-| `top` | `--summary=top` | Per-day section with the 10 most-visited pages |
-| `flop` | `--summary=flop` | Per-day section with the 10 least-visited pages (only pages that have been visited) |
-
-Pass `--all` with `top` or `flop` to remove the 10-entry limit and show every page.
+Both modes display a `Users` and `Bots` breakdown. Bots are identified by their user-agent and always recorded — never silently dropped.
 
 ### Remote download endpoint
 
