@@ -7,7 +7,6 @@ use Pergament\Services\AnalyticsService;
 beforeEach(function (): void {
     $this->storagePath = sys_get_temp_dir().'/pergament-analytics-mw-test-'.uniqid();
     config(['pergament.analytics.storage_path' => $this->storagePath]);
-    config(['pergament.analytics.exclude_bots' => false]);
 });
 
 afterEach(function (): void {
@@ -39,6 +38,7 @@ it('tracks a blog post page view when analytics is enabled', function (): void {
 
     expect($hits)->toHaveCount(1);
     expect($hits[0]['url'])->toBe('/blog/hello-world');
+    expect($hits[0]['is_bot'])->toBeFalse();
 });
 
 it('tracks a documentation page view when analytics is enabled', function (): void {
@@ -52,6 +52,7 @@ it('tracks a documentation page view when analytics is enabled', function (): vo
 
     expect($hits)->toHaveCount(1);
     expect($hits[0]['url'])->toBe('/docs/getting-started/introduction');
+    expect($hits[0]['is_bot'])->toBeFalse();
 });
 
 it('does not track markdown export requests', function (): void {
@@ -65,26 +66,28 @@ it('does not track markdown export requests', function (): void {
     expect($service->getHits($today))->toBe([]);
 });
 
-it('does not track bot user agents when exclude_bots is enabled', function (): void {
+it('tracks bot user agents with is_bot true', function (): void {
     config(['pergament.analytics.enabled' => true]);
-    config(['pergament.analytics.exclude_bots' => true]);
 
     $this->get('/blog/hello-world', ['User-Agent' => 'Googlebot/2.1'])->assertStatus(200);
 
     $service = resolve(AnalyticsService::class);
     $today = now()->format('Y-m-d');
+    $hits = $service->getHits($today);
 
-    expect($service->getHits($today))->toBe([]);
+    expect($hits)->toHaveCount(1);
+    expect($hits[0]['is_bot'])->toBeTrue();
 });
 
-it('tracks requests from regular browsers when exclude_bots is enabled', function (): void {
+it('tracks regular browser requests with is_bot false', function (): void {
     config(['pergament.analytics.enabled' => true]);
-    config(['pergament.analytics.exclude_bots' => true]);
 
     $this->get('/blog/hello-world', ['User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X)'])->assertStatus(200);
 
     $service = resolve(AnalyticsService::class);
     $today = now()->format('Y-m-d');
+    $hits = $service->getHits($today);
 
-    expect($service->getHits($today))->toHaveCount(1);
+    expect($hits)->toHaveCount(1);
+    expect($hits[0]['is_bot'])->toBeFalse();
 });

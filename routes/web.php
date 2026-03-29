@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Pergament\Http\Controllers\AnalyticsDownloadController;
 use Pergament\Http\Controllers\BlogController;
 use Pergament\Http\Controllers\DocumentationController;
 use Pergament\Http\Controllers\FeedController;
@@ -105,6 +106,11 @@ Route::prefix($basePrefix)->group(function (): void {
     if (config('pergament.pwa.enabled', false)) {
         Route::get('manifest.json', [PwaController::class, 'manifest'])->name('pergament.manifest');
         Route::get('sw.js', [PwaController::class, 'serviceWorker'])->name('pergament.sw');
+    }
+
+    // Analytics download — always registered, but gated by token + download.enabled inside the controller
+    if (config('pergament.analytics.enabled', false)) {
+        Route::get('analytics/download', AnalyticsDownloadController::class)->name('pergament.analytics.download');
     }
 
     // Search

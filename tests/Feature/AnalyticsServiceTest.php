@@ -20,11 +20,11 @@ afterEach(function (): void {
     }
 });
 
-it('records a page view as ndjson', function (): void {
+it('records a page view as ndjson with is_bot field', function (): void {
     $service = resolve(AnalyticsService::class);
     $timestamp = CarbonImmutable::parse('2026-01-15T10:00:00Z');
 
-    $service->record('/blog/hello-world', $timestamp);
+    $service->record('/blog/hello-world', $timestamp, false);
 
     $file = $this->storagePath.'/2026-01-15.ndjson';
     expect(file_exists($file))->toBeTrue();
@@ -33,6 +33,19 @@ it('records a page view as ndjson', function (): void {
     $data = json_decode($line, true);
     expect($data['url'])->toBe('/blog/hello-world');
     expect($data['timestamp'])->toBe('2026-01-15T10:00:00+00:00');
+    expect($data['is_bot'])->toBeFalse();
+});
+
+it('records a bot page view with is_bot true', function (): void {
+    $service = resolve(AnalyticsService::class);
+    $timestamp = CarbonImmutable::parse('2026-01-15T10:00:00Z');
+
+    $service->record('/blog/hello-world', $timestamp, true);
+
+    $file = $this->storagePath.'/2026-01-15.ndjson';
+    $line = trim(file($file)[0]);
+    $data = json_decode($line, true);
+    expect($data['is_bot'])->toBeTrue();
 });
 
 it('appends multiple hits to the same daily file', function (): void {
@@ -69,22 +82,32 @@ it('counts hits per url sorted by count descending', function (): void {
     expect($byUrl['/blog/post'])->toBe(1);
 });
 
-it('returns a summary of hits per day', function (): void {
+it('returns a summary of hits per day with bot and user breakdown', function (): void {
     $service = resolve(AnalyticsService::class);
 
-    $service->record('/page-a', CarbonImmutable::parse('2026-01-13T10:00:00Z'));
-    $service->record('/page-b', CarbonImmutable::parse('2026-01-13T11:00:00Z'));
-    $service->record('/page-a', CarbonImmutable::parse('2026-01-14T10:00:00Z'));
+    $dayOne = CarbonImmutable::today()->subDays(2)->setTime(10, 0, 0);
+    $dayTwo = CarbonImmutable::today()->subDay()->setTime(10, 0, 0);
+
+    $service->record('/page-a', $dayOne, false);
+    $service->record('/page-b', $dayOne->addHour(), true);
+    $service->record('/page-a', $dayTwo, false);
 
     $summary = $service->getSummary(30);
 
-    expect($summary)->toHaveKey('2026-01-13');
-    expect($summary['2026-01-13']['total'])->toBe(2);
-    expect($summary['2026-01-13']['unique_urls'])->toBe(2);
+    $dateOne = $dayOne->format('Y-m-d');
+    $dateTwo = $dayTwo->format('Y-m-d');
 
-    expect($summary)->toHaveKey('2026-01-14');
-    expect($summary['2026-01-14']['total'])->toBe(1);
-    expect($summary['2026-01-14']['unique_urls'])->toBe(1);
+    expect($summary)->toHaveKey($dateOne);
+    expect($summary[$dateOne]['total'])->toBe(2);
+    expect($summary[$dateOne]['users'])->toBe(1);
+    expect($summary[$dateOne]['bots'])->toBe(1);
+    expect($summary[$dateOne]['unique_urls'])->toBe(2);
+
+    expect($summary)->toHaveKey($dateTwo);
+    expect($summary[$dateTwo]['total'])->toBe(1);
+    expect($summary[$dateTwo]['users'])->toBe(1);
+    expect($summary[$dateTwo]['bots'])->toBe(0);
+    expect($summary[$dateTwo]['unique_urls'])->toBe(1);
 });
 
 it('creates the storage directory if it does not exist', function (): void {

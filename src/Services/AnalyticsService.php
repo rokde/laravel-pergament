@@ -9,9 +9,9 @@ use Carbon\CarbonImmutable;
 final class AnalyticsService
 {
     /**
-     * Record a page view. Stores only the URL path and timestamp — no user data.
+     * Record a page view. Stores the URL path, timestamp, and whether the request came from a bot.
      */
-    public function record(string $url, ?CarbonImmutable $timestamp = null): void
+    public function record(string $url, ?CarbonImmutable $timestamp = null, bool $isBot = false): void
     {
         $storagePath = $this->storagePath();
         $timestamp ??= CarbonImmutable::now();
@@ -25,6 +25,7 @@ final class AnalyticsService
         $entry = json_encode([
             'url' => $url,
             'timestamp' => $timestamp->toIso8601String(),
+            'is_bot' => $isBot,
         ])."\n";
 
         file_put_contents($file, $entry, FILE_APPEND | LOCK_EX);
@@ -33,7 +34,7 @@ final class AnalyticsService
     /**
      * Get all recorded hits for a given date (Y-m-d format).
      *
-     * @return array<int, array{url: string, timestamp: string}>
+     * @return array<int, array{url: string, timestamp: string, is_bot: bool}>
      */
     public function getHits(string $date): array
     {
@@ -58,15 +59,19 @@ final class AnalyticsService
     }
 
     /**
-     * Get per-URL hit counts for a given date.
+     * Get per-URL hit counts for a given date, optionally filtered by type.
      *
      * @return array<string, int>
      */
-    public function getHitsByUrl(string $date): array
+    public function getHitsByUrl(string $date, ?bool $botFilter = null): array
     {
         $counts = [];
 
         foreach ($this->getHits($date) as $hit) {
+            if ($botFilter !== null && ($hit['is_bot'] ?? false) !== $botFilter) {
+                continue;
+            }
+
             $url = $hit['url'];
             $counts[$url] = ($counts[$url] ?? 0) + 1;
         }
@@ -79,7 +84,7 @@ final class AnalyticsService
     /**
      * Get a summary of total hits and unique URLs per day for the last N days.
      *
-     * @return array<string, array{total: int, unique_urls: int}>
+     * @return array<string, array{total: int, bots: int, users: int, unique_urls: int}>
      */
     public function getSummary(int $days = 30): array
     {
@@ -94,8 +99,12 @@ final class AnalyticsService
                 continue;
             }
 
+            $bots = count(array_filter($hits, fn (array $h): bool => $h['is_bot'] ?? false));
+
             $summary[$date] = [
                 'total' => count($hits),
+                'bots' => $bots,
+                'users' => count($hits) - $bots,
                 'unique_urls' => count(array_unique(array_column($hits, 'url'))),
             ];
         }

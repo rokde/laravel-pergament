@@ -18,7 +18,7 @@ final class TrackPageView
         $response = $next($request);
 
         if ($this->shouldTrack($request, $response)) {
-            $this->analytics->record($request->getPathInfo());
+            $this->analytics->record($request->getPathInfo(), isBot: $this->isBotRequest($request));
         }
 
         return $response;
@@ -41,11 +41,6 @@ final class TrackPageView
         // Skip markdown export responses — these are not human page views
         $contentType = $response->headers->get('Content-Type', '');
         if (str_contains($contentType, 'text/markdown')) {
-            return false;
-        }
-
-        // Exclude bots by user agent if configured
-        if (config('pergament.analytics.exclude_bots', true) && $this->isBotRequest($request)) {
             return false;
         }
 
