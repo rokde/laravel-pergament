@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.2.4 - 2026-05-23
+
+### What's Changed
+
+* feat: add meta text-scale tag and CSS font-size support by @rokde in https://github.com/rokde/laravel-pergament/pull/60
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.2.3...v1.2.4
+
 ## v1.2.3 - 2026-05-23
 
 ### What's Changed
