@@ -42,6 +42,10 @@
 }
 
 @layer base {
+    html {
+        font-size: calc(1em * env(--text-scale, 1));
+    }
+
     ::selection {
         background-color: color-mix(in oklch, var(--p-primary) 30%, var(--p-bg));
         color: var(--p-primary-fg);
