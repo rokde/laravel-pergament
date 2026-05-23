@@ -247,6 +247,23 @@ it('highlights code blocks without a language', function (): void {
     expect($html)->not->toContain('data-language');
 });
 
+it('generates slug with "and" for headings containing ampersand', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml('## Laravel & Vue');
+
+    expect($html)->toContain('id="laravel-and-vue"');
+});
+
+it('extracts heading text with decoded ampersand', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml('## Laravel & Vue');
+    $headings = $renderer->extractHeadings($html);
+
+    expect($headings)->toHaveCount(1);
+    expect($headings[0]->text)->toBe('Laravel & Vue');
+    expect($headings[0]->slug)->toBe('laravel-and-vue');
+});
+
 it('returns empty array when no headings present', function (): void {
     $renderer = resolve(MarkdownRenderer::class);
     $html = '<p>Just a paragraph</p>';
