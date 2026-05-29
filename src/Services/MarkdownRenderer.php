@@ -66,7 +66,7 @@ final readonly class MarkdownRenderer
 
         foreach ($matches as $match) {
             $headings[] = new DocHeading(
-                text: strip_tags($match[3]),
+                text: html_entity_decode(strip_tags($match[3]), ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                 slug: $match[2],
                 level: (int) $match[1],
             );
@@ -220,7 +220,8 @@ final readonly class MarkdownRenderer
             '/<h([23])>(.*?)<\/h[23]>/s',
             function (array $matches): string {
                 $level = $matches[1];
-                $text = strip_tags($matches[2]);
+                $text = html_entity_decode(strip_tags($matches[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $text = str_replace('&', 'and', $text);
                 $slug = Str::slug($text);
 
                 return '<h'.$level.' id="'.$slug.'">'.$matches[2].'</h'.$level.'>';

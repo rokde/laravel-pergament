@@ -2,6 +2,25 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.2.4 - 2026-05-23
+
+### What's Changed
+
+* feat: add meta text-scale tag and CSS font-size support by @rokde in https://github.com/rokde/laravel-pergament/pull/60
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.2.3...v1.2.4
+
+## v1.2.3 - 2026-05-23
+
+### What's Changed
+
+* build(deps): bump dependabot/fetch-metadata from 2.5.0 to 3.0.0 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/51
+* fix: remove --parallel from test:ci to prevent Windows file rename race condition by @rokde in https://github.com/rokde/laravel-pergament/pull/53
+* build(deps): bump dependabot/fetch-metadata from 3.0.0 to 3.1.0 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/54
+* fix: decode HTML entities in TOC headings with ampersand by @rokde in https://github.com/rokde/laravel-pergament/pull/57
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.2.2...v1.2.3
+
 ## v1.2.2 - 2026-03-29
 
 ### What's Changed

@@ -1,5 +1,6 @@
 @props(['seo'])
 @php /** @var \Pergament\Data\SeoMeta $seo */ @endphp
+<meta name="text-scale" content="scale">
 <title>{{ $seo->title }}</title>
 
 @if($seo->description)
