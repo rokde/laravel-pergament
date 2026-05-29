@@ -623,6 +623,63 @@ php artisan pergament:make:post \
 
 Both commands prompt for any missing arguments interactively.
 
+### Export a static site
+
+Render your whole site to a folder of plain HTML files — no PHP, no database, no server required:
+
+```bash
+php artisan pergament:generate-static dist
+```
+
+The export is **fully self-contained and portable**. All internal links are relative and end in `.html`, and the CSS, JS, and fonts are bundled into an `assets/` folder. You can copy the output anywhere — a USB stick, Netlify, GitHub Pages, an S3 bucket — open any `.html` file directly from disk (`file://`), and navigate the entire site offline.
+
+```
+dist/
+├── index.html              # homepage
+├── assets/                 # bundled css, js, fonts (relative urls)
+│   ├── pergament.css
+│   ├── pergament.js
+│   └── fonts/
+├── docs/
+│   ├── index.html          # redirects to the first doc page
+│   └── getting-started/
+│       ├── introduction.html
+│       └── introduction.md # token-safe Markdown sidecar
+├── blog/
+│   ├── index.html
+│   ├── page/2.html         # pagination
+│   ├── my-post.html
+│   ├── my-post.md
+│   └── feed.xml
+├── about.html
+├── about.md
+├── sitemap.xml
+├── robots.txt
+└── llms.txt
+```
+
+#### Markdown sidecars
+
+Every content page (docs, posts, standalone pages) is also written as a `.md` file next to its `.html`. The Markdown is clean — front matter stripped, a `# Title` heading, and internal links rewritten to relative `.md` paths — so an LLM (or any tool) can fetch the `.md` version of a page for a token-safe, prose-only copy of the content.
+
+#### Options
+
+| Option | Description |
+|--------|-------------|
+| `--content-path=` | Source content directory for this export (defaults to the configured `content_path`). Useful for generating from a content folder that lives outside your app. |
+| `--prefix=` | Override the URL prefix for this export (e.g. `--prefix=/` to export at the root). |
+| `--base-url=` | Override the site URL used in `sitemap.xml` and the feed. |
+| `--clean` | Remove the output directory before generating. |
+
+```bash
+php artisan pergament:generate-static dist \
+    --content-path=/path/to/content \
+    --base-url=https://example.com \
+    --clean
+```
+
+> **Note:** Static exports use a bundled client-side search index (`search.json`) and the command palette/search forms work without a server. Broken internal content links are reported as warnings during generation (the export still succeeds).
+
 ## Routes
 
 All routes are nested under the configured `prefix`. With the default `/` prefix:
