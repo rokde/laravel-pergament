@@ -35,7 +35,7 @@ it('generates homepage index.html', function (): void {
     expect(file_get_contents($this->outputDir.'/index.html'))->toContain('Welcome');
 });
 
-it('generates doc pages in correct directory structure', function (): void {
+it('generates doc pages as flat .html files', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,
     ])->assertSuccessful();
@@ -46,16 +46,28 @@ it('generates doc pages in correct directory structure', function (): void {
     expect(file_exists($this->outputDir.'/'.$docsPrefix.'/index.html'))->toBeTrue();
     expect(file_get_contents($this->outputDir.'/'.$docsPrefix.'/index.html'))->toContain('meta http-equiv="refresh"');
 
-    // Doc pages
-    expect(file_exists($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$docsPrefix.'/getting-started/configuration/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$docsPrefix.'/advanced/customization/index.html'))->toBeTrue();
+    // Doc pages as flat html
+    expect(file_exists($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$docsPrefix.'/getting-started/configuration.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$docsPrefix.'/advanced/customization.html'))->toBeTrue();
 
-    $content = file_get_contents($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction/index.html');
+    $content = file_get_contents($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.html');
     expect($content)->toContain('Introduction');
 });
 
-it('generates blog index with pagination', function (): void {
+it('generates a markdown sidecar for each doc page', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+
+    $md = $this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.md';
+    expect(file_exists($md))->toBeTrue();
+    expect(file_get_contents($md))->toContain('# Introduction');
+});
+
+it('generates blog index with .html pagination', function (): void {
     config()->set('pergament.blog.per_page', 1);
 
     $this->artisan('pergament:generate-static', [
@@ -64,25 +76,23 @@ it('generates blog index with pagination', function (): void {
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-    // Page 1
     expect(file_exists($this->outputDir.'/'.$blogPrefix.'/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/page/1/index.html'))->toBeTrue();
-
-    // Page 2
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/page/2/index.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/page/1.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/page/2.html'))->toBeTrue();
 });
 
-it('generates individual blog post files', function (): void {
+it('generates individual blog post files with markdown sidecars', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,
     ])->assertSuccessful();
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/hello-world/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/getting-started-with-laravel/index.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/hello-world.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/hello-world.md'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/getting-started-with-laravel.html'))->toBeTrue();
 
-    $content = file_get_contents($this->outputDir.'/'.$blogPrefix.'/hello-world/index.html');
+    $content = file_get_contents($this->outputDir.'/'.$blogPrefix.'/hello-world.html');
     expect($content)->toContain('Hello World');
 });
 
@@ -93,8 +103,8 @@ it('generates category pages', function (): void {
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/category/general/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/category/tutorials/index.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/category/general.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/category/tutorials.html'))->toBeTrue();
 });
 
 it('generates tag pages', function (): void {
@@ -104,8 +114,8 @@ it('generates tag pages', function (): void {
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/tag/intro/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/tag/laravel/index.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/tag/intro.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/tag/laravel.html'))->toBeTrue();
 });
 
 it('generates author pages', function (): void {
@@ -115,8 +125,8 @@ it('generates author pages', function (): void {
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/author/jane-doe/index.html'))->toBeTrue();
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/author/john-smith/index.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/author/jane-doe.html'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/author/john-smith.html'))->toBeTrue();
 });
 
 it('generates sitemap.xml', function (): void {
@@ -146,19 +156,133 @@ it('generates llms.txt', function (): void {
     expect(file_get_contents($this->outputDir.'/llms.txt'))->toContain('# Test Site');
 });
 
-it('generates feed as blog/feed/index.xml', function (): void {
+it('generates feed as blog/feed.xml', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,
     ])->assertSuccessful();
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
 
-    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/feed/index.xml'))->toBeTrue();
-    expect(file_get_contents($this->outputDir.'/'.$blogPrefix.'/feed/index.xml'))->toContain('<feed');
+    expect(file_exists($this->outputDir.'/'.$blogPrefix.'/feed.xml'))->toBeTrue();
+    expect(file_get_contents($this->outputDir.'/'.$blogPrefix.'/feed.xml'))->toContain('<feed');
+});
+
+it('generates a client-side search index', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    expect(file_exists($this->outputDir.'/search.json'))->toBeTrue();
+
+    $index = json_decode((string) file_get_contents($this->outputDir.'/search.json'), true);
+
+    expect($index)->toBeArray()->not->toBeEmpty();
+
+    $titles = array_column($index, 'title');
+    expect($titles)->toContain('Introduction');
+
+    $intro = collect($index)->firstWhere('title', 'Introduction');
+    expect($intro)->toHaveKeys(['title', 'excerpt', 'content', 'url', 'type'])
+        ->and($intro['type'])->toBe('doc')
+        ->and($intro['url'])->toBe('docs/getting-started/introduction.html')
+        ->and($intro['url'])->not->toStartWith('/')
+        ->and($intro['content'])->toContain('documentation');
+});
+
+it('points search at a relative index and disables the service worker', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+
+    // Deep page: search index reached by walking up to the root.
+    $deep = file_get_contents($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.html');
+    expect($deep)->toMatch('/searchUrl:\s*"(?:\.\.\\\\\/\.\.\\\\\/search\.json|\.\.\/\.\.\/search\.json)"/')
+        ->and($deep)->toContain('swUrl: null');
+
+    // Root page: index sits right next to it.
+    $home = file_get_contents($this->outputDir.'/index.html');
+    expect($home)->toContain('searchUrl: "search.json"');
+});
+
+it('rewrites static search forms away from the live search route', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+    $deep = file_get_contents($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.html');
+
+    expect($deep)->not->toContain('action="http://localhost/search"')
+        ->and($deep)->not->toContain('action="/search"')
+        ->and($deep)->toContain('data-pergament-static-search="true"');
+});
+
+it('omits the search index when search is disabled', function (): void {
+    config()->set('pergament.search.enabled', false);
+
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    expect(file_exists($this->outputDir.'/search.json'))->toBeFalse();
+});
+
+it('bundles css, js and fonts into a self-contained assets directory', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    expect(file_exists($this->outputDir.'/assets/pergament.css'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/assets/pergament.js'))->toBeTrue();
+    expect(file_exists($this->outputDir.'/assets/fonts/OpenDyslexic-Regular.otf'))->toBeTrue();
+
+    // Font URLs inside the stylesheet must be relative, not absolute.
+    $css = file_get_contents($this->outputDir.'/assets/pergament.css');
+    expect($css)->toContain('url(fonts/OpenDyslexic-Regular.otf)');
+    expect($css)->not->toContain('/vendor/pergament/fonts/');
+});
+
+it('rewrites asset links to relative, version-free paths', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $home = file_get_contents($this->outputDir.'/index.html');
+
+    expect($home)->toContain('href="assets/pergament.css"')
+        ->and($home)->toContain('src="assets/pergament.js"')
+        ->and($home)->not->toContain('pergament.css?v=')
+        ->and($home)->not->toContain('/vendor/pergament/');
+});
+
+it('produces a self-contained homepage with no absolute internal links', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $home = file_get_contents($this->outputDir.'/index.html');
+
+    expect($home)->not->toContain('href="http://localhost')
+        ->and($home)->not->toContain('src="http://localhost');
+});
+
+it('links between doc pages with relative .html paths', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+    $intro = file_get_contents($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.html');
+
+    // Sibling doc page is linked relatively with a .html extension.
+    expect($intro)->toContain('configuration.html');
+    // Assets are reached by walking up out of the chapter directory.
+    expect($intro)->toContain('../../assets/pergament.css');
 });
 
 it('copies media files from doc content dirs', function (): void {
-    // Create a media file in a doc chapter
     $docsPath = config('pergament.content_path').'/'.config('pergament.docs.path', 'docs');
     $chapterDir = $docsPath.'/0-getting-started';
     file_put_contents($chapterDir.'/diagram.png', 'fake-image-data');
@@ -172,12 +296,10 @@ it('copies media files from doc content dirs', function (): void {
     expect(file_exists($this->outputDir.'/'.$docsPrefix.'/media/getting-started/diagram.png'))->toBeTrue();
     expect(file_get_contents($this->outputDir.'/'.$docsPrefix.'/media/getting-started/diagram.png'))->toBe('fake-image-data');
 
-    // Clean up the test media file
     unlink($chapterDir.'/diagram.png');
 });
 
 it('copies media files from blog content dirs', function (): void {
-    // Create a media file in a blog post dir
     $blogPath = config('pergament.content_path').'/'.config('pergament.blog.path', 'blog');
     $postDir = $blogPath.'/2024-01-15-hello-world';
     file_put_contents($postDir.'/cover.jpg', 'fake-cover-data');
@@ -191,7 +313,6 @@ it('copies media files from blog content dirs', function (): void {
     expect(file_exists($this->outputDir.'/'.$blogPrefix.'/media/hello-world/cover.jpg'))->toBeTrue();
     expect(file_get_contents($this->outputDir.'/'.$blogPrefix.'/media/hello-world/cover.jpg'))->toBe('fake-cover-data');
 
-    // Clean up the test media file
     unlink($postDir.'/cover.jpg');
 });
 
@@ -203,10 +324,7 @@ it('overrides prefix with --prefix option', function (): void {
         '--prefix' => '/',
     ])->assertSuccessful();
 
-    // After the command, the original prefix should be restored
     expect(config('pergament.prefix'))->toBe('landingpage-whatever');
-
-    // Homepage should still be generated at root
     expect(file_exists($this->outputDir.'/index.html'))->toBeTrue();
 });
 
@@ -235,10 +353,8 @@ it('skips disabled features gracefully', function (): void {
         'output-dir' => $this->outputDir,
     ])->assertSuccessful();
 
-    // Homepage should still exist
     expect(file_exists($this->outputDir.'/index.html'))->toBeTrue();
 
-    // Disabled features should not exist
     expect(file_exists($this->outputDir.'/docs'))->toBeFalse();
     expect(file_exists($this->outputDir.'/blog'))->toBeFalse();
     expect(file_exists($this->outputDir.'/sitemap.xml'))->toBeFalse();
@@ -246,14 +362,17 @@ it('skips disabled features gracefully', function (): void {
     expect(file_exists($this->outputDir.'/llms.txt'))->toBeFalse();
 });
 
-it('generates standalone page files', function (): void {
+it('generates standalone page files with markdown sidecars', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,
     ])->assertSuccessful();
 
-    // "about" page should be generated (not "home" since it's the homepage source)
-    expect(file_exists($this->outputDir.'/about/index.html'))->toBeTrue();
-    expect(file_get_contents($this->outputDir.'/about/index.html'))->toContain('About Us');
+    // "about" page is generated as a flat file (not "home", the homepage source).
+    expect(file_exists($this->outputDir.'/about.html'))->toBeTrue();
+    expect(file_get_contents($this->outputDir.'/about.html'))->toContain('About Us');
+
+    expect(file_exists($this->outputDir.'/about.md'))->toBeTrue();
+    expect(file_get_contents($this->outputDir.'/about.md'))->toContain('# About Us');
 });
 
 it('provides getSlugs method on PageService', function (): void {
@@ -264,7 +383,7 @@ it('provides getSlugs method on PageService', function (): void {
     expect($slugs)->toContain('about');
 });
 
-it('rewrites pagination query strings to static paths', function (): void {
+it('rewrites pagination query strings to static .html paths', function (): void {
     config()->set('pergament.blog.per_page', 1);
 
     $this->artisan('pergament:generate-static', [
@@ -272,14 +391,12 @@ it('rewrites pagination query strings to static paths', function (): void {
     ])->assertSuccessful();
 
     $blogPrefix = config('pergament.blog.url_prefix', 'blog');
-    $content = file_get_contents($this->outputDir.'/'.$blogPrefix.'/page/1/index.html');
+    $content = file_get_contents($this->outputDir.'/'.$blogPrefix.'/page/1.html');
 
-    // Should not contain ?page= query strings
     expect($content)->not->toContain('?page=');
 });
 
 it('reports broken content links during static generation', function (): void {
-    // Create a temp content dir with a page containing a broken link
     config()->set('pergament.content_path', $this->tempDir);
     mkdir($this->tempDir.'/pages', 0755, true);
     file_put_contents($this->tempDir.'/pages/home.md', implode("\n", [
@@ -305,7 +422,6 @@ it('reports broken content links during static generation', function (): void {
     ])->assertSuccessful()
         ->expectsOutputToContain('Broken link');
 
-    // The generated page should not contain an <a> tag for the broken link
     $content = file_get_contents($this->outputDir.'/index.html');
     expect($content)->toContain('missing page');
     expect($content)->not->toContain('nonexistent.md');

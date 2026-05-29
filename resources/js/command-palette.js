@@ -7,6 +7,36 @@
     const searchUrl = (window.PergamentConfig && window.PergamentConfig.searchUrl) || null;
     if (!searchUrl) return;
 
+    // When searchUrl points at a static JSON index (statically generated site) we fetch the
+    // index once and filter client-side. Otherwise we query the live server endpoint.
+    const searchBase = new URL(searchUrl, window.location.href);
+    const isStatic = searchBase.pathname.endsWith('.json');
+    let staticIndex = null;
+
+    function resolveUrl(u) {
+        try {
+            return new URL(u, searchBase).href;
+        } catch (e) {
+            return u;
+        }
+    }
+
+    function loadStaticIndex() {
+        if (staticIndex) return Promise.resolve(staticIndex);
+        return fetch(searchBase)
+            .then(function (r) { return r.json(); })
+            .then(function (d) { staticIndex = Array.isArray(d) ? d : []; return staticIndex; });
+    }
+
+    function filterStatic(q) {
+        const t = q.toLowerCase();
+        return (staticIndex || []).filter(function (it) {
+            return (it.title || '').toLowerCase().includes(t)
+                || (it.excerpt || '').toLowerCase().includes(t)
+                || (it.content || '').toLowerCase().includes(t);
+        }).slice(0, 20);
+    }
+
     const COMMANDS = [
         { title: 'Toggle dark mode', excerpt: 'Switch between light and dark theme', type: 'cmd', action: 'dark-mode' },
         { title: 'Increase font size', excerpt: 'Make text larger', type: 'cmd', action: 'font-size-increase' },
@@ -62,6 +92,12 @@
         document.body.classList.remove('cmd-open');
     }
 
+    function openStaticSearch(query) {
+        open();
+        input.value = query;
+        doSearch(query);
+    }
+
     /**
      * Sets the active state for an item in a list based on the provided index.
      *
@@ -83,7 +119,7 @@
             if (result.type === 'cmd') {
                 executeCommand(result.action);
             } else {
-                window.location.href = result.url;
+                window.location.href = resolveUrl(result.url);
             }
             close();
         }
@@ -129,7 +165,7 @@
 
         data.forEach(function (result, i) {
             const a = document.createElement('a');
-            a.href = result.type === 'cmd' ? '#' : result.url;
+            a.href = result.type === 'cmd' ? '#' : resolveUrl(result.url);
             a.className = 'pergament-cmd-result';
             a.setAttribute('role', 'option');
 
@@ -161,7 +197,7 @@
                 if (result.type === 'cmd') {
                     executeCommand(result.action);
                 } else {
-                    window.location.href = result.url;
+                    window.location.href = resolveUrl(result.url);
                 }
                 close();
             });
@@ -171,6 +207,12 @@
     }
 
     function loadSuggestions() {
+        if (isStatic) {
+            loadStaticIndex()
+                .then(function (idx) { render(idx.slice(0, 8).concat(COMMANDS)); })
+                .catch(function () { render(COMMANDS); });
+            return;
+        }
         fetch(searchUrl + '?q=', {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         }).then(function (r) { return r.json(); }).then(function (data) {
@@ -196,6 +238,16 @@
             return;
         }
         if (q.length < 2) { resultsEl.innerHTML = ''; results = []; return; }
+        if (isStatic) {
+            loadStaticIndex().then(function () {
+                const lowercasedTerm = q.toLowerCase();
+                const matchedCommands = COMMANDS.filter(function (cmd) {
+                    return cmd.title.toLowerCase().includes(lowercasedTerm) || cmd.excerpt.toLowerCase().includes(lowercasedTerm);
+                });
+                render(filterStatic(q).concat(matchedCommands));
+            }).catch(function () {});
+            return;
+        }
         fetch(searchUrl + '?q=' + encodeURIComponent(q), {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         }).then(function (r) { return r.json(); })
@@ -206,6 +258,23 @@
                 });
                 render(data.concat(matchedCommands));
             }).catch(function () {});
+    }
+
+    if (isStatic) {
+        document.querySelectorAll('form[data-pergament-static-search="true"]').forEach(function (form) {
+            const sourceInput = form.querySelector('input[name="q"]');
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                openStaticSearch(sourceInput ? sourceInput.value.trim() : '');
+            });
+
+            if (sourceInput) {
+                sourceInput.addEventListener('focus', function () {
+                    openStaticSearch(sourceInput.value.trim());
+                });
+            }
+        });
     }
 
     input.addEventListener('input', function () {

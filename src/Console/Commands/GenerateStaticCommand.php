@@ -6,12 +6,14 @@ namespace Pergament\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use League\HTMLToMarkdown\HtmlConverter;
 use Pergament\Services\BlogService;
 use Pergament\Services\DocumentationService;
 use Pergament\Services\FeedService;
 use Pergament\Services\PageService;
 use Pergament\Services\SeoService;
 use Pergament\Services\SitemapService;
+use Pergament\Support\PortableLinkRewriter;
 use Pergament\Support\UrlGenerator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -21,14 +23,22 @@ final class GenerateStaticCommand extends Command
 {
     protected $signature = 'pergament:generate-static
                             {output-dir : The directory to write static files to}
+                            {--content-path= : Override the content source directory for this export}
                             {--prefix= : Override URL prefix for this export}
                             {--base-url= : Override site URL for sitemap/feed}
                             {--clean : Remove output directory before generating}';
 
-    protected $description = 'Generate a static HTML site from Pergament content';
+    protected $description = 'Generate a self-contained static HTML site from Pergament content';
 
     /** @var array<int, string> */
     private array $errors = [];
+
+    /** @var array<int, array{title: string, excerpt: string, content: string, url: string, type: string}> */
+    private array $searchIndex = [];
+
+    private PortableLinkRewriter $rewriter;
+
+    private HtmlConverter $htmlConverter;
 
     public function handle(
         DocumentationService $docsService,
@@ -40,10 +50,18 @@ final class GenerateStaticCommand extends Command
     ): int {
         $outputDir = mb_rtrim((string) $this->argument('output-dir'), '/');
 
+        $this->errors = [];
+        $this->searchIndex = [];
+
         $originalPrefix = config('pergament.prefix');
         $originalSiteUrl = config('pergament.site.url');
+        $originalContentPath = config('pergament.content_path');
 
         try {
+            if ($this->option('content-path') !== null) {
+                config()->set('pergament.content_path', mb_rtrim((string) $this->option('content-path'), '/'));
+            }
+
             if ($this->option('prefix') !== null) {
                 config()->set('pergament.prefix', $this->option('prefix'));
             }
@@ -52,6 +70,9 @@ final class GenerateStaticCommand extends Command
                 config()->set('pergament.site.url', $this->option('base-url'));
             }
 
+            $this->rewriter = $this->makeRewriter();
+            $this->htmlConverter = new HtmlConverter(['hard_break' => true, 'strip_tags' => false]);
+
             if ($this->option('clean') && is_dir($outputDir)) {
                 $this->removeDirectory($outputDir);
             }
@@ -59,6 +80,8 @@ final class GenerateStaticCommand extends Command
             if (! is_dir($outputDir)) {
                 mkdir($outputDir, 0755, true);
             }
+
+            $this->copyAssets($outputDir);
 
             $this->generateHomepage($pageService, $docsService, $blogService, $seoService, $outputDir);
 
@@ -84,6 +107,10 @@ final class GenerateStaticCommand extends Command
 
             if (config('pergament.pages.enabled', true)) {
                 $this->generatePages($pageService, $seoService, $outputDir);
+            }
+
+            if (config('pergament.search.enabled', true)) {
+                $this->generateSearchIndex($outputDir);
             }
 
             if (config('pergament.sitemap.enabled', true)) {
@@ -113,7 +140,30 @@ final class GenerateStaticCommand extends Command
         } finally {
             config()->set('pergament.prefix', $originalPrefix);
             config()->set('pergament.site.url', $originalSiteUrl);
+            config()->set('pergament.content_path', $originalContentPath);
         }
+    }
+
+    private function makeRewriter(): PortableLinkRewriter
+    {
+        $hosts = [];
+
+        foreach ([config('app.url'), config('app.asset_url'), config('pergament.site.url')] as $candidate) {
+            if (is_string($candidate) && $candidate !== '') {
+                $host = parse_url($candidate, PHP_URL_HOST);
+
+                if (is_string($host) && $host !== '') {
+                    $hosts[] = $host;
+                }
+            }
+        }
+
+        return new PortableLinkRewriter(
+            array_values(array_unique($hosts)),
+            UrlGenerator::basePrefix(),
+            (string) config('pergament.docs.url_prefix', 'docs'),
+            (string) config('pergament.blog.url_prefix', 'blog'),
+        );
     }
 
     private function generateHomepage(
@@ -128,74 +178,74 @@ final class GenerateStaticCommand extends Command
         $source = $homepage['source'] ?? 'home';
 
         try {
-            $html = match ($type) {
-                'page' => $this->renderHomepagePage($pageService, $seoService, $source),
-                'doc-page' => $this->renderHomepageDocPage($docsService, $seoService, $source),
-                'blog-index' => $this->renderHomepageBlogIndex($blogService, $seoService),
-                'redirect' => $this->renderRedirect($source),
-                default => null,
-            };
+            switch ($type) {
+                case 'page':
+                    $page = $pageService->getRenderedPage($source);
 
-            if ($html !== null) {
-                $this->writeFile($outputDir.'/index.html', $this->postProcessHtml($html));
+                    if ($page === null) {
+                        return;
+                    }
+
+                    $this->collectLinkErrors($page);
+                    $seo = $seoService->resolve($page['meta'], $page['title'], UrlGenerator::url());
+                    $html = view('pergament::pages.show', [
+                        'page' => $page,
+                        'seo' => $seo,
+                        'layout' => $page['layout'] ?? 'default',
+                        'isHomepage' => true,
+                    ])->render();
+
+                    $this->writeContentPage($outputDir, 'index.html', $html, $page, $page['title'], 'page');
+
+                    return;
+
+                case 'doc-page':
+                    $parts = explode('/', $source, 2);
+
+                    if (count($parts) < 2) {
+                        $first = $docsService->getFirstPage();
+
+                        if ($first === null) {
+                            return;
+                        }
+
+                        $parts = [$first['chapter'], $first['page']];
+                    }
+
+                    $page = $docsService->getRenderedPage($parts[0], $parts[1]);
+
+                    if ($page === null) {
+                        return;
+                    }
+
+                    $this->collectLinkErrors($page);
+                    $seo = $seoService->resolve($page['meta'], $page['title'], UrlGenerator::url());
+                    $html = view('pergament::docs.show', [
+                        'page' => $page,
+                        'navigation' => $docsService->getNavigation(),
+                        'currentChapter' => $parts[0],
+                        'currentPage' => $parts[1],
+                        'seo' => $seo,
+                    ])->render();
+
+                    $this->writeContentPage($outputDir, 'index.html', $html, $page, $page['title'], 'doc');
+
+                    return;
+
+                case 'blog-index':
+                    $this->writeListingPage($outputDir, 'index.html', $this->renderHomepageBlogIndex($blogService, $seoService));
+
+                    return;
+
+                case 'redirect':
+                    $target = $this->rewriter->resolve($source, 'index.html');
+                    $this->writeFile($outputDir.'/index.html', $this->renderRedirect($target));
+
+                    return;
             }
         } catch (Throwable $e) {
             $this->errors[] = "Homepage: {$e->getMessage()}";
         }
-    }
-
-    private function renderHomepagePage(PageService $pageService, SeoService $seoService, string $slug): ?string
-    {
-        $page = $pageService->getRenderedPage($slug);
-
-        if ($page === null) {
-            return null;
-        }
-
-        $this->collectLinkErrors($page);
-        $canonicalUrl = UrlGenerator::url();
-        $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
-        $layout = $page['layout'] ?? 'default';
-
-        return view('pergament::pages.show', [
-            'page' => $page,
-            'seo' => $seo,
-            'layout' => $layout,
-            'isHomepage' => true,
-        ])->render();
-    }
-
-    private function renderHomepageDocPage(DocumentationService $docsService, SeoService $seoService, string $source): ?string
-    {
-        $parts = explode('/', $source, 2);
-
-        if (count($parts) < 2) {
-            $first = $docsService->getFirstPage();
-
-            if ($first === null) {
-                return null;
-            }
-
-            $parts = [$first['chapter'], $first['page']];
-        }
-
-        $page = $docsService->getRenderedPage($parts[0], $parts[1]);
-
-        if ($page === null) {
-            return null;
-        }
-
-        $this->collectLinkErrors($page);
-        $canonicalUrl = UrlGenerator::url();
-        $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
-
-        return view('pergament::docs.show', [
-            'page' => $page,
-            'navigation' => $docsService->getNavigation(),
-            'currentChapter' => $parts[0],
-            'currentPage' => $parts[1],
-            'seo' => $seo,
-        ])->render();
     }
 
     private function renderHomepageBlogIndex(BlogService $blogService, SeoService $seoService): string
@@ -228,11 +278,11 @@ final class GenerateStaticCommand extends Command
             }
 
             $docsPrefix = config('pergament.docs.url_prefix', 'docs');
-            $target = UrlGenerator::path($docsPrefix, $first['chapter'], $first['page']);
-            $html = $this->renderRedirect($target);
+            $absoluteTarget = UrlGenerator::path($docsPrefix, $first['chapter'], $first['page']);
+            $relPath = $docsPrefix.'/index.html';
+            $target = $this->rewriter->resolve($absoluteTarget, $relPath);
 
-            $dir = $outputDir.'/'.$docsPrefix;
-            $this->writeFile($dir.'/index.html', $html);
+            $this->writeFile($outputDir.'/'.$relPath, $this->renderRedirect($target));
         } catch (Throwable $e) {
             $this->errors[] = "Doc index: {$e->getMessage()}";
         }
@@ -263,8 +313,8 @@ final class GenerateStaticCommand extends Command
                         'seo' => $seo,
                     ])->render();
 
-                    $path = $outputDir.'/'.$docsPrefix.'/'.$chapter->slug.'/'.$page->slug.'/index.html';
-                    $this->writeFile($path, $this->postProcessHtml($html));
+                    $relPath = $docsPrefix.'/'.$chapter->slug.'/'.$page->slug.'.html';
+                    $this->writeContentPage($outputDir, $relPath, $html, $pageData, $pageData['title'], 'doc');
                 } catch (Throwable $e) {
                     $this->errors[] = "Doc page {$chapter->slug}/{$page->slug}: {$e->getMessage()}";
                 }
@@ -297,13 +347,11 @@ final class GenerateStaticCommand extends Command
                     'seo' => $seo,
                 ])->render();
 
-                $html = $this->postProcessHtml($html);
-
                 if ($page === 1) {
-                    $this->writeFile($outputDir.'/'.$blogPrefix.'/index.html', $html);
+                    $this->writeListingPage($outputDir, $blogPrefix.'/index.html', $html);
                 }
 
-                $this->writeFile($outputDir.'/'.$blogPrefix.'/page/'.$page.'/index.html', $html);
+                $this->writeListingPage($outputDir, $blogPrefix.'/page/'.$page.'.html', $html);
             } catch (Throwable $e) {
                 $this->errors[] = "Blog index page {$page}: {$e->getMessage()}";
             }
@@ -331,8 +379,8 @@ final class GenerateStaticCommand extends Command
                     'seo' => $seo,
                 ])->render();
 
-                $path = $outputDir.'/'.$blogPrefix.'/'.$post->slug.'/index.html';
-                $this->writeFile($path, $this->postProcessHtml($html));
+                $relPath = $blogPrefix.'/'.$post->slug.'.html';
+                $this->writeContentPage($outputDir, $relPath, $html, $rendered, $rendered['title'], 'post');
             } catch (Throwable $e) {
                 $this->errors[] = "Blog post {$post->slug}: {$e->getMessage()}";
             }
@@ -358,8 +406,7 @@ final class GenerateStaticCommand extends Command
                     'seo' => $seo,
                 ])->render();
 
-                $path = $outputDir.'/'.$blogPrefix.'/category/'.$categorySlug.'/index.html';
-                $this->writeFile($path, $this->postProcessHtml($html));
+                $this->writeListingPage($outputDir, $blogPrefix.'/category/'.$categorySlug.'.html', $html);
             } catch (Throwable $e) {
                 $this->errors[] = "Category {$category}: {$e->getMessage()}";
             }
@@ -385,8 +432,7 @@ final class GenerateStaticCommand extends Command
                     'seo' => $seo,
                 ])->render();
 
-                $path = $outputDir.'/'.$blogPrefix.'/tag/'.$tagSlug.'/index.html';
-                $this->writeFile($path, $this->postProcessHtml($html));
+                $this->writeListingPage($outputDir, $blogPrefix.'/tag/'.$tagSlug.'.html', $html);
             } catch (Throwable $e) {
                 $this->errors[] = "Tag {$tag}: {$e->getMessage()}";
             }
@@ -410,8 +456,7 @@ final class GenerateStaticCommand extends Command
                     'seo' => $seo,
                 ])->render();
 
-                $path = $outputDir.'/'.$blogPrefix.'/author/'.$author->slug().'/index.html';
-                $this->writeFile($path, $this->postProcessHtml($html));
+                $this->writeListingPage($outputDir, $blogPrefix.'/author/'.$author->slug().'.html', $html);
             } catch (Throwable $e) {
                 $this->errors[] = "Author {$author->name}: {$e->getMessage()}";
             }
@@ -438,17 +483,15 @@ final class GenerateStaticCommand extends Command
                 $this->collectLinkErrors($page);
                 $canonicalUrl = UrlGenerator::url($slug);
                 $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
-                $layout = $page['layout'] ?? 'default';
 
                 $html = view('pergament::pages.show', [
                     'page' => $page,
                     'seo' => $seo,
-                    'layout' => $layout,
+                    'layout' => $page['layout'] ?? 'default',
                     'isHomepage' => false,
                 ])->render();
 
-                $path = $outputDir.'/'.$slug.'/index.html';
-                $this->writeFile($path, $this->postProcessHtml($html));
+                $this->writeContentPage($outputDir, $slug.'.html', $html, $page, $page['title'], 'page');
             } catch (Throwable $e) {
                 $this->errors[] = "Page {$slug}: {$e->getMessage()}";
             }
@@ -463,7 +506,7 @@ final class GenerateStaticCommand extends Command
             $type = config('pergament.blog.feed.type', 'atom');
             $content = $type === 'rss' ? $feedService->rss() : $feedService->atom();
 
-            $this->writeFile($outputDir.'/'.$blogPrefix.'/feed/index.xml', $content);
+            $this->writeFile($outputDir.'/'.$blogPrefix.'/feed.xml', $content);
         } catch (Throwable $e) {
             $this->errors[] = "Feed: {$e->getMessage()}";
         }
@@ -533,6 +576,46 @@ final class GenerateStaticCommand extends Command
             $this->writeFile($outputDir.'/llms.txt', implode("\n", $lines));
         } catch (Throwable $e) {
             $this->errors[] = "LLMs: {$e->getMessage()}";
+        }
+    }
+
+    private function copyAssets(string $outputDir): void
+    {
+        $packageRoot = dirname(__DIR__, 3);
+        $distPath = $packageRoot.'/dist';
+        $fontsPath = $packageRoot.'/resources/fonts';
+        $assetsDir = $outputDir.'/assets';
+
+        try {
+            $css = $distPath.'/pergament.css';
+
+            if (is_file($css)) {
+                // Fonts are bundled alongside the stylesheet, so make their URLs relative.
+                $contents = str_replace('/vendor/pergament/fonts/', 'fonts/', (string) file_get_contents($css));
+                $this->writeFile($assetsDir.'/pergament.css', $contents);
+            }
+
+            $js = $distPath.'/pergament.js';
+
+            if (is_file($js)) {
+                $this->copyFile($js, $assetsDir.'/pergament.js');
+            }
+
+            if (is_dir($fontsPath)) {
+                foreach (scandir($fontsPath) as $file) {
+                    if ($file === '.' || $file === '..') {
+                        continue;
+                    }
+
+                    $src = $fontsPath.'/'.$file;
+
+                    if (is_file($src)) {
+                        $this->copyFile($src, $assetsDir.'/fonts/'.$file);
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            $this->errors[] = "Assets: {$e->getMessage()}";
         }
     }
 
@@ -612,29 +695,118 @@ final class GenerateStaticCommand extends Command
         }
     }
 
-    private function postProcessHtml(string $html): string
+    /**
+     * Write a content page as both a portable HTML file and a token-safe Markdown sidecar,
+     * and record it in the client-side search index.
+     *
+     * @param  array<string, mixed>  $pageData
+     */
+    private function writeContentPage(string $outputDir, string $relHtmlPath, string $fullHtml, array $pageData, string $title, string $type): void
     {
-        $html = $this->rewritePaginationLinks($html);
+        $this->writeFile($outputDir.'/'.$relHtmlPath, $this->finalizeHtml($fullHtml, $relHtmlPath));
+
+        $relMdPath = preg_replace('/\.html$/', '.md', $relHtmlPath);
+        $this->writeFile($outputDir.'/'.$relMdPath, $this->renderMarkdown($pageData, $title, $relMdPath));
+
+        $this->searchIndex[] = [
+            'title' => $title,
+            'excerpt' => (string) ($pageData['excerpt'] ?? ''),
+            'content' => $this->plainText((string) ($pageData['htmlContent'] ?? '')),
+            'url' => $relHtmlPath,
+            'type' => $type,
+        ];
+    }
+
+    /**
+     * Write an aggregated listing page (index, category, tag, author) as portable HTML only.
+     */
+    private function writeListingPage(string $outputDir, string $relHtmlPath, string $fullHtml): void
+    {
+        $this->writeFile($outputDir.'/'.$relHtmlPath, $this->finalizeHtml($fullHtml, $relHtmlPath));
+    }
+
+    /**
+     * Make a rendered page portable: relativize links, then point runtime config (search index,
+     * service worker) at static-friendly locations relative to the current page.
+     */
+    private function finalizeHtml(string $fullHtml, string $relHtmlPath): string
+    {
+        return $this->rewriteRuntimeConfig($this->rewriter->rewriteHtml($fullHtml, $relHtmlPath), $relHtmlPath);
+    }
+
+    private function rewriteRuntimeConfig(string $html, string $relHtmlPath): string
+    {
+        // The service worker needs a live server scope; disable it for the static export.
+        $html = (string) preg_replace('/(\bswUrl\b\s*:\s*)"[^"]*"/', '${1}null', $html);
+
+        if (config('pergament.search.enabled', true)) {
+            $relSearch = $this->rewriter->resolve('/search.json', $relHtmlPath);
+            $html = (string) preg_replace('/(\bsearchUrl\b\s*:\s*)"[^"]*"/', '${1}'.json_encode($relSearch), $html);
+            $html = $this->rewriteSearchForms($html);
+        }
 
         return $html;
     }
 
-    private function rewritePaginationLinks(string $html): string
+    private function rewriteSearchForms(string $html): string
     {
+        $searchRoute = route('pergament.search');
+        $searchPath = parse_url($searchRoute, PHP_URL_PATH);
+
         return (string) preg_replace_callback(
-            '/(href=["\'])([^"\']*?)\?page=(\d+)(["\'])/',
-            function (array $matches): string {
-                $prefix = $matches[1];
-                $basePath = $matches[2];
-                $page = $matches[3];
-                $suffix = $matches[4];
+            '/<form\b[^>]*\baction=(["\'])(.*?)\1[^>]*>/i',
+            static function (array $matches) use ($searchRoute, $searchPath): string {
+                $action = html_entity_decode(trim($matches[2]), ENT_QUOTES);
+                $actionPath = parse_url($action, PHP_URL_PATH);
 
-                $basePath = mb_rtrim($basePath, '/');
+                $matchesSearchRoute = $action === $searchRoute
+                    || ($actionPath !== false && $searchPath !== false && $actionPath === $searchPath);
 
-                return $prefix.$basePath.'/page/'.$page.'/'.$suffix;
+                if (! $matchesSearchRoute) {
+                    return $matches[0];
+                }
+
+                $tag = preg_replace('/\baction=(["\'])(.*?)\1/i', 'action="#"', $matches[0], 1);
+
+                if ($tag === null || str_contains($tag, 'data-pergament-static-search=')) {
+                    return $matches[0];
+                }
+
+                return preg_replace('/<form\b/i', '<form data-pergament-static-search="true"', $tag, 1) ?? $matches[0];
             },
             $html,
         );
+    }
+
+    private function generateSearchIndex(string $outputDir): void
+    {
+        try {
+            $this->writeFile(
+                $outputDir.'/search.json',
+                (string) json_encode($this->searchIndex, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            );
+        } catch (Throwable $e) {
+            $this->errors[] = "Search index: {$e->getMessage()}";
+        }
+    }
+
+    private function plainText(string $html): string
+    {
+        $text = mb_trim((string) preg_replace('/\s+/', ' ', strip_tags($html)));
+
+        return mb_substr($text, 0, 2000);
+    }
+
+    /**
+     * @param  array<string, mixed>  $pageData
+     */
+    private function renderMarkdown(array $pageData, string $title, string $relMdPath): string
+    {
+        $fragment = $this->rewriter->rewriteHtml((string) ($pageData['htmlContent'] ?? ''), $relMdPath, 'md');
+        $body = mb_trim($this->htmlConverter->convert($fragment));
+        $heading = $title !== '' ? '# '.$title."\n\n" : '';
+
+        return $heading.$body."\n";
     }
 
     private function writeFile(string $path, string $content): void
