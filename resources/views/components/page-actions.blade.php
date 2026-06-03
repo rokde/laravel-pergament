@@ -59,7 +59,7 @@
                 <span>{{ $primaryAgent['label'] ?? 'AI agent' }}</span>
             </a>
         @elseif($agents->count() > 1)
-            <div data-pergament-agent-split-button class="relative inline-flex items-stretch">
+            <div class="relative inline-flex items-stretch">
                 <a
                     href="{{ $agentUrl($primaryAgent) }}"
                     target="_blank"
@@ -80,6 +80,7 @@
                     popovertargetaction="toggle"
                     aria-label="Choose AI agent"
                     title="Choose AI agent"
+                    style="anchor-name: --pergament-ai-agents-anchor"
                     class="inline-flex items-center rounded-r-md border border-l-0 border-gray-200 dark:border-gray-700 px-2 py-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
                     <svg class="size-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
@@ -90,7 +91,8 @@
                 <div
                     id="pergament-ai-agents-menu"
                     popover
-                    class="m-0 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-lg backdrop:bg-transparent"
+                    style="position-anchor: --pergament-ai-agents-anchor; position-area: bottom span-left; margin: 0.25rem 0 0; inset: auto"
+                    class="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-lg backdrop:bg-transparent"
                 >
                     <div class="flex min-w-44 flex-col" role="menu" aria-label="AI agents">
                         @foreach($secondaryAgents as $agent)
@@ -101,7 +103,7 @@
                                 role="menuitem"
                                 class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
                             >
-                                {{ $agent['label'] ?? 'AI agent' }}
+                                Chat in {{ $agent['label'] ?? 'AI agent' }}
                             </a>
                         @endforeach
                     </div>
