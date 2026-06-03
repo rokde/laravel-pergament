@@ -1,7 +1,11 @@
 @php
     $config = config('pergament.page_actions', []);
     $pageUrl = request()->url();
-    $markdownUrl = rtrim($pageUrl, '/').'.md';
+    $pagePath = trim((string) parse_url($pageUrl, PHP_URL_PATH), '/');
+    $isHomepage = $pagePath === \Pergament\Support\UrlGenerator::basePrefix();
+    $markdownUrl = $isHomepage
+        ? rtrim($pageUrl, '/').'/index.md'
+        : rtrim($pageUrl, '/').'.md';
     $agents = collect($config['ai_agents'] ?? [])->filter(fn (array $agent): bool => (bool) ($agent['enabled'] ?? false));
     $primaryAgent = $agents->first();
     $secondaryAgents = $agents->slice(1);
