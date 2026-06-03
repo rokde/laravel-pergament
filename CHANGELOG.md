@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.4.0 - 2026-06-03
+
+### What's Changed
+
+* Add standalone Pergament static export CLI by @rokde in https://github.com/rokde/laravel-pergament/pull/63
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.3.0...v1.4.0
+
 ## v1.2.4 - 2026-05-23
 
 ### What's Changed
