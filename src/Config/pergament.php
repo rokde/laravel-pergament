@@ -100,7 +100,7 @@ return [
     */
 
     'blog' => [
-        'enabled' => false,
+        'enabled' => true,
         'path' => 'blog',
         'url_prefix' => 'blog',
         'title' => 'Blog',
@@ -131,7 +131,7 @@ return [
     */
 
     'pages' => [
-        'enabled' => false,
+        'enabled' => true,
         'path' => 'pages',
         'tts' => false,
         'statistics' => [
@@ -284,12 +284,12 @@ return [
                 'url' => 'https://chatgpt.com/?q=I%27d+like+to+discuss+the+content+from+{url}',
             ],
             'perplexity' => [
-                'enabled' => false,
+                'enabled' => true,
                 'label' => 'Perplexity',
                 'url' => 'https://www.perplexity.ai/?q=I%27d+like+to+discuss+the+content+from+{url}',
             ],
             'gemini' => [
-                'enabled' => false,
+                'enabled' => true,
                 'label' => 'Gemini',
                 'url' => 'https://gemini.google.com/app?q=I%27d+like+to+discuss+the+content+from+{url}',
             ],
