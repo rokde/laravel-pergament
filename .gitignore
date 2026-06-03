@@ -1,8 +1,11 @@
+.DS_Store
 .idea
 .vscode
 .claude
 composer.lock
 coverage
+content
+static-content
 
 /vendor/
 node_modules/

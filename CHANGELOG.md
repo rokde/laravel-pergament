@@ -10,6 +10,15 @@ All notable changes to `laravel-pergament` will be documented in this file.
 
 **Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.3.0...v1.4.0
 
+## v1.3.0 - 2026-06-01
+
+### What's Changed
+
+* Fix static HTML export portability by @rokde in https://github.com/rokde/laravel-pergament/pull/61
+  security: pin GitHub Actions to commit SHAs by @rokde in https://github.com/rokde/laravel-pergament/pull/62
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.2.4...v1.3.0
+
 ## v1.2.4 - 2026-05-23
 
 ### What's Changed

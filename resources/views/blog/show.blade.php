@@ -51,6 +51,12 @@
                     <x-pergament::tts-button />
                 </div>
             @endif
+
+            @if(config('pergament.page_actions.enabled'))
+                <div class="mt-4">
+                    <x-pergament::page-actions />
+                </div>
+            @endif
         </header>
 
         <x-pergament::content-statistics :statistics="$post['statistics'] ?? []" />

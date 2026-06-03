@@ -259,6 +259,45 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Page Actions
+    |--------------------------------------------------------------------------
+    |
+    | Optional toolbar for content pages. When enabled, visitors can copy the
+    | raw markdown source, open the .md version, or start a chat with a
+    | configured AI agent using the current page URL.
+    |
+    */
+
+    'page_actions' => [
+        'enabled' => true,
+        'copy_markdown' => true,
+        'open_markdown' => true,
+        'ai_agents' => [
+            'claude' => [
+                'enabled' => true,
+                'label' => 'Claude',
+                'url' => 'https://claude.ai/new?q=I%E2%80%99d+like+to+discuss+the+content+from+{url}',
+            ],
+            'chatgpt' => [
+                'enabled' => true,
+                'label' => 'ChatGPT',
+                'url' => 'https://chatgpt.com/?q=I%27d+like+to+discuss+the+content+from+{url}',
+            ],
+            'perplexity' => [
+                'enabled' => true,
+                'label' => 'Perplexity',
+                'url' => 'https://www.perplexity.ai/?q=I%27d+like+to+discuss+the+content+from+{url}',
+            ],
+            'gemini' => [
+                'enabled' => true,
+                'label' => 'Gemini',
+                'url' => 'https://gemini.google.com/app?q=I%27d+like+to+discuss+the+content+from+{url}',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Search
     |--------------------------------------------------------------------------
     */

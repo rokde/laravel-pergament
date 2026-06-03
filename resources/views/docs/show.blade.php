@@ -22,6 +22,12 @@
         </div>
     @endif
 
+    @if(config('pergament.page_actions.enabled'))
+        <div class="mb-6">
+            <x-pergament::page-actions />
+        </div>
+    @endif
+
     <div class="prose max-w-none prose-slate dark:prose-invert prose-headings:scroll-mt-20 prose-headings:font-semibold prose-a:text-primary prose-a:underline prose-code:rounded prose-code:bg-muted prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-pre:bg-slate-900 prose-pre:dark:bg-slate-950 prose-img:rounded-lg">
         {!! $page['htmlContent'] !!}
     </div>
