@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.4.1 - 2026-06-03
+
+### What's Changed
+
+* Page related functions by @rokde in https://github.com/rokde/laravel-pergament/pull/64
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.4.0...v1.4.1
+
 ## v1.4.0 - 2026-06-03
 
 ### What's Changed
