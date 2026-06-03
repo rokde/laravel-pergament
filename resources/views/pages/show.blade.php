@@ -22,6 +22,12 @@
             </div>
         @endif
 
+        @if(config('pergament.page_actions.enabled'))
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
+                <x-pergament::page-actions />
+            </div>
+        @endif
+
         <div class="prose dark:prose-invert max-w-none">
             {!! $page['htmlContent'] !!}
         </div>
@@ -42,6 +48,12 @@
         @if(config('pergament.pages.tts'))
             <div class="mb-6">
                 <x-pergament::tts-button />
+            </div>
+        @endif
+
+        @if(config('pergament.page_actions.enabled'))
+            <div class="mb-6">
+                <x-pergament::page-actions />
             </div>
         @endif
 

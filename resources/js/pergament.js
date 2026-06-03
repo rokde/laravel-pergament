@@ -10,3 +10,4 @@ import './docs-sidebar.js';
 import './toc.js';
 import './heading-anchors.js';
 import './tts.js';
+import './page-actions.js';
