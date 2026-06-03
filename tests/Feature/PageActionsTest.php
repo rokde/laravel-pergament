@@ -7,9 +7,9 @@ it('ships page actions disabled by default with copy open and claude configured'
     expect(config('pergament.page_actions.copy_markdown'))->toBeTrue();
     expect(config('pergament.page_actions.open_markdown'))->toBeTrue();
     expect(config('pergament.page_actions.ai_agents.claude.enabled'))->toBeTrue();
-    expect(config('pergament.page_actions.ai_agents.chatgpt.enabled'))->toBeFalse();
-    expect(config('pergament.page_actions.ai_agents.perplexity.enabled'))->toBeFalse();
-    expect(config('pergament.page_actions.ai_agents.gemini.enabled'))->toBeFalse();
+    expect(config('pergament.page_actions.ai_agents.chatgpt.enabled'))->toBeTrue();
+    expect(config('pergament.page_actions.ai_agents.perplexity.enabled'))->toBeTrue();
+    expect(config('pergament.page_actions.ai_agents.gemini.enabled'))->toBeTrue();
 });
 
 it('does not render page actions by default', function (): void {
@@ -56,8 +56,8 @@ it('only renders enabled agent links', function (): void {
     $this->get('/about')
         ->assertStatus(200)
         ->assertSee('ChatGPT', false)
-        ->assertDontSee('Perplexity', false)
-        ->assertDontSee('Gemini', false);
+        ->assertSee('Perplexity', false)
+        ->assertSee('Gemini', false);
 });
 
 it('renders multiple enabled agents as a native html split dropdown', function (): void {

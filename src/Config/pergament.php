@@ -269,7 +269,7 @@ return [
     */
 
     'page_actions' => [
-        'enabled' => true,
+        'enabled' => false,
         'copy_markdown' => true,
         'open_markdown' => true,
         'ai_agents' => [
