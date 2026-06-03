@@ -59,7 +59,7 @@
                 <span>Chat in {{ $primaryAgent['label'] ?? 'AI agent' }}</span>
             </a>
         @elseif($agents->count() > 1)
-            <div class="relative inline-flex items-stretch">
+            <div data-pergament-agent-split-button class="relative inline-flex items-stretch">
                 <a
                     href="{{ $agentUrl($primaryAgent) }}"
                     target="_blank"
