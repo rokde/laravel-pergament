@@ -118,7 +118,7 @@ jobs:
         with:
           php-version: '8.4'
       - run: composer install --no-dev --prefer-dist --no-interaction
-      - run: vendor/bin/pergament generate-static public --content-path=content --base-url="https://example.github.io/repository"
+      - run: vendor/bin/pergament generate-static public --content-path=content --base-url="https://example.github.io" --prefix=/repository
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
@@ -134,10 +134,7 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-For project pages hosted below a repository path, users should pass:
-
-- `--base-url=https://<owner>.github.io/<repo>` for canonical URLs, feeds, and sitemap.
-- `--prefix=<repo>` only if the generated site intentionally needs Pergament routes below that path. If `base-url` alone is sufficient for generated absolute URLs, avoid forcing a prefix.
+User/org pages and custom domains usually need only `--base-url` for canonical URLs, feeds, and sitemap output. Project pages hosted below a repository path should also pass `--prefix=/repo` so generated Pergament routes include the repository path.
 
 The CLI should return a non-zero exit code for bootstrap failures and invalid CLI usage. The existing export command currently returns success even when content-level link/render errors are collected as warnings; that behavior should stay unchanged unless separately redesigned.
 

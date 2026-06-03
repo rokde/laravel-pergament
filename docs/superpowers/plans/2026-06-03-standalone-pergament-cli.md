@@ -493,6 +493,8 @@ Expected: PASS or fail with a specific missing Illuminate binding/helper. If a b
 **Files:**
 - Modify: `README.md`
 
+Document that user/org pages and custom domains usually need only `--base-url`, while project pages hosted below a repository path should also pass `--prefix=/repo`.
+
 - [ ] **Step 1: Add a README section**
 
 Add this section near existing static generation or usage documentation in `README.md`:
@@ -538,7 +540,7 @@ jobs:
         with:
           php-version: '8.4'
       - run: composer install --no-dev --prefer-dist --no-interaction
-      - run: vendor/bin/pergament generate-static public --content-path=content --base-url="https://OWNER.github.io/REPOSITORY"
+      - run: vendor/bin/pergament generate-static public --content-path=content --base-url="https://OWNER.github.io" --prefix=/REPOSITORY
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
@@ -553,6 +555,8 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
 ```
+
+User/org pages and custom domains usually need only `--base-url` for canonical URLs, feeds, and sitemap output. Project pages hosted below a repository path should also pass `--prefix=/repo` so generated Pergament routes include the repository path.
 ```
 
 - [ ] **Step 2: Check README formatting**

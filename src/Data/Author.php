@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pergament\Data;
 
+use Illuminate\Support\Str;
+
 final readonly class Author
 {
     public function __construct(
@@ -15,6 +17,6 @@ final readonly class Author
 
     public function slug(): string
     {
-        return \Illuminate\Support\Str::slug($this->name);
+        return Str::slug($this->name);
     }
 }

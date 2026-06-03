@@ -3,7 +3,10 @@
 declare(strict_types=1);
 
 use Carbon\CarbonImmutable;
+use Pergament\Services\BlogService;
 use Pergament\Services\ContentStatisticsService;
+use Pergament\Services\DocumentationService;
+use Pergament\Services\PageService;
 
 it('returns empty stats when no stats are enabled', function (): void {
     $service = resolve(ContentStatisticsService::class);
@@ -124,7 +127,7 @@ it('includes statistics in documentation rendered page when enabled', function (
     config()->set('pergament.docs.statistics.reading_time', true);
     config()->set('pergament.docs.statistics.word_count', true);
 
-    $service = resolve(\Pergament\Services\DocumentationService::class);
+    $service = resolve(DocumentationService::class);
     $page = $service->getRenderedPage('getting-started', 'introduction');
 
     expect($page)->not->toBeNull()
@@ -134,7 +137,7 @@ it('includes statistics in documentation rendered page when enabled', function (
 it('includes statistics in blog rendered post when enabled', function (): void {
     config()->set('pergament.blog.statistics.reading_time', true);
 
-    $service = resolve(\Pergament\Services\BlogService::class);
+    $service = resolve(BlogService::class);
     $post = $service->getRenderedPost('hello-world');
 
     expect($post)->not->toBeNull()
@@ -144,7 +147,7 @@ it('includes statistics in blog rendered post when enabled', function (): void {
 it('includes statistics in page rendered page when enabled', function (): void {
     config()->set('pergament.pages.statistics.word_count', true);
 
-    $service = resolve(\Pergament\Services\PageService::class);
+    $service = resolve(PageService::class);
     $page = $service->getRenderedPage('about');
 
     expect($page)->not->toBeNull()
@@ -152,7 +155,7 @@ it('includes statistics in page rendered page when enabled', function (): void {
 });
 
 it('returns empty statistics when no stats are configured', function (): void {
-    $service = resolve(\Pergament\Services\DocumentationService::class);
+    $service = resolve(DocumentationService::class);
     $page = $service->getRenderedPage('getting-started', 'introduction');
 
     expect($page)->not->toBeNull()

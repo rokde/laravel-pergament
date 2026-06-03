@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$autoloadPaths = isset($_composer_autoload_path) ? [$_composer_autoload_path] : [];
+
+$autoloadPaths = array_merge($autoloadPaths, [
+    __DIR__.'/../vendor/autoload.php',
+    __DIR__.'/../../../autoload.php',
+]);
+
+$autoload = null;
+
+foreach ($autoloadPaths as $autoloadPath) {
+    if (file_exists($autoloadPath)) {
+        $autoload = $autoloadPath;
+
+        break;
+    }
+}
+
+if ($autoload === null) {
+    fwrite(STDERR, "Unable to locate Composer autoload. Run composer install before using pergament.\n");
+
+    exit(1);
+}
+
+require $autoload;
+
+try {
+    exit(Pergament\Console\StandaloneApplication::runFromBasePath(getcwd()));
+} catch (Throwable $throwable) {
+    fwrite(STDERR, $throwable->getMessage()."\n");
+
+    exit(1);
+}

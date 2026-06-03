@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Carbon\CarbonImmutable;
 use Pergament\Data\Author;
 use Pergament\Data\BlogPost;
 use Pergament\Services\BlogService;
@@ -33,7 +34,7 @@ it('renders a post with HTML content', function (): void {
     expect($rendered)->not->toBeNull();
     expect($rendered)->toHaveKeys(['title', 'excerpt', 'htmlContent', 'slug', 'date', 'authors']);
     expect($rendered['htmlContent'])->toContain('Welcome to our blog');
-    expect($rendered['date'])->toBeInstanceOf(Carbon\CarbonImmutable::class);
+    expect($rendered['date'])->toBeInstanceOf(CarbonImmutable::class);
     expect($rendered['authors'])->toHaveCount(1);
 });
 

@@ -680,6 +680,64 @@ php artisan pergament:generate-static dist \
 
 > **Note:** Static exports use a bundled client-side search index (`search.json`) and the command palette/search forms work without a server. Broken internal content links are reported as warnings during generation (the export still succeeds).
 
+## Standalone Static Export
+
+Pergament ships a standalone CLI for generating static HTML without a host Laravel application:
+
+```bash
+vendor/bin/pergament generate-static public --content-path=content --base-url="https://example.com"
+```
+
+The command accepts the same options as the Laravel Artisan command:
+
+- `--content-path=` overrides the content directory.
+- `--prefix=` overrides the generated Pergament route prefix.
+- `--base-url=` sets the absolute site URL used by canonical URLs, feeds, and sitemap output.
+- `--clean` removes the output directory before generating.
+
+### GitHub Pages
+
+Use the standalone CLI in GitHub Actions to publish generated files to GitHub Pages:
+
+User/org pages (`https://OWNER.github.io`) and custom domains usually only need `--base-url`. Project pages hosted below `/REPOSITORY` should keep the owner domain in `--base-url` and pass the repository path with `--prefix=/REPOSITORY`.
+
+```yaml
+name: Deploy Pergament site
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+      - run: composer install --no-dev --prefer-dist --no-interaction
+      - run: vendor/bin/pergament generate-static public --content-path=content --base-url="https://OWNER.github.io" --prefix=/REPOSITORY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+
 ## Routes
 
 All routes are nested under the configured `prefix`. With the default `/` prefix:
