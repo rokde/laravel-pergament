@@ -9,21 +9,26 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Pergament\Services\PageService;
 use Pergament\Services\SeoService;
+use Pergament\Support\MarkdownExporter;
 use Pergament\Support\UrlGenerator;
 
 final class PageController
 {
-    public function __invoke(Request $request, string $slug, PageService $pageService, SeoService $seoService): View|Response
+    public function __invoke(Request $request, string $slug, PageService $pageService, SeoService $seoService, MarkdownExporter $exporter): View|Response
     {
         if (str_ends_with($slug, '.md')) {
             $slug = substr($slug, 0, -3);
         }
 
         if ($request->attributes->get('pergament.wants_raw_markdown')) {
-            $markdown = $pageService->getRawMarkdown($slug);
-            abort_unless($markdown !== null, 404);
+            $page = $pageService->getRenderedPage($slug);
+            abort_unless($page !== null, 404);
 
-            return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+            return new Response(
+                $exporter->fromHtml($page['htmlContent'], $page['title']),
+                200,
+                ['Content-Type' => 'text/markdown; charset=UTF-8'],
+            );
         }
 
         $page = $pageService->getRenderedPage($slug);

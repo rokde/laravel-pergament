@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Pergament\Services\BlogService;
 use Pergament\Services\SeoService;
+use Pergament\Support\MarkdownExporter;
 use Pergament\Support\UrlGenerator;
 
 final class BlogController
@@ -32,17 +33,21 @@ final class BlogController
         ]);
     }
 
-    public function show(Request $request, string $slug, BlogService $service, SeoService $seoService): View|Response
+    public function show(Request $request, string $slug, BlogService $service, SeoService $seoService, MarkdownExporter $exporter): View|Response
     {
         if (str_ends_with($slug, '.md')) {
             $slug = substr($slug, 0, -3);
         }
 
         if ($request->attributes->get('pergament.wants_raw_markdown')) {
-            $markdown = $service->getRawMarkdown($slug);
-            abort_unless($markdown !== null, 404);
+            $post = $service->getRenderedPost($slug);
+            abort_unless($post !== null, 404);
 
-            return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+            return new Response(
+                $exporter->fromHtml($post['htmlContent'], $post['title']),
+                200,
+                ['Content-Type' => 'text/markdown; charset=UTF-8'],
+            );
         }
 
         $post = $service->getRenderedPost($slug);

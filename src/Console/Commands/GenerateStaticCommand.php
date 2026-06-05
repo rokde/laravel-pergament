@@ -6,13 +6,13 @@ namespace Pergament\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
-use League\HTMLToMarkdown\HtmlConverter;
 use Pergament\Services\BlogService;
 use Pergament\Services\DocumentationService;
 use Pergament\Services\FeedService;
 use Pergament\Services\PageService;
 use Pergament\Services\SeoService;
 use Pergament\Services\SitemapService;
+use Pergament\Support\MarkdownExporter;
 use Pergament\Support\PortableLinkRewriter;
 use Pergament\Support\UrlGenerator;
 use RecursiveDirectoryIterator;
@@ -38,7 +38,7 @@ final class GenerateStaticCommand extends Command
 
     private PortableLinkRewriter $rewriter;
 
-    private HtmlConverter $htmlConverter;
+    private MarkdownExporter $exporter;
 
     public function handle(
         DocumentationService $docsService,
@@ -71,7 +71,7 @@ final class GenerateStaticCommand extends Command
             }
 
             $this->rewriter = $this->makeRewriter();
-            $this->htmlConverter = new HtmlConverter(['hard_break' => true, 'strip_tags' => true]);
+            $this->exporter = new MarkdownExporter;
 
             if ($this->option('clean') && is_dir($outputDir)) {
                 $this->removeDirectory($outputDir);
@@ -825,22 +825,8 @@ final class GenerateStaticCommand extends Command
     private function renderMarkdown(array $pageData, string $title, string $relMdPath): string
     {
         $fragment = $this->rewriter->rewriteHtml((string) ($pageData['htmlContent'] ?? ''), $relMdPath, 'md');
-        $fragment = $this->stripNonContentHtml($fragment);
-        $body = mb_trim($this->htmlConverter->convert($fragment));
-        $heading = $title !== '' ? '# '.$title."\n\n" : '';
 
-        return $heading.$body."\n";
-    }
-
-    /**
-     * Drop tags whose content is not part of the readable document so the markdown
-     * sidecar holds only the prose. The HtmlConverter (strip_tags) removes remaining
-     * structural tags but keeps their inner text, so style/script must go first along
-     * with their contents.
-     */
-    private function stripNonContentHtml(string $html): string
-    {
-        return (string) preg_replace('#<(style|script)\b[^>]*>.*?</\1>#is', '', $html);
+        return $this->exporter->fromHtml($fragment, $title);
     }
 
     private function writeFile(string $path, string $content): void

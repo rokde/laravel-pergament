@@ -12,6 +12,7 @@ use Pergament\Services\BlogService;
 use Pergament\Services\DocumentationService;
 use Pergament\Services\PageService;
 use Pergament\Services\SeoService;
+use Pergament\Support\MarkdownExporter;
 use Pergament\Support\UrlGenerator;
 
 final class HomeController
@@ -22,6 +23,7 @@ final class HomeController
         DocumentationService $docsService,
         BlogService $blogService,
         SeoService $seoService,
+        MarkdownExporter $exporter,
     ): View|RedirectResponse|Response {
         $homepage = config('pergament.homepage', []);
         $type = $homepage['type'] ?? 'page';
@@ -29,8 +31,8 @@ final class HomeController
 
         if ($request->attributes->get('pergament.wants_raw_markdown')) {
             return match ($type) {
-                'page' => $this->rawMarkdownPage($pageService, $source),
-                'doc-page' => $this->rawMarkdownDocPage($docsService, $source),
+                'page' => $this->rawMarkdownPage($pageService, $exporter, $source),
+                'doc-page' => $this->rawMarkdownDocPage($docsService, $exporter, $source),
                 default => $this->fallbackHtml($type, $source, $blogService, $seoService),
             };
         }
@@ -44,15 +46,19 @@ final class HomeController
         };
     }
 
-    private function rawMarkdownPage(PageService $pageService, string $slug): Response
+    private function rawMarkdownPage(PageService $pageService, MarkdownExporter $exporter, string $slug): Response
     {
-        $markdown = $pageService->getRawMarkdown($slug);
-        abort_unless($markdown !== null, 404);
+        $page = $pageService->getRenderedPage($slug);
+        abort_unless($page !== null, 404);
 
-        return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+        return new Response(
+            $exporter->fromHtml($page['htmlContent'], $page['title']),
+            200,
+            ['Content-Type' => 'text/markdown; charset=UTF-8'],
+        );
     }
 
-    private function rawMarkdownDocPage(DocumentationService $docsService, string $source): Response
+    private function rawMarkdownDocPage(DocumentationService $docsService, MarkdownExporter $exporter, string $source): Response
     {
         $parts = explode('/', $source, 2);
 
@@ -62,10 +68,14 @@ final class HomeController
             $parts = [$first['chapter'], $first['page']];
         }
 
-        $markdown = $docsService->getRawMarkdown($parts[0], $parts[1]);
-        abort_unless($markdown !== null, 404);
+        $pageData = $docsService->getRenderedPage($parts[0], $parts[1]);
+        abort_unless($pageData !== null, 404);
 
-        return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+        return new Response(
+            $exporter->fromHtml($pageData['htmlContent'], $pageData['title']),
+            200,
+            ['Content-Type' => 'text/markdown; charset=UTF-8'],
+        );
     }
 
     private function fallbackHtml(

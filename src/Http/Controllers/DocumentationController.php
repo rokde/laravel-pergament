@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Pergament\Services\DocumentationService;
 use Pergament\Services\SeoService;
+use Pergament\Support\MarkdownExporter;
 use Pergament\Support\UrlGenerator;
 
 final class DocumentationController
@@ -33,16 +34,21 @@ final class DocumentationController
         string $page,
         DocumentationService $service,
         SeoService $seoService,
+        MarkdownExporter $exporter,
     ): View|Response {
         if (str_ends_with($page, '.md')) {
             $page = substr($page, 0, -3);
         }
 
         if ($request->attributes->get('pergament.wants_raw_markdown')) {
-            $markdown = $service->getRawMarkdown($chapter, $page);
-            abort_unless($markdown !== null, 404);
+            $pageData = $service->getRenderedPage($chapter, $page);
+            abort_unless($pageData !== null, 404);
 
-            return new Response($markdown, 200, ['Content-Type' => 'text/markdown; charset=UTF-8']);
+            return new Response(
+                $exporter->fromHtml($pageData['htmlContent'], $pageData['title']),
+                200,
+                ['Content-Type' => 'text/markdown; charset=UTF-8'],
+            );
         }
 
         $pageData = $service->getRenderedPage($chapter, $page);
