@@ -11,6 +11,7 @@ use Pergament\Data\DocChapter;
 use Pergament\Data\DocHeading;
 use Pergament\Data\DocPage;
 use Pergament\Support\FrontMatterParser;
+use Pergament\Support\SidecarAssets;
 use Pergament\Support\UrlGenerator;
 
 final readonly class DocumentationService
@@ -79,7 +80,7 @@ final readonly class DocumentationService
     }
 
     /**
-     * @return array{title: string, excerpt: string, htmlContent: string, headings: array<int, DocHeading>, slug: string, previousPage: array{title: string, url: string}|null, nextPage: array{title: string, url: string}|null, linkErrors: array<int, string>}|null
+     * @return array{title: string, excerpt: string, htmlContent: string, headings: array<int, DocHeading>, slug: string, previousPage: array{title: string, url: string}|null, nextPage: array{title: string, url: string}|null, styles: ?string, scripts: ?string, linkErrors: array<int, string>}|null
      */
     public function getRenderedPage(string $chapterSlug, string $pageSlug): ?array
     {
@@ -111,6 +112,7 @@ final readonly class DocumentationService
         $docsPrefix = config('pergament.docs.url_prefix', 'docs');
         $statsConfig = config('pergament.docs.statistics', []);
         $contentStats = $this->statistics->compute($page->content, $sourceFile, $statsConfig);
+        $sidecar = SidecarAssets::forMarkdownFile($sourceFile);
 
         return [
             'title' => $page->title,
@@ -128,6 +130,8 @@ final readonly class DocumentationService
                 'title' => $adjacent['next']['title'],
                 'url' => UrlGenerator::path($docsPrefix, $adjacent['next']['chapter'], $adjacent['next']['page']),
             ] : null,
+            'styles' => $sidecar['styles'],
+            'scripts' => $sidecar['scripts'],
             'linkErrors' => $linkErrors,
         ];
     }
