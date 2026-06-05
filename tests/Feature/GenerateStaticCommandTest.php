@@ -35,6 +35,37 @@ it('generates homepage index.html', function (): void {
     expect(file_get_contents($this->outputDir.'/index.html'))->toContain('Welcome');
 });
 
+it('preserves style tags in allow html pages during static generation', function (): void {
+    mkdir($this->tempDir.'/pages', 0755, true);
+
+    file_put_contents($this->tempDir.'/pages/home.md', <<<'MARKDOWN'
+---
+title: HTML Home
+allow_html: true
+---
+
+# HTML Home
+
+<style>
+  .custom-home { color: red; }
+</style>
+
+<section class="custom-home">Styled content</section>
+MARKDOWN);
+
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+        '--content-path' => $this->tempDir,
+    ])->assertSuccessful();
+
+    $html = file_get_contents($this->outputDir.'/index.html');
+
+    expect($html)->toContain('<style>')
+        ->and($html)->toContain('.custom-home { color: red; }')
+        ->and($html)->not->toContain('&lt;style>')
+        ->and($html)->toContain('<section class="custom-home">Styled content</section>');
+});
+
 it('generates doc pages as flat .html files', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,

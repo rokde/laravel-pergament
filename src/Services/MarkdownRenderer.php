@@ -19,7 +19,7 @@ final readonly class MarkdownRenderer
     /**
      * Convert markdown to HTML.
      */
-    public function toHtml(string $markdown): string
+    public function toHtml(string $markdown, bool $allowHtml = false): string
     {
         $markdown = str_replace(' -- ', ' — ', $markdown);
 
@@ -29,10 +29,18 @@ final readonly class MarkdownRenderer
             $extensions[] = new FootnoteExtension;
         }
 
-        $html = Str::markdown($markdown, [
+        $options = [
             'allow_unsafe_links' => false,
             'html_input' => 'allow',
-        ], $extensions);
+        ];
+
+        if ($allowHtml) {
+            $options['disallowed_raw_html'] = [
+                'disallowed_tags' => [],
+            ];
+        }
+
+        $html = Str::markdown($markdown, $options, $extensions);
 
         $html = $this->highlightCodeBlocks($html);
         $html = $this->addHeadingIds($html);

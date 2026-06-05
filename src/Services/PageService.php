@@ -73,7 +73,8 @@ final readonly class PageService
             return null;
         }
 
-        $html = $this->renderer->toHtml($page->content);
+        $allowHtml = ($page->meta['allow_html'] ?? false) === true;
+        $html = $this->renderer->toHtml($page->content, $allowHtml);
         $html = $this->renderer->stripFirstH1($html);
 
         $sourceFile = $this->basePath().'/'.$slug.'.md';
@@ -97,7 +98,7 @@ final readonly class PageService
             'slug' => $page->slug,
             'layout' => $page->layout,
             'meta' => $page->meta,
-            'allowHtml' => ($page->meta['allow_html'] ?? false) === true,
+            'allowHtml' => $allowHtml,
             'statistics' => $contentStats,
             'linkErrors' => $linkErrors,
         ];
