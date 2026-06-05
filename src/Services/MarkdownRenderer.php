@@ -5,7 +5,14 @@ declare(strict_types=1);
 namespace Pergament\Services;
 
 use Illuminate\Support\Str;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\Autolink\AutolinkExtension;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\Extension\Footnote\FootnoteExtension;
+use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
+use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\Extension\TaskList\TaskListExtension;
+use League\CommonMark\MarkdownConverter;
 use Pergament\Data\DocHeading;
 use Pergament\Support\SyntaxHighlighter;
 use Pergament\Support\UrlGenerator;
@@ -29,18 +36,12 @@ final readonly class MarkdownRenderer
             $extensions[] = new FootnoteExtension;
         }
 
-        $options = [
-            'allow_unsafe_links' => false,
-            'html_input' => 'allow',
-        ];
-
-        if ($allowHtml) {
-            $options['disallowed_raw_html'] = [
-                'disallowed_tags' => [],
-            ];
-        }
-
-        $html = Str::markdown($markdown, $options, $extensions);
+        $html = $allowHtml
+            ? $this->toHtmlAllowingRawHtml($markdown, $extensions)
+            : Str::markdown($markdown, [
+                'allow_unsafe_links' => false,
+                'html_input' => 'allow',
+            ], $extensions);
 
         $html = $this->highlightCodeBlocks($html);
         $html = $this->addHeadingIds($html);
@@ -51,6 +52,32 @@ final readonly class MarkdownRenderer
         }
 
         return $html;
+    }
+
+    /**
+     * Laravel's GFM converter includes CommonMark's DisallowedRawHtmlExtension,
+     * which escapes tags like style even when html_input is allow.
+     *
+     * @param  array<int, object>  $extensions
+     */
+    private function toHtmlAllowingRawHtml(string $markdown, array $extensions): string
+    {
+        $environment = new Environment([
+            'allow_unsafe_links' => false,
+            'html_input' => 'allow',
+        ]);
+
+        $environment->addExtension(new CommonMarkCoreExtension);
+        $environment->addExtension(new AutolinkExtension);
+        $environment->addExtension(new StrikethroughExtension);
+        $environment->addExtension(new TableExtension);
+        $environment->addExtension(new TaskListExtension);
+
+        foreach ($extensions as $extension) {
+            $environment->addExtension($extension);
+        }
+
+        return (string) (new MarkdownConverter($environment))->convert($markdown);
     }
 
     /**

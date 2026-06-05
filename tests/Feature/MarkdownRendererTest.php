@@ -12,6 +12,19 @@ it('converts markdown to html', function (): void {
     expect($html)->toContain('<em>italic</em>');
 });
 
+it('preserves style tags when raw html is allowed', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $html = $renderer->toHtml(<<<'MARKDOWN'
+<style>
+  .custom-home { color: red; }
+</style>
+MARKDOWN, true);
+
+    expect($html)->toContain('<style>')
+        ->and($html)->toContain('.custom-home { color: red; }')
+        ->and($html)->not->toContain('&lt;style>');
+});
+
 it('adds ids to h2 and h3 headings', function (): void {
     $renderer = resolve(MarkdownRenderer::class);
     $html = $renderer->toHtml("## My Section\n\n### Sub Section");
