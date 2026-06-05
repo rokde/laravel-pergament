@@ -63,7 +63,7 @@ final readonly class PageService
     }
 
     /**
-     * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, layout: ?string, meta: array, linkErrors: array<int, string>}|null
+     * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, layout: ?string, meta: array, allowHtml: bool, linkErrors: array<int, string>}|null
      */
     public function getRenderedPage(string $slug): ?array
     {
@@ -97,6 +97,7 @@ final readonly class PageService
             'slug' => $page->slug,
             'layout' => $page->layout,
             'meta' => $page->meta,
+            'allowHtml' => ($page->meta['allow_html'] ?? false) === true,
             'statistics' => $contentStats,
             'linkErrors' => $linkErrors,
         ];

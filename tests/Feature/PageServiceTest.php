@@ -30,6 +30,64 @@ it('renders a page with HTML', function (): void {
     expect($rendered['htmlContent'])->toContain('This is the homepage content');
 });
 
+it('renders raw html in page content', function (): void {
+    $slug = 'html-raw-'.uniqid();
+    $path = config('pergament.content_path').'/pages/'.$slug.'.md';
+
+    file_put_contents($path, <<<'MARKDOWN'
+---
+title: HTML Raw
+---
+
+# HTML Raw
+
+<section class="custom-hero">
+    <button type="button">Click me</button>
+</section>
+MARKDOWN);
+
+    $service = resolve(PageService::class);
+    try {
+        $rendered = $service->getRenderedPage($slug);
+
+        expect($rendered)->not->toBeNull();
+        expect($rendered['htmlContent'])->toContain('<section class="custom-hero">');
+        expect($rendered['htmlContent'])->toContain('<button type="button">Click me</button>');
+    } finally {
+        unlink($path);
+    }
+});
+
+it('allows raw html in pages when enabled in front matter', function (): void {
+    $slug = 'html-enabled-'.uniqid();
+    $path = config('pergament.content_path').'/pages/'.$slug.'.md';
+
+    file_put_contents($path, <<<'MARKDOWN'
+---
+title: HTML Enabled
+allow_html: true
+---
+
+# HTML Enabled
+
+<section class="custom-hero">
+    <button type="button">Click me</button>
+</section>
+MARKDOWN);
+
+    $service = resolve(PageService::class);
+    try {
+        $rendered = $service->getRenderedPage($slug);
+
+        expect($rendered)->not->toBeNull();
+        expect($rendered['htmlContent'])->toContain('<section class="custom-hero">');
+        expect($rendered['htmlContent'])->toContain('<button type="button">Click me</button>');
+        expect($rendered['allowHtml'])->toBeTrue();
+    } finally {
+        unlink($path);
+    }
+});
+
 it('preserves layout from front matter', function (): void {
     $service = resolve(PageService::class);
     $page = $service->getPage('home');

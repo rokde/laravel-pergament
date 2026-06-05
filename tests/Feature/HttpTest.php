@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Pergament\Data\SeoMeta;
+
 it('serves the homepage', function (): void {
     $this->get('/')->assertStatus(200);
 });
@@ -74,4 +76,21 @@ it('serves PWA manifest', function (): void {
 
 it('shows a standalone page', function (): void {
     $this->get('/about')->assertStatus(200);
+});
+
+it('renders allow_html pages without the prose content wrapper', function (): void {
+    $html = (string) view('pergament::pages.show', [
+        'page' => [
+            'title' => 'HTML Enabled',
+            'htmlContent' => '<section class="custom-hero"><button type="button">Click me</button></section>',
+            'statistics' => [],
+            'allowHtml' => true,
+        ],
+        'seo' => new SeoMeta(title: 'HTML Enabled'),
+        'layout' => 'landing',
+        'isHomepage' => false,
+    ])->render();
+
+    expect($html)->toContain('<section class="custom-hero">')
+        ->not->toContain('<div class="prose dark:prose-invert max-w-none">');
 });
