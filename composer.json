@@ -18,6 +18,7 @@
         "bin/pergament"
     ],
     "scripts": {
+        "build": "bin/pergament generate-static static-content --content-path=content --base-url=\"https://clonio-dev.github.io\" --prefix=\"/clonio-docs\" --clean",
         "lint": "pint --parallel",
         "test:lint": "pint --parallel --test",
         "test:unit": "pest --parallel --coverage --coverage-html ./coverage --min=80",
