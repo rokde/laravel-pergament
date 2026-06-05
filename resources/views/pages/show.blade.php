@@ -28,9 +28,13 @@
             </div>
         @endif
 
-        <div class="prose dark:prose-invert max-w-none">
+        @if($page['allowHtml'] ?? false)
             {!! $page['htmlContent'] !!}
-        </div>
+        @else
+            <div class="prose dark:prose-invert max-w-none">
+                {!! $page['htmlContent'] !!}
+            </div>
+        @endif
     </div>
 @else
     {{-- Standard page layout --}}
@@ -59,9 +63,13 @@
 
         <x-pergament::content-statistics :statistics="$page['statistics'] ?? []" />
 
-        <div class="prose dark:prose-invert max-w-none">
+        @if($page['allowHtml'] ?? false)
             {!! $page['htmlContent'] !!}
-        </div>
+        @else
+            <div class="prose dark:prose-invert max-w-none">
+                {!! $page['htmlContent'] !!}
+            </div>
+        @endif
     </div>
 @endif
 
