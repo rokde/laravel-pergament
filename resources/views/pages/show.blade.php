@@ -89,6 +89,7 @@
 </style>
 @endpush
 
+{{-- Sidecar assets --}}
 @if(!empty($page['styles']))
 @push('styles')
 <style>{!! $page['styles'] !!}</style>

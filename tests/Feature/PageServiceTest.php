@@ -26,7 +26,7 @@ it('renders a page with HTML', function (): void {
     $rendered = $service->getRenderedPage('home');
 
     expect($rendered)->not->toBeNull();
-    expect($rendered)->toHaveKeys(['title', 'excerpt', 'htmlContent', 'headings', 'slug', 'layout', 'meta']);
+    expect($rendered)->toHaveKeys(['title', 'excerpt', 'htmlContent', 'headings', 'slug', 'layout', 'meta', 'allowHtml', 'statistics', 'styles', 'scripts', 'linkErrors']);
     expect($rendered['htmlContent'])->toContain('This is the homepage content');
 });
 
