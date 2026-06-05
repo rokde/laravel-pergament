@@ -35,6 +35,16 @@ it('generates homepage index.html', function (): void {
     expect(file_get_contents($this->outputDir.'/index.html'))->toContain('Welcome');
 });
 
+it('copies the configured favicon into the static output root', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    expect(file_exists($this->outputDir.'/favicon.ico'))->toBeTrue();
+    expect(file_get_contents($this->outputDir.'/favicon.ico'))
+        ->toBe(file_get_contents(__DIR__.'/../fixtures/content/favicon.ico'));
+});
+
 it('preserves style tags in allow html pages during static generation', function (): void {
     mkdir($this->tempDir.'/pages', 0755, true);
 

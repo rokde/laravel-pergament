@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 use Pergament\Http\Controllers\AnalyticsDatesController;
 use Pergament\Http\Controllers\AnalyticsDownloadController;
 use Pergament\Http\Controllers\BlogController;
 use Pergament\Http\Controllers\DocumentationController;
+use Pergament\Http\Controllers\FaviconController;
 use Pergament\Http\Controllers\FeedController;
 use Pergament\Http\Controllers\HomeController;
 use Pergament\Http\Controllers\PageController;
@@ -101,6 +103,12 @@ Route::prefix($basePrefix)->group(function (): void {
     // LLMs.txt
     if (config('pergament.llms.enabled', true)) {
         Route::get('llms.txt', [RobotsController::class, 'llms'])->name('pergament.llms');
+    }
+
+    // Favicon — served from the content directory unless an absolute URL is configured
+    $favicon = config('pergament.favicon');
+    if (is_string($favicon) && $favicon !== '' && ! Str::startsWith($favicon, ['http://', 'https://', '//'])) {
+        Route::get(basename($favicon), [FaviconController::class, 'show'])->name('pergament.favicon');
     }
 
     // PWA

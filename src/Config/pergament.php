@@ -198,11 +198,14 @@ return [
     | Favicon
     |--------------------------------------------------------------------------
     |
-    | Path relative to the content directory, or an absolute URL.
+    | Path relative to the content directory (e.g. 'favicon.ico'), or an
+    | absolute URL. Relative files are served from the content directory at
+    | runtime and copied into the site root during static generation. Absolute
+    | URLs are used verbatim and neither served nor copied.
     |
     */
 
-    'favicon' => null,
+    'favicon' => 'favicon.ico',
 
     /*
     |--------------------------------------------------------------------------

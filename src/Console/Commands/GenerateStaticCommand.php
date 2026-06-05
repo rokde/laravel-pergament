@@ -82,6 +82,7 @@ final class GenerateStaticCommand extends Command
             }
 
             $this->copyAssets($outputDir);
+            $this->copyFavicon($outputDir);
 
             $this->generateHomepage($pageService, $docsService, $blogService, $seoService, $outputDir);
 
@@ -616,6 +617,27 @@ final class GenerateStaticCommand extends Command
             }
         } catch (Throwable $e) {
             $this->errors[] = "Assets: {$e->getMessage()}";
+        }
+    }
+
+    private function copyFavicon(string $outputDir): void
+    {
+        $favicon = config('pergament.favicon');
+
+        if (! is_string($favicon) || $favicon === '' || Str::startsWith($favicon, ['http://', 'https://', '//'])) {
+            return;
+        }
+
+        try {
+            $src = config('pergament.content_path').'/'.ltrim($favicon, '/');
+
+            if (is_file($src)) {
+                $this->copyFile($src, $outputDir.'/'.basename($favicon));
+            } else {
+                $this->errors[] = "Favicon: file not found at {$src}";
+            }
+        } catch (Throwable $e) {
+            $this->errors[] = "Favicon: {$e->getMessage()}";
         }
     }
 

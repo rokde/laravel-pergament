@@ -6,8 +6,9 @@
 
     @yield('seo')
 
-    @if(config('pergament.favicon'))
-        <link rel="icon" href="{{ config('pergament.favicon') }}">
+    @php($pergamentFavicon = config('pergament.favicon'))
+    @if($pergamentFavicon)
+        <link rel="icon" href="{{ \Illuminate\Support\Str::startsWith($pergamentFavicon, ['http://', 'https://', '//']) ? $pergamentFavicon : \Pergament\Support\UrlGenerator::path(basename($pergamentFavicon)) }}">
     @endif
 
     @if(config('pergament.blog.enabled') && config('pergament.blog.feed.enabled'))
