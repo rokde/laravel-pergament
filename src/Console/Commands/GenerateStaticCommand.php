@@ -71,7 +71,7 @@ final class GenerateStaticCommand extends Command
             }
 
             $this->rewriter = $this->makeRewriter();
-            $this->htmlConverter = new HtmlConverter(['hard_break' => true, 'strip_tags' => false]);
+            $this->htmlConverter = new HtmlConverter(['hard_break' => true, 'strip_tags' => true]);
 
             if ($this->option('clean') && is_dir($outputDir)) {
                 $this->removeDirectory($outputDir);
@@ -803,10 +803,22 @@ final class GenerateStaticCommand extends Command
     private function renderMarkdown(array $pageData, string $title, string $relMdPath): string
     {
         $fragment = $this->rewriter->rewriteHtml((string) ($pageData['htmlContent'] ?? ''), $relMdPath, 'md');
+        $fragment = $this->stripNonContentHtml($fragment);
         $body = mb_trim($this->htmlConverter->convert($fragment));
         $heading = $title !== '' ? '# '.$title."\n\n" : '';
 
         return $heading.$body."\n";
+    }
+
+    /**
+     * Drop tags whose content is not part of the readable document so the markdown
+     * sidecar holds only the prose. The HtmlConverter (strip_tags) removes remaining
+     * structural tags but keeps their inner text, so style/script must go first along
+     * with their contents.
+     */
+    private function stripNonContentHtml(string $html): string
+    {
+        return (string) preg_replace('#<(style|script)\b[^>]*>.*?</\1>#is', '', $html);
     }
 
     private function writeFile(string $path, string $content): void

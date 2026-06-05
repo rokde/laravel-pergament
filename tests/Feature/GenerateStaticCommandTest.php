@@ -68,6 +68,48 @@ MARKDOWN);
         ->and($html)->toContain('<section class="custom-home">Styled content</section>');
 });
 
+it('strips style, script and raw html tags from markdown sidecars', function (): void {
+    mkdir($this->tempDir.'/pages', 0755, true);
+
+    file_put_contents($this->tempDir.'/pages/home.md', <<<'MARKDOWN'
+---
+title: HTML Home
+allow_html: true
+---
+
+# HTML Home
+
+<style>
+  .custom-home { color: red; }
+</style>
+
+<script>console.log('tracker');</script>
+
+<section class="custom-home">Styled content</section>
+
+Plain paragraph text.
+MARKDOWN);
+
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+        '--content-path' => $this->tempDir,
+    ])->assertSuccessful();
+
+    $md = $this->outputDir.'/index.md';
+    expect(file_exists($md))->toBeTrue();
+
+    $content = file_get_contents($md);
+
+    expect($content)->toContain('# HTML Home')
+        ->and($content)->toContain('Styled content')
+        ->and($content)->toContain('Plain paragraph text.')
+        ->and($content)->not->toContain('<style>')
+        ->and($content)->not->toContain('.custom-home { color: red; }')
+        ->and($content)->not->toContain('<script>')
+        ->and($content)->not->toContain("console.log('tracker')")
+        ->and($content)->not->toContain('<section');
+});
+
 it('generates doc pages as flat .html files', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,
