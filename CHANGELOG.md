@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.4.3 - 2026-06-05
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.4.2...v1.4.3
+
+- replaced the Markdown Renderer
+
 ## v1.4.2 - 2026-06-05
 
 ### What's Changed
