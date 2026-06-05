@@ -216,6 +216,18 @@ The default templates use Tailwind CSS (CDN) and can be fully replaced after pub
 - `.pergament-img-light` / `.pergament-img-dark` — themed image variants
 - `.prose` / `.dark:prose-invert` — Tailwind Typography for rendered Markdown content
 
+### Page-scoped CSS & JS
+
+For styles or scripts that should apply to a single page only — without publishing views or touching the global stylesheet — place a same-named `.css` and/or `.js` file next to the Markdown file. Pergament injects the contents inline into that page (CSS into `@stack('styles')` in `<head>`, JS into `@stack('scripts')` before `</body>`), at runtime and in the static export alike:
+
+```
+content/pages/landing.md
+content/pages/landing.css   # <style> injected into <head> for /landing
+content/pages/landing.js    # <script> injected before </body> for /landing
+```
+
+Blog posts use `post.css` / `post.js` alongside `post.md`; documentation pages use the page file's basename. Contents are injected verbatim. See the content-authoring skill for the full naming convention.
+
 ## Static Site Generation
 
 Export the entire site as static HTML:
