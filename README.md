@@ -279,6 +279,30 @@ seo.robots: "noindex, nofollow"
 
 These override the corresponding values from `config('pergament.site.seo.*')`.
 
+## Page CSS & JS Assets
+
+Attach page-scoped styles and scripts without any configuration. Place a file with
+the **same basename** as a Markdown file, using a `.css` or `.js` extension, in the
+**same directory**. Its contents are embedded inline in the rendered page — CSS into
+the document `<head>`, JavaScript just before the closing `</body>` tag.
+
+| Content type | Markdown file                               | Sidecar files                          |
+|--------------|---------------------------------------------|----------------------------------------|
+| Page         | `content/pages/home.md`                     | `content/pages/home.css`, `home.js`    |
+| Blog post    | `content/blog/2024-01-15-hello/post.md`     | `post.css`, `post.js` (same directory) |
+| Doc page     | `content/docs/0-getting-started/0-intro.md` | `0-intro.css`, `0-intro.js`            |
+
+Both files are optional and independent — a page may have only CSS, only JS, both, or
+neither. You may attach at most one `.css` and one `.js` per Markdown file.
+
+The contents are injected **inline and verbatim**: CSS inside a `<style>` tag, JavaScript
+inside a `<script>` tag. There is no separate request and no caching layer. This works the
+same way for live URLs and for the static site produced by `pergament:generate-static`.
+
+Because the content is injected raw, keeping it valid is your responsibility: avoid a
+literal `</style>` or `</script>` inside the file, as it would close the surrounding tag
+prematurely.
+
 ## GitHub-Style Alerts
 
 Pergament supports GitHub-style alert blocks for highlighting important information. Alerts are enabled by default.
