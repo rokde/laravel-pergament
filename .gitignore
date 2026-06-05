@@ -4,8 +4,8 @@
 .claude
 composer.lock
 coverage
-content
-static-content
+/content
+/static-content
 
 /vendor/
 node_modules/

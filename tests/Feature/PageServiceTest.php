@@ -26,7 +26,7 @@ it('renders a page with HTML', function (): void {
     $rendered = $service->getRenderedPage('home');
 
     expect($rendered)->not->toBeNull();
-    expect($rendered)->toHaveKeys(['title', 'excerpt', 'htmlContent', 'headings', 'slug', 'layout', 'meta']);
+    expect($rendered)->toHaveKeys(['title', 'excerpt', 'htmlContent', 'headings', 'slug', 'layout', 'meta', 'allowHtml', 'statistics', 'styles', 'scripts', 'linkErrors']);
     expect($rendered['htmlContent'])->toContain('This is the homepage content');
 });
 
@@ -101,4 +101,34 @@ it('returns an empty collection of pages when the content path does not exists',
     $service = resolve(PageService::class);
 
     expect($service->getSlugs())->toBeEmpty();
+});
+
+it('includes sidecar styles and scripts in the rendered page', function (): void {
+    $page = app(PageService::class)->getRenderedPage('about');
+
+    expect($page['styles'])->toBe('.about-hero { color: rebeccapurple; }')
+        ->and($page['scripts'])->toBe("console.log('about page');");
+});
+
+it('has null sidecar keys when no sidecar files exist', function (): void {
+    $page = app(PageService::class)->getRenderedPage('home');
+
+    expect($page['styles'])->toBeNull()
+        ->and($page['scripts'])->toBeNull();
+});
+
+it('renders sidecar css and js inline on the page response', function (): void {
+    $response = $this->get('/about');
+
+    $response->assertOk()
+        ->assertSee('<style>.about-hero { color: rebeccapurple; }</style>', false)
+        ->assertSee("<script>console.log('about page');</script>", false);
+});
+
+it('does not emit empty style or script tags without sidecars', function (): void {
+    $response = $this->get('/home');
+
+    $response->assertOk()
+        ->assertDontSee('<style></style>', false)
+        ->assertDontSee('<script></script>', false);
 });

@@ -33,3 +33,11 @@ it('returns 200 for an author with no matching posts using the Str::title fallba
 it('returns 404 for a blog post that does not exist', function (): void {
     $this->get('/blog/nonexistent-post')->assertStatus(404);
 });
+
+it('renders sidecar css and js inline on the blog post response', function (): void {
+    $response = $this->get('/blog/hello-world');
+
+    $response->assertOk()
+        ->assertSee('<style>.post-callout { border: 1px solid teal; }</style>', false)
+        ->assertSee("<script>console.log('hello world post');</script>", false);
+});

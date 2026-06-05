@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Pergament\Data\Page;
 use Pergament\Support\FrontMatterParser;
+use Pergament\Support\SidecarAssets;
 use Pergament\Support\UrlGenerator;
 
 final readonly class PageService
@@ -42,7 +43,7 @@ final readonly class PageService
     }
 
     /**
-     * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, layout: ?string, meta: array, allowHtml: bool, linkErrors: array<int, string>}|null
+     * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, layout: ?string, meta: array, allowHtml: bool, statistics: array, styles: ?string, scripts: ?string, linkErrors: array<int, string>}|null
      */
     public function getRenderedPage(string $slug): ?array
     {
@@ -68,6 +69,7 @@ final readonly class PageService
         $headings = $this->renderer->extractHeadings($html);
         $statsConfig = config('pergament.pages.statistics', []);
         $contentStats = $this->statistics->compute($page->content, $sourceFile, $statsConfig);
+        $sidecar = SidecarAssets::forMarkdownFile($sourceFile);
 
         return [
             'title' => $page->title,
@@ -79,6 +81,8 @@ final readonly class PageService
             'meta' => $page->meta,
             'allowHtml' => $allowHtml,
             'statistics' => $contentStats,
+            'styles' => $sidecar['styles'],
+            'scripts' => $sidecar['scripts'],
             'linkErrors' => $linkErrors,
         ];
     }

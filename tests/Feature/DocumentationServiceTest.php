@@ -156,3 +156,11 @@ it('does not rewrite absolute or anchor links in doc page content', function ():
     expect($rendered['htmlContent'])->not->toContain('/docs/media/getting-started/http');
     expect($rendered['htmlContent'])->not->toContain('/docs/media/getting-started/#');
 });
+
+it('includes sidecar styles and scripts in the rendered doc page', function (): void {
+    $page = app(DocumentationService::class)
+        ->getRenderedPage('getting-started', 'introduction');
+
+    expect($page['styles'])->toBe('.doc-note { background: lightyellow; }')
+        ->and($page['scripts'])->toBe("console.log('intro doc');");
+});

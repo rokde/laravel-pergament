@@ -212,6 +212,29 @@ External links (`http://`, `https://`), anchors (`#`), `mailto:` links, and link
 
 To make the browser save the file to disk instead of navigating to it, wrap the link in a `:::download` block (see Block directives above).
 
+## Page CSS & JS Assets
+
+Attach page-scoped styles and scripts to any single piece of content — no config required. Place a file with the **same basename** as the Markdown file, using a `.css` or `.js` extension, in the **same directory**. Its contents are embedded inline in that page's rendered output — CSS into the document `<head>`, JavaScript just before the closing `</body>` tag.
+
+| Content type | Markdown file | Sidecar files |
+|--------------|---------------|---------------|
+| Standalone page | `content/pages/about.md` | `content/pages/about.css`, `about.js` |
+| Blog post | `content/blog/{YYYY-MM-DD}-{slug}/post.md` | `post.css`, `post.js` (same directory) |
+| Documentation page | `content/docs/0-getting-started/01-introduction.md` | `01-introduction.css`, `01-introduction.js` |
+
+Both files are optional and independent — a page may have only CSS, only JS, both, or neither. You may attach at most one `.css` and one `.js` per Markdown file; the basename must match exactly.
+
+```
+content/pages/
+├── about.md     # the content
+├── about.css    # injected into <head> for /about only
+└── about.js     # injected before </body> for /about only
+```
+
+The contents are injected **inline and verbatim** — CSS inside a `<style>` tag, JavaScript inside a `<script>` tag. There is no separate request and no caching layer; the bytes ship with the page. This works the same way for live URLs and for the static site produced by `pergament:generate-static`.
+
+Because the content is injected raw, keeping it valid is your responsibility: avoid a literal `</style>` or `</script>` inside the file, as it would close the surrounding tag prematurely.
+
 ## GitHub-Style Alerts
 
 Use GitHub-style alert blocks to highlight important information:
@@ -256,6 +279,7 @@ Do:
 - Place media files (images, PDFs, ZIPs, etc.) in the same directory as the content that references them
 - Use numeric prefixes consistently for doc ordering (two digits: `01`, `02`, etc.)
 - Use `:::download` blocks when you want files saved to disk rather than opened in the browser
+- Attach page-scoped styles/scripts with a same-named `.css`/`.js` file next to the Markdown (see Page CSS & JS Assets)
 
 Don't:
 - Use absolute filesystem paths for images or files in Markdown — use relative paths

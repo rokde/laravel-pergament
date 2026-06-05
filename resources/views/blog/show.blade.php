@@ -115,4 +115,17 @@
         </nav>
     </article>
 </div>
+
+{{-- Sidecar assets --}}
+@if(!empty($post['styles']))
+@push('styles')
+<style>{!! $post['styles'] !!}</style>
+@endpush
+@endif
+
+@if(!empty($post['scripts']))
+@push('scripts')
+<script>{!! $post['scripts'] !!}</script>
+@endpush
+@endif
 @endsection

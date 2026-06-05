@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## Unreleased
+
+- feat: page-scoped CSS/JS sidecar assets — drop a same-named `.css`/`.js` next to a Markdown file to inject it inline (runtime + static)
+
 ## v1.4.3 - 2026-06-05
 
 **Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.4.2...v1.4.3
