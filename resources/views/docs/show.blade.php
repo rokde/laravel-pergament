@@ -52,7 +52,7 @@
     </nav>
 </article>
 
-{{-- Sidecar assets --}}
+{{-- Sidecar assets — stacks resolve into layouts.app @stack('styles') / @stack('scripts') --}}
 @if(!empty($page['styles']))
 @push('styles')
 <style>{!! $page['styles'] !!}</style>
