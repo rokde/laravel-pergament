@@ -131,6 +131,7 @@ Simple Markdown files for standalone pages like About, Contact, etc.
 title: "About Us"
 excerpt: "Learn about our team"
 layout: landing
+allow_html: true
 seo.title: "About - My Site"
 ---
 ```
@@ -138,6 +139,9 @@ seo.title: "About - My Site"
 **Layout options:**
 - Default (omit `layout`): Standard centered content
 - `layout: landing`: Full-width layout with block directive support
+
+**Custom HTML pages:**
+- `allow_html: true`: Use for standalone pages that include custom HTML/CSS fragments. Pergament still renders the content through Markdown, but skips the default `prose` wrapper so the page can control its own layout and styling.
 
 **Block directives for landing pages:**
 ```markdown

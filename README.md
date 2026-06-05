@@ -255,10 +255,13 @@ authors:
 title: About Us
 excerpt: Learn more about our company
 layout: landing
+allow_html: true
 ---
 ```
 
 Set `layout: landing` to use the full-width landing page layout instead of the default centered content layout.
+
+Set `allow_html: true` on standalone pages that include custom HTML/CSS fragments. The page content is still rendered from Markdown, but Pergament skips the default `prose` content wrapper so your HTML layout can control its own structure and styling.
 
 ### SEO Overrides
 
@@ -463,6 +466,7 @@ Create `content/pages/home.md`:
 ---
 title: "My Product"
 layout: landing
+allow_html: true
 seo.title: "My Product - The Best Solution"
 seo.description: "Discover the best solution for your needs"
 ---
