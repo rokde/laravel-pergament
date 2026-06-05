@@ -481,6 +481,20 @@ it('rewrites pagination query strings to static .html paths', function (): void 
     expect($content)->not->toContain('?page=');
 });
 
+it('embeds sidecar css and js inline in static output', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    expect(file_exists($this->outputDir.'/about.html'))->toBeTrue();
+
+    $html = file_get_contents($this->outputDir.'/about.html');
+
+    expect($html)
+        ->toContain('<style>.about-hero { color: rebeccapurple; }</style>')
+        ->toContain("<script>console.log('about page');</script>");
+});
+
 it('reports broken content links during static generation', function (): void {
     config()->set('pergament.content_path', $this->tempDir);
     mkdir($this->tempDir.'/pages', 0755, true);
