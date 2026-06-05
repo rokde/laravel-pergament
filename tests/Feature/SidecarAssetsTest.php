@@ -35,6 +35,13 @@ it('returns nulls for a null path', function () {
         ->and($result['scripts'])->toBeNull();
 });
 
+it('returns nulls for a non-.md path', function () {
+    $result = SidecarAssets::forMarkdownFile('/some/file.html');
+
+    expect($result['styles'])->toBeNull()
+        ->and($result['scripts'])->toBeNull();
+});
+
 it('trims sidecar contents', function () {
     $dir = sys_get_temp_dir().'/pergament-sidecar-'.uniqid();
     mkdir($dir);
