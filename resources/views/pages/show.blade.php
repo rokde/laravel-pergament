@@ -88,4 +88,16 @@
     }
 </style>
 @endpush
+
+@if(!empty($page['styles']))
+@push('styles')
+<style>{!! $page['styles'] !!}</style>
+@endpush
+@endif
+
+@if(!empty($page['scripts']))
+@push('scripts')
+<script>{!! $page['scripts'] !!}</script>
+@endpush
+@endif
 @endsection
