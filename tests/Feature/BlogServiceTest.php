@@ -151,3 +151,10 @@ it('does not rewrite absolute or anchor links in blog post content', function ()
     expect($rendered['htmlContent'])->not->toContain('/blog/media/hello-world/http');
     expect($rendered['htmlContent'])->not->toContain('/blog/media/hello-world/#');
 });
+
+it('includes sidecar styles and scripts in the rendered post', function (): void {
+    $post = app(BlogService::class)->getRenderedPost('hello-world');
+
+    expect($post['styles'])->toBe('.post-callout { border: 1px solid teal; }')
+        ->and($post['scripts'])->toBe("console.log('hello world post');");
+});

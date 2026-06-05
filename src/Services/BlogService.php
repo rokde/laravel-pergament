@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Pergament\Data\Author;
 use Pergament\Data\BlogPost;
 use Pergament\Support\FrontMatterParser;
+use Pergament\Support\SidecarAssets;
 use Pergament\Support\UrlGenerator;
 
 final readonly class BlogService
@@ -54,7 +55,7 @@ final readonly class BlogService
     /**
      * Get a rendered post with HTML content.
      *
-     * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, date: Carbon, category: ?string, tags: array, authors: array, meta: array, previousPost: array|null, nextPost: array|null, linkErrors: array<int, string>}|null
+     * @return array{title: string, excerpt: string, htmlContent: string, headings: array, slug: string, date: Carbon, category: ?string, tags: array, authors: array, meta: array, statistics: array, styles: ?string, scripts: ?string, previousPost: array|null, nextPost: array|null, linkErrors: array<int, string>}|null
      */
     public function getRenderedPost(string $slug): ?array
     {
@@ -88,6 +89,7 @@ final readonly class BlogService
         $blogPrefix = config('pergament.blog.url_prefix', 'blog');
         $statsConfig = config('pergament.blog.statistics', []);
         $contentStats = $this->statistics->compute($post->content, $sourceFile, $statsConfig);
+        $sidecar = SidecarAssets::forMarkdownFile($sourceFile);
 
         return [
             'title' => $post->title,
@@ -101,6 +103,8 @@ final readonly class BlogService
             'authors' => $post->authors,
             'meta' => $post->meta,
             'statistics' => $contentStats,
+            'styles' => $sidecar['styles'],
+            'scripts' => $sidecar['scripts'],
             'previousPost' => $index !== false && $index > 0 ? [
                 'title' => $posts->get($index - 1)->title,
                 'url' => UrlGenerator::path($blogPrefix, $posts->get($index - 1)->slug),
