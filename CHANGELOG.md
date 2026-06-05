@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.4.2 - 2026-06-05
+
+### What's Changed
+
+* feat(pages): support html frontmatter rendering by @rokde in https://github.com/rokde/laravel-pergament/pull/65
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.4.1...v1.4.2
+
 ## v1.4.1 - 2026-06-03
 
 ### What's Changed
