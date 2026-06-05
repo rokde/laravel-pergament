@@ -58,6 +58,8 @@ MARKDOWN);
         '--content-path' => $this->tempDir,
     ])->assertSuccessful();
 
+    expect(file_exists($this->outputDir.'/index.html'))->toBeTrue();
+
     $html = file_get_contents($this->outputDir.'/index.html');
 
     expect($html)->toContain('<style>')
