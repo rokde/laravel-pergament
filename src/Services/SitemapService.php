@@ -16,8 +16,13 @@ final readonly class SitemapService
 
     /**
      * Generate a sitemap XML string with all discoverable URLs.
+     *
+     * Pass $htmlExtension = true when generating for a static site where every
+     * content page is written as a .html file (e.g. blog/hello-world.html).
+     * Index/directory URLs (root, blog index) are intentionally left unchanged
+     * because static hosts serve those from index.html automatically.
      */
-    public function generate(): string
+    public function generate(bool $htmlExtension = false): string
     {
         $urls = [];
 
@@ -28,8 +33,9 @@ final readonly class SitemapService
 
             foreach ($this->docs->getChapters() as $chapter) {
                 foreach ($chapter->pages as $page) {
+                    $loc = UrlGenerator::url($docsPrefix, $chapter->slug, $page->slug);
                     $urls[] = [
-                        'loc' => UrlGenerator::url($docsPrefix, $chapter->slug, $page->slug),
+                        'loc' => $htmlExtension ? $loc.'.html' : $loc,
                         'priority' => '0.8',
                     ];
                 }
@@ -41,23 +47,26 @@ final readonly class SitemapService
             $urls[] = ['loc' => UrlGenerator::url($blogPrefix), 'priority' => '0.7'];
 
             foreach ($this->blog->getPosts() as $post) {
+                $loc = UrlGenerator::url($blogPrefix, $post->slug);
                 $urls[] = [
-                    'loc' => UrlGenerator::url($blogPrefix, $post->slug),
+                    'loc' => $htmlExtension ? $loc.'.html' : $loc,
                     'lastmod' => $post->date->toDateString(),
                     'priority' => '0.6',
                 ];
             }
 
             foreach ($this->blog->getCategories() as $category) {
+                $loc = UrlGenerator::url($blogPrefix, 'category', Str::slug($category));
                 $urls[] = [
-                    'loc' => UrlGenerator::url($blogPrefix, 'category', Str::slug($category)),
+                    'loc' => $htmlExtension ? $loc.'.html' : $loc,
                     'priority' => '0.5',
                 ];
             }
 
             foreach ($this->blog->getTags() as $tag) {
+                $loc = UrlGenerator::url($blogPrefix, 'tag', Str::slug($tag));
                 $urls[] = [
-                    'loc' => UrlGenerator::url($blogPrefix, 'tag', Str::slug($tag)),
+                    'loc' => $htmlExtension ? $loc.'.html' : $loc,
                     'priority' => '0.4',
                 ];
             }

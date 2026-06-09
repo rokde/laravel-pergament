@@ -223,6 +223,42 @@ it('generates sitemap.xml', function (): void {
     expect(file_get_contents($this->outputDir.'/sitemap.xml'))->toContain('<urlset');
 });
 
+it('generates sitemap.xml with .html urls for static hosting', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $xml = file_get_contents($this->outputDir.'/sitemap.xml');
+
+    expect($xml)->toContain('hello-world.html')
+        ->and($xml)->toContain('getting-started/introduction.html')
+        ->and($xml)->toContain('/blog/category/general.html');
+});
+
+it('generates doc page with .html canonical url', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+    $html = file_get_contents($this->outputDir.'/'.$docsPrefix.'/getting-started/introduction.html');
+
+    expect($html)->toContain('rel="canonical"')
+        ->and($html)->toContain('/docs/getting-started/introduction.html');
+});
+
+it('generates blog post with .html canonical url', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $blogPrefix = config('pergament.blog.url_prefix', 'blog');
+    $html = file_get_contents($this->outputDir.'/'.$blogPrefix.'/hello-world.html');
+
+    expect($html)->toContain('rel="canonical"')
+        ->and($html)->toContain('/blog/hello-world.html');
+});
+
 it('generates robots.txt', function (): void {
     $this->artisan('pergament:generate-static', [
         'output-dir' => $this->outputDir,
