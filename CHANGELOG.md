@@ -2,6 +2,16 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.4.5 - 2026-06-15
+
+### What's Changed
+
+* build(deps): bump actions/checkout from 4.3.1 to 6.0.3 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/67
+* build(deps): bump anthropics/claude-code-action from 1.0.133 to 1.0.140 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/68
+* fix: generate .html urls in static sitemap and canonical tags by @rokde in https://github.com/rokde/laravel-pergament/pull/70
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.4.4...v1.4.5
+
 ## v1.4.4 - 2026-06-05
 
 ### What's Changed
