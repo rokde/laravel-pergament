@@ -31,3 +31,25 @@ it('includes doc page urls', function (): void {
     expect($xml)->toContain('/docs/getting-started/configuration');
     expect($xml)->toContain('/docs/advanced/customization');
 });
+
+it('appends .html to content page urls when htmlExtension is true', function (): void {
+    $service = resolve(SitemapService::class);
+    $xml = $service->generate(htmlExtension: true);
+
+    expect($xml)->toContain('/docs/getting-started/introduction.html');
+    expect($xml)->toContain('/docs/getting-started/configuration.html');
+    expect($xml)->toContain('/docs/advanced/customization.html');
+    expect($xml)->toContain('/blog/hello-world.html');
+    expect($xml)->toContain('/blog/category/general.html');
+    expect($xml)->toContain('/blog/tag/');
+});
+
+it('does not append .html to root or blog index urls when htmlExtension is true', function (): void {
+    $service = resolve(SitemapService::class);
+    $xml = $service->generate(htmlExtension: true);
+
+    expect($xml)->toContain('<loc>http://localhost/</loc>');
+    expect($xml)->toContain('<loc>http://localhost/blog</loc>');
+    expect($xml)->not->toContain('http://localhost/.html');
+    expect($xml)->not->toContain('http://localhost/blog.html');
+});

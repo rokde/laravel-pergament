@@ -303,7 +303,7 @@ final class GenerateStaticCommand extends Command
                     }
 
                     $this->collectLinkErrors($pageData);
-                    $canonicalUrl = UrlGenerator::url($docsPrefix, $chapter->slug, $page->slug);
+                    $canonicalUrl = UrlGenerator::url($docsPrefix, $chapter->slug, $page->slug).'.html';
                     $seo = $seoService->resolve($pageData['meta'], $pageData['title'], $canonicalUrl);
 
                     $html = view('pergament::docs.show', [
@@ -372,7 +372,7 @@ final class GenerateStaticCommand extends Command
                 }
 
                 $this->collectLinkErrors($rendered);
-                $canonicalUrl = UrlGenerator::url($blogPrefix, $post->slug);
+                $canonicalUrl = UrlGenerator::url($blogPrefix, $post->slug).'.html';
                 $seo = $seoService->resolve($rendered['meta'], $rendered['title'], $canonicalUrl);
 
                 $html = view('pergament::blog.show', [
@@ -397,7 +397,7 @@ final class GenerateStaticCommand extends Command
                 $posts = $blogService->getPostsByCategory($category);
                 $categorySlug = Str::slug($category);
                 $categoryTitle = Str::title(str_replace('-', ' ', $categorySlug));
-                $canonicalUrl = UrlGenerator::url($blogPrefix, 'category', $categorySlug);
+                $canonicalUrl = UrlGenerator::url($blogPrefix, 'category', $categorySlug).'.html';
                 $seo = $seoService->resolve([], $categoryTitle, $canonicalUrl);
 
                 $html = view('pergament::blog.category', [
@@ -423,7 +423,7 @@ final class GenerateStaticCommand extends Command
                 $posts = $blogService->getPostsByTag($tag);
                 $tagSlug = Str::slug($tag);
                 $tagTitle = Str::title(str_replace('-', ' ', $tagSlug));
-                $canonicalUrl = UrlGenerator::url($blogPrefix, 'tag', $tagSlug);
+                $canonicalUrl = UrlGenerator::url($blogPrefix, 'tag', $tagSlug).'.html';
                 $seo = $seoService->resolve([], $tagTitle, $canonicalUrl);
 
                 $html = view('pergament::blog.tag', [
@@ -447,7 +447,7 @@ final class GenerateStaticCommand extends Command
         foreach ($blogService->getAuthors() as $author) {
             try {
                 $posts = $blogService->getPostsByAuthor($author->slug());
-                $canonicalUrl = UrlGenerator::url($blogPrefix, 'author', $author->slug());
+                $canonicalUrl = UrlGenerator::url($blogPrefix, 'author', $author->slug()).'.html';
                 $seo = $seoService->resolve([], $author->name, $canonicalUrl);
 
                 $html = view('pergament::blog.author', [
@@ -482,7 +482,7 @@ final class GenerateStaticCommand extends Command
                 }
 
                 $this->collectLinkErrors($page);
-                $canonicalUrl = UrlGenerator::url($slug);
+                $canonicalUrl = UrlGenerator::url($slug).'.html';
                 $seo = $seoService->resolve($page['meta'], $page['title'], $canonicalUrl);
 
                 $html = view('pergament::pages.show', [
@@ -516,7 +516,7 @@ final class GenerateStaticCommand extends Command
     private function generateSitemap(SitemapService $sitemapService, string $outputDir): void
     {
         try {
-            $this->writeFile($outputDir.'/sitemap.xml', $sitemapService->generate());
+            $this->writeFile($outputDir.'/sitemap.xml', $sitemapService->generate(htmlExtension: true));
         } catch (Throwable $e) {
             $this->errors[] = "Sitemap: {$e->getMessage()}";
         }
