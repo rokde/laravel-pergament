@@ -11,3 +11,4 @@ import './toc.js';
 import './heading-anchors.js';
 import './tts.js';
 import './page-actions.js';
+import './webmcp.js';
