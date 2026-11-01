@@ -2,6 +2,27 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.5.0 - WebMCP - 2026-11-01
+
+### What's Changed
+
+* feat: expose search as a WebMCP tool by @rokde in https://github.com/rokde/laravel-pergament/pull/90
+* build(deps): bump shivammathur/setup-php from 2.37.1 to 2.37.2 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/71
+* build(deps): bump anthropics/claude-code-action from 1.0.140 to 1.0.148 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/72
+* build(deps): bump actions/setup-node from 6.4.0 to 7.0.0 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/85
+* build(deps): bump actions/checkout from 6.0.3 to 7.0.1 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/83
+* build(deps): bump actions/cache from 5.0.5 to 6.1.0 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/76
+* build(deps-dev): bump postcss from 8.5.15 to 8.5.25 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/84
+* build(deps-dev): bump vite from 8.0.14 to 8.0.16 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/73
+* build(deps): bump stefanzweifel/git-auto-commit-action from 7.1.0 to 7.2.0 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/78
+* build(deps): bump anthropics/claude-code-action from 1.0.148 to 1.0.183 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/82
+* build(deps): bump anthropics/claude-code-action from 1.0.183 to 1.0.231 in the github-actions group across 1 directory by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/86
+* build(deps-dev): bump vite from 8.0.16 to 8.1.6 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/89
+* build(deps): bump source-map-js from 1.2.1 to 1.2.2 by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/87
+* build(deps): bump the github-actions group with 3 updates by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/88
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.4.5...v1.5.0
+
 ## v1.4.5 - 2026-06-15
 
 ### What's Changed
