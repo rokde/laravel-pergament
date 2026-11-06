@@ -75,10 +75,6 @@
 
     if (!modelContext || typeof modelContext.registerTool !== 'function') return;
 
-    // Browsers with declarative support already register the form as "search".
-    const declarativeSupported = typeof SubmitEvent !== 'undefined' && 'agentInvoked' in SubmitEvent.prototype;
-    if (form && declarativeSupported) return;
-
     // Older implementations expect an MCP-style result; the current spec takes plain data.
     function result(data, isError) {
         if (!isLegacy) {
@@ -89,37 +85,56 @@
         return isError ? { content: [{ type: 'text', text: text }], isError: true } : { content: [{ type: 'text', text: text }] };
     }
 
+    const TOOL = {
+        name: 'search',
+        title: 'Search',
+        description: DESCRIPTION,
+        inputSchema: {
+            type: 'object',
+            properties: {
+                query: { type: 'string', description: 'Text to search for' },
+            },
+            required: ['query'],
+        },
+        annotations: { readOnlyHint: true },
+        execute: function (args) {
+            const query = String((args && args.query) || '').trim();
+            if (!query) {
+                return result('Please provide a search query.', true);
+            }
+
+            return search(query)
+                .then(function (items) { return result(items, false); })
+                .catch(function () { return result('Search failed.', true); });
+        },
+    };
+
     const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
 
-    try {
-        const registered = modelContext.registerTool({
-            name: 'search',
-            title: 'Search',
-            description: DESCRIPTION,
-            inputSchema: {
-                type: 'object',
-                properties: {
-                    query: { type: 'string', description: 'Text to search for' },
-                },
-                required: ['query'],
-            },
-            annotations: { readOnlyHint: true },
-            execute: function (args) {
-                const query = String((args && args.query) || '').trim();
-                if (!query) {
-                    return result('Please provide a search query.', true);
-                }
-
-                return search(query)
-                    .then(function (items) { return result(items, false); })
-                    .catch(function () { return result('Search failed.', true); });
-            },
-        }, controller ? { signal: controller.signal } : undefined);
-
-        if (registered && typeof registered.catch === 'function') {
-            registered.catch(function () {});
+    function register() {
+        try {
+            const registered = modelContext.registerTool(TOOL, controller ? { signal: controller.signal } : undefined);
+            if (registered && typeof registered.catch === 'function') {
+                registered.catch(function () {});
+            }
+        } catch (e) {
+            // A tool named "search" already exists.
         }
-    } catch (e) {
-        // A tool named "search" may already exist (e.g. registered by the browser).
     }
+
+    // The declarative form may already provide "search". Only skip our own
+    // registration when the browser confirms it, so a hidden or unsupported
+    // form never leaves the page without a tool.
+    if (typeof modelContext.getTools !== 'function') {
+        register();
+        return;
+    }
+
+    Promise.resolve()
+        .then(function () { return modelContext.getTools(); })
+        .then(function (tools) {
+            const exists = Array.isArray(tools) && tools.some(function (t) { return t && t.name === 'search'; });
+            if (!exists) register();
+        })
+        .catch(register);
 })();

@@ -312,6 +312,11 @@ return [
         // (document.modelContext, declarative form attributes and a
         // /.well-known/webmcp manifest). Requires search to be enabled.
         'webmcp' => true,
+
+        // Origin Trial token for the WebMCP API. Lets visitors on Chrome
+        // and Edge use the tools without enabling a browser flag. Tokens
+        // are bound to one origin: https://developer.chrome.com/origintrials
+        'webmcp_origin_trial' => env('PERGAMENT_WEBMCP_ORIGIN_TRIAL'),
     ],
 
     /*
