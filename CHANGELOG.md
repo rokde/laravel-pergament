@@ -2,6 +2,14 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.5.3 - 2026-11-06
+
+### What's Changed
+
+* feat: scroll active docs nav item into view by @rokde in https://github.com/rokde/laravel-pergament/pull/100
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.5.2...v1.5.3
+
 ## v1.5.2 - 2026-11-06
 
 ### What's Changed
