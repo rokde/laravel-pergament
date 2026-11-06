@@ -583,3 +583,18 @@ it('skips the webmcp manifest when webmcp is disabled', function (): void {
 
     expect(file_exists($this->outputDir.'/.well-known/webmcp'))->toBeFalse();
 });
+
+it('rewrites relative .md links with anchors to relative .html page links', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful()
+        ->doesntExpectOutputToContain('Broken link');
+
+    $docsPrefix = config('pergament.docs.url_prefix', 'docs');
+    $html = file_get_contents($this->outputDir.'/'.$docsPrefix.'/advanced/customization.html');
+
+    expect($html)->toContain('href="../getting-started/configuration.html#basic-setup"')
+        ->and($html)->toContain('href="customization.html#details"')
+        ->and($html)->toContain('href="#details"')
+        ->and($html)->not->toContain('/media/');
+});

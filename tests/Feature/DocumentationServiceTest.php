@@ -164,3 +164,14 @@ it('includes sidecar styles and scripts in the rendered doc page', function (): 
     expect($page['styles'])->toBe('.doc-note { background: lightyellow; }')
         ->and($page['scripts'])->toBe("console.log('intro doc');");
 });
+
+it('resolves relative .md links with anchors to doc page urls instead of media paths', function (): void {
+    $rendered = resolve(DocumentationService::class)->getRenderedPage('advanced', 'customization');
+
+    expect($rendered['linkErrors'])->toBeEmpty()
+        ->and($rendered['htmlContent'])->toContain('href="/docs/getting-started/configuration#basic-setup"')
+        ->and($rendered['htmlContent'])->toContain('href="/docs/getting-started/configuration?page=2#basic-setup"')
+        ->and($rendered['htmlContent'])->toContain('href="/docs/advanced/customization#details"')
+        ->and($rendered['htmlContent'])->toContain('href="#details"')
+        ->and($rendered['htmlContent'])->not->toContain('/docs/media/');
+});

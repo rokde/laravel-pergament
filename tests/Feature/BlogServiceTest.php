@@ -158,3 +158,12 @@ it('includes sidecar styles and scripts in the rendered post', function (): void
     expect($post['styles'])->toBe('.post-callout { border: 1px solid teal; }')
         ->and($post['scripts'])->toBe("console.log('hello world post');");
 });
+
+it('resolves relative .md links with anchors to blog post urls instead of media paths', function (): void {
+    $rendered = resolve(BlogService::class)->getRenderedPost('getting-started-with-laravel');
+
+    expect($rendered['linkErrors'])->toBeEmpty()
+        ->and($rendered['htmlContent'])->toContain('href="/blog/hello-world#what-we-do"')
+        ->and($rendered['htmlContent'])->toContain('href="#more"')
+        ->and($rendered['htmlContent'])->not->toContain('/blog/media/');
+});
