@@ -22,7 +22,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Pushes made with GITHUB_TOKEN don't trigger workflows, so the rebuilt
+          # commit would never get a tests-passed check. A deploy key push does.
+          ssh-key: ${{ secrets.CI_DEPLOY_KEY }}
 
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v6
