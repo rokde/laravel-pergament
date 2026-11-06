@@ -16,7 +16,7 @@
 
         {{-- Sidebar --}}
         <aside id="docs-sidebar" class="hidden lg:block lg:col-span-3 print:hidden">
-            <nav class="sticky top-24 overflow-y-auto max-h-[calc(100vh-8rem)] pb-8 pr-4">
+            <nav id="docs-sidebar-nav" class="sticky top-24 overflow-y-auto max-h-[calc(100vh-8rem)] pb-8 pr-4">
                 @isset($navigation)
                     @foreach($navigation as $chapter)
                         <div class="mb-6">
@@ -31,6 +31,7 @@
                                     <li>
                                         <a
                                             href="{{ route('pergament.docs.show', ['chapter' => $chapter['slug'], 'page' => $navPage['slug']]) }}"
+                                            @if($isActive) aria-current="page" data-docs-nav-active @endif
                                             class="block px-3 py-1.5 text-sm rounded-md transition-colors {{ $isActive ? 'pergament-active-nav' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800' }}"
                                         >
                                             {{ $navPage['title'] }}
