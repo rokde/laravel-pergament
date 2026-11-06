@@ -18,6 +18,17 @@ final class WebMcpManifest
             && (bool) config('pergament.search.webmcp', true);
     }
 
+    public static function originTrialToken(): ?string
+    {
+        if (! self::enabled()) {
+            return null;
+        }
+
+        $token = trim((string) config('pergament.search.webmcp_origin_trial', ''));
+
+        return $token === '' ? null : $token;
+    }
+
     /**
      * @return array<string, mixed>
      */

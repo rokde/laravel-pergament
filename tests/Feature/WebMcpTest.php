@@ -71,3 +71,28 @@ it('renders schema.org json-ld in the page head', function (): void {
         ->and($data['@graph'][0]['@type'])->toBe('WebSite')
         ->and($data['@graph'][1]['@type'])->toBe('WebPage');
 });
+
+it('renders the webmcp origin trial token when configured', function (): void {
+    config()->set('pergament.search.webmcp_origin_trial', 'test-token-123');
+
+    $this->get('/about')
+        ->assertStatus(200)
+        ->assertSee('<meta http-equiv="origin-trial" content="test-token-123">', false);
+});
+
+it('omits the origin trial meta tag without a token', function (): void {
+    config()->set('pergament.search.webmcp_origin_trial', null);
+
+    $this->get('/about')
+        ->assertStatus(200)
+        ->assertDontSee('http-equiv="origin-trial"', false);
+});
+
+it('omits the origin trial meta tag when webmcp is disabled', function (): void {
+    config()->set('pergament.search.webmcp_origin_trial', 'test-token-123');
+    config()->set('pergament.search.webmcp', false);
+
+    $this->get('/about')
+        ->assertStatus(200)
+        ->assertDontSee('http-equiv="origin-trial"', false);
+});

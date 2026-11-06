@@ -595,6 +595,16 @@ With `search.webmcp` enabled (default), the site search is exposed to in-browser
 
 Set `search.webmcp` to `false` to turn these off.
 
+The `search` tool is registered imperatively unless the browser already lists it from the declarative form, so the site always exposes one `search` tool.
+
+Browsers only expose WebMCP when it is switched on. For local testing, enable `chrome://flags/#enable-webmcp-testing`. Visitors on stable Chrome and Edge need an [Origin Trial](https://developer.chrome.com/origintrials) token, which you register for your origin and set as:
+
+```dotenv
+PERGAMENT_WEBMCP_ORIGIN_TRIAL=your-token
+```
+
+Pergament then adds `<meta http-equiv="origin-trial">` to every page, including the static export.
+
 Independently of WebMCP, every page includes a Schema.org JSON-LD block (`WebSite` plus `WebPage`, or `Article` when `seo.og_type: article` is set).
 
 ## Blade Components
