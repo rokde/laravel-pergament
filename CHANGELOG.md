@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.5.2 - 2026-11-06
+
+### What's Changed
+
+* fix: resolve relative .md links with #anchor (#97) by @rokde in https://github.com/rokde/laravel-pergament/pull/98
+* feat: WebMCP origin trial token and robust tool registration by @rokde in https://github.com/rokde/laravel-pergament/pull/99
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.5.1...v1.5.2
+
 ## v1.5.1 - 2026-11-06
 
 ### What's Changed
