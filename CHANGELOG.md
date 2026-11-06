@@ -2,6 +2,19 @@
 
 All notable changes to `laravel-pergament` will be documented in this file.
 
+## v1.5.1 - 2026-11-06
+
+### What's Changed
+
+* ci: fix Dependabot auto-merge by @rokde in https://github.com/rokde/laravel-pergament/pull/92
+* ci: push changelog with deploy key by @rokde in https://github.com/rokde/laravel-pergament/pull/93
+* build(deps): bump the github-actions group across 1 directory with 2 updates by @dependabot[bot] in https://github.com/rokde/laravel-pergament/pull/91
+* ci: add PHP 8.6 to test matrix by @rokde in https://github.com/rokde/laravel-pergament/pull/94
+* ci: push rebuilt assets with a deploy key by @rokde in https://github.com/rokde/laravel-pergament/pull/96
+* feat: make WebMCP tools discoverable by @rokde in https://github.com/rokde/laravel-pergament/pull/95
+
+**Full Changelog**: https://github.com/rokde/laravel-pergament/compare/v1.5.0...v1.5.1
+
 ## v1.5.0 - WebMCP - 2026-11-01
 
 ### What's Changed
