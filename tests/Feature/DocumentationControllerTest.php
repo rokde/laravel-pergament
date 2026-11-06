@@ -21,3 +21,11 @@ it('renders sidecar css and js inline on the doc page response', function (): vo
         ->assertSee('<style>.doc-note { background: lightyellow; }</style>', false)
         ->assertSee("<script>console.log('intro doc');</script>", false);
 });
+
+it('marks the active sidebar nav link with aria-current', function (): void {
+    $html = $this->get('/docs/getting-started/introduction')->assertOk()->getContent();
+
+    expect(substr_count($html, 'aria-current="page"'))->toBe(1)
+        ->and($html)->toContain('id="docs-sidebar-nav"')
+        ->and($html)->toMatch('/<a\s[^>]*href="[^"]*getting-started\/introduction"[^>]*aria-current="page"/s');
+});
