@@ -309,7 +309,8 @@ return [
         'enabled' => true,
 
         // Expose a "search" tool to in-browser AI agents via WebMCP
-        // (navigator.modelContext). Requires search to be enabled.
+        // (document.modelContext, declarative form attributes and a
+        // /.well-known/webmcp manifest). Requires search to be enabled.
         'webmcp' => true,
     ],
 

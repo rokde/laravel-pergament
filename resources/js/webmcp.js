@@ -2,12 +2,14 @@
     const cfg = window.PergamentConfig || {};
     if (!cfg.webMcp || !cfg.searchUrl) return;
 
-    const modelContext = navigator.modelContext;
-    if (!modelContext || typeof modelContext.registerTool !== 'function') return;
+    // Current spec: document.modelContext. Older Chrome builds and polyfills: navigator.modelContext.
+    const modelContext = document.modelContext || navigator.modelContext;
+    const isLegacy = !document.modelContext && !!navigator.modelContext;
 
     const searchBase = new URL(cfg.searchUrl, window.location.href);
     const isStatic = searchBase.pathname.endsWith('.json');
     const LIMIT = 20;
+    const DESCRIPTION = 'Search this site\'s documentation, blog posts and pages. Returns matching titles, excerpts and URLs.';
     let staticIndex = null;
 
     function absolute(u) {
@@ -44,37 +46,80 @@
             .then(function (r) { return r.json(); });
     }
 
-    modelContext.registerTool({
-        name: 'search',
-        description: 'Search this site\'s documentation, blog posts and pages. Returns matching titles, excerpts and URLs.',
-        inputSchema: {
-            type: 'object',
-            properties: {
-                query: { type: 'string', description: 'Text to search for' },
-            },
-            required: ['query'],
-        },
-        annotations: { readOnlyHint: true },
-        execute: function (args) {
-            const query = String((args && args.query) || '').trim();
-            if (!query) {
-                return { content: [{ type: 'text', text: 'Please provide a search query.' }], isError: true };
-            }
-
-            return fetchResults(query).then(function (results) {
-                const items = (Array.isArray(results) ? results : []).slice(0, LIMIT).map(function (it) {
-                    return {
-                        title: it.title || '',
-                        excerpt: it.excerpt || '',
-                        url: absolute(it.url),
-                        type: it.type || '',
-                    };
-                });
-
-                return { content: [{ type: 'text', text: JSON.stringify(items) }] };
-            }).catch(function () {
-                return { content: [{ type: 'text', text: 'Search failed.' }], isError: true };
+    function search(query) {
+        return fetchResults(query).then(function (results) {
+            return (Array.isArray(results) ? results : []).slice(0, LIMIT).map(function (it) {
+                return {
+                    title: it.title || '',
+                    excerpt: it.excerpt || '',
+                    url: absolute(it.url),
+                    type: it.type || '',
+                };
             });
-        },
-    });
+        });
+    }
+
+    // Declarative WebMCP: the header search form carries toolname/tooldescription.
+    // When an agent submits it, answer with JSON results instead of navigating.
+    const form = document.querySelector('form[data-pergament-webmcp-form]');
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            if (!event.agentInvoked || typeof event.respondWith !== 'function') return;
+
+            event.preventDefault();
+            const input = form.querySelector('[name="q"]');
+            const query = String((input && input.value) || '').trim();
+            event.respondWith(query ? search(query) : Promise.resolve([]));
+        });
+    }
+
+    if (!modelContext || typeof modelContext.registerTool !== 'function') return;
+
+    // Browsers with declarative support already register the form as "search".
+    const declarativeSupported = typeof SubmitEvent !== 'undefined' && 'agentInvoked' in SubmitEvent.prototype;
+    if (form && declarativeSupported) return;
+
+    // Older implementations expect an MCP-style result; the current spec takes plain data.
+    function result(data, isError) {
+        if (!isLegacy) {
+            return isError ? Promise.reject(new Error(data)) : data;
+        }
+
+        const text = typeof data === 'string' ? data : JSON.stringify(data);
+        return isError ? { content: [{ type: 'text', text: text }], isError: true } : { content: [{ type: 'text', text: text }] };
+    }
+
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+
+    try {
+        const registered = modelContext.registerTool({
+            name: 'search',
+            title: 'Search',
+            description: DESCRIPTION,
+            inputSchema: {
+                type: 'object',
+                properties: {
+                    query: { type: 'string', description: 'Text to search for' },
+                },
+                required: ['query'],
+            },
+            annotations: { readOnlyHint: true },
+            execute: function (args) {
+                const query = String((args && args.query) || '').trim();
+                if (!query) {
+                    return result('Please provide a search query.', true);
+                }
+
+                return search(query)
+                    .then(function (items) { return result(items, false); })
+                    .catch(function () { return result('Search failed.', true); });
+            },
+        }, controller ? { signal: controller.signal } : undefined);
+
+        if (registered && typeof registered.catch === 'function') {
+            registered.catch(function () {});
+        }
+    } catch (e) {
+        // A tool named "search" may already exist (e.g. registered by the browser).
+    }
 })();

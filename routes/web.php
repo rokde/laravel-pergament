@@ -16,10 +16,12 @@ use Pergament\Http\Controllers\PwaController;
 use Pergament\Http\Controllers\RobotsController;
 use Pergament\Http\Controllers\SearchController;
 use Pergament\Http\Controllers\SitemapController;
+use Pergament\Http\Controllers\WebMcpController;
 use Pergament\Http\Middleware\MarkdownResponse;
 use Pergament\Http\Middleware\TrackPageView;
 use Pergament\Services\PageService;
 use Pergament\Support\UrlGenerator;
+use Pergament\Support\WebMcpManifest;
 
 // JS asset — static file takes priority when vendor:published; this route is the fallback
 Route::get('vendor/pergament/pergament.js', function () {
@@ -85,6 +87,11 @@ Route::get('vendor/pergament/fonts/{file}', function (?string $file = null) {
         'ETag' => $etag,
     ]);
 })->name('pergament.fonts');
+
+// WebMCP discovery manifest — well-known URIs live at the origin root
+if (WebMcpManifest::enabled()) {
+    Route::get('.well-known/webmcp', [WebMcpController::class, 'manifest'])->name('pergament.webmcp');
+}
 
 $basePrefix = UrlGenerator::basePrefix();
 
