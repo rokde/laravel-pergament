@@ -19,11 +19,13 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    # PHP 8.6 is not released yet; failures there must not block merges.
+    continue-on-error: ${{ matrix.experimental == true }}
     strategy:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        php: [ 8.5, 8.4 ]
+        php: [ 8.6, 8.5, 8.4 ]
         laravel: [ 13.*, 12.* ]
         stability: [ prefer-lowest, prefer-stable ]
         include:
@@ -31,6 +33,8 @@ jobs:
             testbench: 11.*
           - laravel: 12.*
             testbench: 10.*
+          - php: 8.6
+            experimental: true
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
@@ -57,7 +61,7 @@ jobs:
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
           composer require --dev "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-          composer update --${{ matrix.stability }} --prefer-dist --no-interaction
+          composer update --${{ matrix.stability }} --prefer-dist --no-interaction ${{ matrix.experimental && '--ignore-platform-req=php+' || '' }}
 
       - name: List Installed Dependencies
         run: composer show -D
