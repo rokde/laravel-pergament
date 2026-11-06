@@ -23,10 +23,17 @@
 
                 @if(config('pergament.search.enabled'))
                     <search>
-                        <form action="{{ route('pergament.search') }}" method="GET" class="relative">
+                        <form action="{{ route('pergament.search') }}" method="GET" class="relative"
+                            @if(\Pergament\Support\WebMcpManifest::enabled())
+                                toolname="search"
+                                tooldescription="{{ \Pergament\Support\WebMcpManifest::searchDescription() }}"
+                                data-pergament-webmcp-form
+                            @endif
+                        >
                             <input
                                 type="text"
                                 name="q"
+                                @if(\Pergament\Support\WebMcpManifest::enabled()) toolparamdescription="Text to search for" @endif
                                 placeholder="Search..."
                                 class="w-52 pl-3 pr-16 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 pergament-input"
                             >

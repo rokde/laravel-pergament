@@ -561,3 +561,25 @@ it('reports broken content links during static generation', function (): void {
     expect($content)->toContain('missing page');
     expect($content)->not->toContain('nonexistent.md');
 });
+
+it('generates the webmcp discovery manifest', function (): void {
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    $manifest = json_decode((string) file_get_contents($this->outputDir.'/.well-known/webmcp'), true);
+
+    expect($manifest['tools'][0]['name'])->toBe('search')
+        ->and($manifest['tools'][0]['url'])->toEndWith('/search.json')
+        ->and(file_exists($this->outputDir.'/.nojekyll'))->toBeTrue();
+});
+
+it('skips the webmcp manifest when webmcp is disabled', function (): void {
+    config()->set('pergament.search.webmcp', false);
+
+    $this->artisan('pergament:generate-static', [
+        'output-dir' => $this->outputDir,
+    ])->assertSuccessful();
+
+    expect(file_exists($this->outputDir.'/.well-known/webmcp'))->toBeFalse();
+});

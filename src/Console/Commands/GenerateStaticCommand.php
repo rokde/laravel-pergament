@@ -15,6 +15,7 @@ use Pergament\Services\SitemapService;
 use Pergament\Support\MarkdownExporter;
 use Pergament\Support\PortableLinkRewriter;
 use Pergament\Support\UrlGenerator;
+use Pergament\Support\WebMcpManifest;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Throwable;
@@ -124,6 +125,10 @@ final class GenerateStaticCommand extends Command
 
             if (config('pergament.llms.enabled', true)) {
                 $this->generateLlms($outputDir);
+            }
+
+            if (WebMcpManifest::enabled()) {
+                $this->generateWebMcpManifest($outputDir);
             }
 
             if (count($this->errors) > 0) {
@@ -543,6 +548,21 @@ final class GenerateStaticCommand extends Command
             $this->writeFile($outputDir.'/robots.txt', implode("\n", $lines));
         } catch (Throwable $e) {
             $this->errors[] = "Robots: {$e->getMessage()}";
+        }
+    }
+
+    private function generateWebMcpManifest(string $outputDir): void
+    {
+        try {
+            $this->writeFile(
+                $outputDir.'/.well-known/webmcp',
+                WebMcpManifest::toJson(UrlGenerator::url('search.json')),
+            );
+
+            // GitHub Pages (Jekyll) skips dot-directories like .well-known otherwise.
+            $this->writeFile($outputDir.'/.nojekyll', '');
+        } catch (Throwable $e) {
+            $this->errors[] = "WebMCP manifest: {$e->getMessage()}";
         }
     }
 

@@ -585,6 +585,18 @@ Search covers all three content types:
 | Post | Blog posts |
 | Page | Standalone pages |
 
+### WebMCP
+
+With `search.webmcp` enabled (default), the site search is exposed to in-browser AI agents via [WebMCP](https://webmachinelearning.github.io/webmcp/):
+
+- **Imperative tool** — a `search` tool registered on `document.modelContext` (falls back to `navigator.modelContext` for older browsers and polyfills)
+- **Declarative tool** — the header search form carries `toolname`, `tooldescription` and `toolparamdescription` attributes
+- **Discovery manifest** — `/.well-known/webmcp` lists the available tools as JSON (also written by the static export, together with a `.nojekyll` file so GitHub Pages serves it)
+
+Set `search.webmcp` to `false` to turn these off.
+
+Independently of WebMCP, every page includes a Schema.org JSON-LD block (`WebSite` plus `WebPage`, or `Article` when `seo.og_type: article` is set).
+
 ## Blade Components
 
 The header and footer are extracted as anonymous Blade components so you can publish and customise them independently without overriding the entire view set.
@@ -787,6 +799,7 @@ All routes are nested under the configured `prefix`. With the default `/` prefix
 | `/sitemap.xml` | XML sitemap |
 | `/robots.txt` | Robots.txt |
 | `/llms.txt` | LLMs.txt |
+| `/.well-known/webmcp` | WebMCP discovery manifest (always at the domain root) |
 
 With `prefix` set to `docs`, all routes become `/docs/...`, `/docs/blog/...`, etc.
 

@@ -44,3 +44,25 @@
 @if($seo->robots)
     <meta name="robots" content="{{ $seo->robots }}">
 @endif
+
+@php
+    $pergamentSiteName = (string) config('pergament.site.name', '');
+    $pergamentJsonLd = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'WebSite',
+                'name' => $pergamentSiteName,
+                'url' => \Pergament\Support\UrlGenerator::url(''),
+            ],
+            array_filter([
+                '@type' => $seo->ogType === 'article' ? 'Article' : 'WebPage',
+                ($seo->ogType === 'article' ? 'headline' : 'name') => $seo->title,
+                'description' => $seo->description ?: null,
+                'url' => $seo->canonical,
+                'image' => $seo->ogImage ?: null,
+            ]),
+        ],
+    ];
+@endphp
+<script type="application/ld+json">{!! json_encode($pergamentJsonLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
