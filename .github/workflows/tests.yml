@@ -64,3 +64,17 @@ jobs:
 
       - name: Tests
         run: composer test:ci
+
+  tests-passed:
+    name: tests-passed
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Check matrix result
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "Test matrix result: ${{ needs.test.result }}"
+            exit 1
+          fi
