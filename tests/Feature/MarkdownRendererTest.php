@@ -150,6 +150,20 @@ it('preserves anchor fragments in .md links', function (): void {
     expect($result['linkErrors'])->toBeEmpty();
 });
 
+it('preserves query strings and anchor fragments in relative .md links', function (): void {
+    $renderer = resolve(MarkdownRenderer::class);
+    $contentPath = config('pergament.content_path').'/'.config('pergament.docs.path', 'docs');
+    $sourceFile = $contentPath.'/1-advanced/01-customization.md';
+
+    $html = '<a href="../0-getting-started/02-configuration.md?page=2#basic-setup">Config</a>'
+        .'<a href="../../pages/about.md#team">About</a>';
+    $result = $renderer->resolveContentLinks($html, $sourceFile);
+
+    expect($result['html'])->toContain('href="/docs/getting-started/configuration?page=2#basic-setup"')
+        ->and($result['html'])->toContain('href="/about#team"')
+        ->and($result['linkErrors'])->toBeEmpty();
+});
+
 it('strips link and reports error for missing .md targets', function (): void {
     $renderer = resolve(MarkdownRenderer::class);
     $contentPath = config('pergament.content_path').'/'.config('pergament.docs.path', 'docs');

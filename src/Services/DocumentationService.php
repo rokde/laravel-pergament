@@ -301,7 +301,7 @@ final readonly class DocumentationService
                     str_starts_with($href, '/') ||
                     str_starts_with($href, '#') ||
                     str_starts_with($href, 'mailto:') ||
-                    str_ends_with($href, '.md')
+                    preg_match('/\.md(?:[?#]|$)/i', $href) === 1
                 ) {
                     return $matches[0];
                 }

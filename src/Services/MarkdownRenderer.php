@@ -121,7 +121,7 @@ final readonly class MarkdownRenderer
         $linkErrors = [];
 
         $html = (string) preg_replace_callback(
-            '/<a\s+([^>]*?)href="([^"]*\.md(?:#[^"]*)?)"([^>]*?)>([\s\S]*?)<\/a>/i',
+            '/<a\s+([^>]*?)href="([^"?#]*\.md(?:[?#][^"]*)?)"([^>]*?)>([\s\S]*?)<\/a>/i',
             function (array $matches) use ($sourceDir, $sourceFilePath, &$linkErrors): string {
                 $beforeHref = $matches[1];
                 $href = $matches[2];
@@ -133,11 +133,10 @@ final readonly class MarkdownRenderer
                     return $matches[0];
                 }
 
-                // Separate anchor from path
+                // Separate query string and anchor from path
                 $anchor = '';
-                if (str_contains($href, '#')) {
-                    [$href, $anchor] = explode('#', $href, 2);
-                    $anchor = '#'.$anchor;
+                if (preg_match('/^([^?#]*)([?#].*)$/s', $href, $parts) === 1) {
+                    [, $href, $anchor] = $parts;
                 }
 
                 $resolvedPath = $this->normalizePath($sourceDir.'/'.$href);
